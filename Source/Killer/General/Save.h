@@ -24,4 +24,7 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Volume")
 		float FOVShake;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Tutorial")
+		bool TutorialCompleted;
 };
