@@ -47,6 +47,9 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Patroul")
 		float Speed;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Patroul")
+		bool IsPlacedInWorld;
+
 public:	
 	ATarget();
 

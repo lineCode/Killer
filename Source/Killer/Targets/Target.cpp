@@ -7,6 +7,8 @@ ATarget::ATarget()
 {
 	PrimaryActorTick.bCanEverTick = true;
 
+	IsPlacedInWorld = false;
+
 	CapsuleComponent = CreateDefaultSubobject<UCapsuleComponent>(TEXT("Capsule Component"));
 	RootComponent = CapsuleComponent;
 
@@ -22,7 +24,10 @@ void ATarget::BeginPlay()
 
 	World = GetWorld();
 
-	//SetLocations();
+	if (IsPlacedInWorld)
+	{
+		SetLocations();
+	}
 }
 
 void ATarget::Tick(float DeltaTime)

@@ -32,6 +32,12 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Jump")
 		USoundWave* JumpSound;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shoot")
+		bool CanShoot;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Walk")
+		bool CanWalk;
 	
 public:
 	virtual void SetupInputComponent() override;

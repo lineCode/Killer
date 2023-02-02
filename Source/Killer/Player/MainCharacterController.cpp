@@ -8,14 +8,14 @@
 
 void AMainCharacterController::MoveRight(float Value)
 {
-	if (CheckIfDead()) return;
+	if (!CanWalk || CheckIfDead()) return;
 
 	GetCharacter()->AddMovementInput(FVector(1, 0, 0), Value * Speed);
 }
 
 void AMainCharacterController::Jump()
 {
-	if (CheckIfDead()) return;
+	if (!CanWalk || CheckIfDead()) return;
 
 	ACharacter* OwnerCharacter = GetCharacter();
 	if (!OwnerCharacter) return;
@@ -32,13 +32,15 @@ void AMainCharacterController::Jump()
 
 void AMainCharacterController::StopJumping()
 {
-	if (CheckIfDead()) return;
+	if (!CanWalk || CheckIfDead()) return;
 
 	GetCharacter()->StopJumping();
 }
 
 void AMainCharacterController::Shoot()
 {
+	if (!CanShoot) return;
+
 	AMainCharacter* MainCharacter = Cast<AMainCharacter>(GetCharacter());
 	if (!MainCharacter || MainCharacter->GetIsDead()) return;
 
