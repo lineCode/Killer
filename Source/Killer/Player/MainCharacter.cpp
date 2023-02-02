@@ -1,5 +1,6 @@
 #include "MainCharacter.h"
 #include "Killer/Weapons/Gun.h"
+#include "Killer/Environment/Spawn.h"
 
 AMainCharacter::AMainCharacter()
 {
@@ -21,12 +22,19 @@ AMainCharacter::AMainCharacter()
 	Weapon = CreateDefaultSubobject<UChildActorComponent>(TEXT("Weapon"));
 	Weapon->SetupAttachment(RootComponent);
 
+	AudioComp = CreateDefaultSubobject<UAudioComponent>(TEXT("Audio Component"));
+	AudioComp->SetupAttachment(RootComponent);
+
 	HealthComp = CreateDefaultSubobject<UHealthComponent>(TEXT("Health Component"));
 }
 
 void AMainCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+
+	World = GetWorld();
+
+	TeleportPlayerToRandomSpawn();
 
 	AController* BaseController = GetController();
 	if (BaseController)
@@ -47,6 +55,8 @@ void AMainCharacter::BeginPlay()
 	}
 
 	GetMaterialEmission(GetSprite(), PlayerDynamicMaterial, PlayerEmission);
+
+	BulletModifiers.InstigatedBy = GetController();
 }
 
 void AMainCharacter::Tick(float DeltaTime)
@@ -80,11 +90,9 @@ void AMainCharacter::OnHealed(float HealAmount)
 	UpdateMaterialEmission(WeaponDynamicMaterial, WeaponEmission);
 }
 
-void AMainCharacter::AddKills(int32 Value)
+void AMainCharacter::OnTargetKilled(AController* InstigatedBy, AActor* DamageCauser)
 {
-	if (Value <= 0) return;
-
-	Kills += Value;
+	Kills++;
 }
 
 void AMainCharacter::UpdateMaterialEmission(UMaterialInstanceDynamic* DynamicMaterial, float Emission)
@@ -130,6 +138,21 @@ void AMainCharacter::RotateWeapon()
 
 	FQuat WeaponRotation = FQuat(Direction.Rotation());
 	Weapon->SetWorldRotation(WeaponRotation);
+}
+
+void AMainCharacter::TeleportPlayerToRandomSpawn()
+{
+	if (World)
+	{
+		TArray<AActor*> AllSpawns;
+		UGameplayStatics::GetAllActorsOfClass(World, ASpawn::StaticClass(), AllSpawns);
+
+		if (AllSpawns.Num() > 0)
+		{
+			int32 RandomIndex = FMath::RandRange(0, AllSpawns.Num() - 1);
+			SetActorLocation(AllSpawns[RandomIndex]->GetActorLocation(), false, nullptr, ETeleportType::TeleportPhysics);
+		}
+	}
 }
 
 AGun* AMainCharacter::GetGun()

@@ -20,6 +20,8 @@ void ATarget::BeginPlay()
 {
 	Super::BeginPlay();
 
+	World = GetWorld();
+
 	//SetLocations();
 }
 
@@ -59,12 +61,18 @@ void ATarget::SetLocations()
 
 void ATarget::OnKilled(AController* InstigatedBy, AActor* DamageCauser)
 {
-	if (InstigatedBy)
+	if (World)
 	{
-		AMainCharacter* MainCharacter = Cast<AMainCharacter>(InstigatedBy->GetCharacter());
-		if (MainCharacter)
+		TArray<AActor*> ActorsWithInterface;
+		UGameplayStatics::GetAllActorsWithInterface(World, UTargetEventsInterface::StaticClass(), ActorsWithInterface);
+
+		for (auto& Actor : ActorsWithInterface)
 		{
-			MainCharacter->AddKills(1);
+			ITargetEventsInterface* InterfaceActor = Cast<ITargetEventsInterface>(Actor);
+			if (InterfaceActor)
+			{
+				InterfaceActor->OnTargetKilled(InstigatedBy, DamageCauser);
+			}
 		}
 	}
 

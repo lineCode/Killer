@@ -6,16 +6,21 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "Killer/Combat/HealthComponent.h"
 #include "Killer/Combat/HealthInterface.h"
+#include "Components/AudioComponent.h"
+#include "Killer/Combat/BulletInfo.h"
+#include "Killer/Targets/TargetEventsInterface.h"
 #include "MainCharacter.generated.h"
 
 class AGun;
 
 UCLASS()
-class KILLER_API AMainCharacter : public APaperCharacter, public IHealthInterface
+class KILLER_API AMainCharacter : public APaperCharacter, public IHealthInterface, public ITargetEventsInterface
 {
 	GENERATED_BODY()
 
 private:
+	UWorld* World;
+
 	APlayerController* PlayerController;
 	AGun* Gun;
 
@@ -29,6 +34,8 @@ private:
 
 	void MoveWeapon();
 	void RotateWeapon();
+
+	void TeleportPlayerToRandomSpawn();
 	
 protected:
 	virtual void BeginPlay() override;
@@ -43,6 +50,9 @@ protected:
 		UChildActorComponent* Weapon;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		UAudioComponent* AudioComp;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		UHealthComponent* HealthComp;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health")
@@ -54,13 +64,16 @@ protected:
 public:
 	AMainCharacter();
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		FBulletInfo BulletModifiers;
+
 	virtual void Tick(float DeltaTime) override;
 
 	virtual void OnDamageTaken(AController* InstigatedBy, AActor* DamageCauser) override;
 	virtual void OnKilled(AController* InstigatedBy, AActor* DamageCauser) override;
 	virtual void OnHealed(float HealAmount) override;
 
-	void AddKills(int32 Value);
+	virtual void OnTargetKilled(AController* InstigatedBy, AActor* DamageCauser) override;
 
 	AGun* GetGun();
 	UHealthComponent* GetHealthComponent();

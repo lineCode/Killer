@@ -7,6 +7,7 @@
 #include "Killer/Player/MainCharacter.h"
 #include "Components/BoxComponent.h"
 #include "Killer/General/FunctionLibrary.h"
+#include "Killer/Combat/BulletInfo.h"
 #include "Gun.generated.h"
 
 class ABullet;
@@ -40,7 +41,7 @@ public:
 
 	AMainCharacter* Owner;
 
-	void FireFromMuzzle(AController* InstigatedBy);
+	void FireFromMuzzle(FBulletInfo& BulletModifiers);
 
 	UPaperFlipbookComponent* GetSprite();
 };

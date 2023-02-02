@@ -6,6 +6,7 @@
 #include "PaperFlipbookComponent.h"
 #include "Killer/Combat/HealthInterface.h"
 #include "Killer/Combat/HealthComponent.h"
+#include "Killer/Targets/TargetEventsInterface.h"
 #include "Target.generated.h"
 
 UCLASS()
@@ -25,6 +26,8 @@ private:
 
 protected:
 	virtual void BeginPlay() override;
+
+	UWorld* World;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		UCapsuleComponent* CapsuleComponent;

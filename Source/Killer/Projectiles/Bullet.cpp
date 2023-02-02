@@ -5,6 +5,8 @@ ABullet::ABullet()
 {
 	PrimaryActorTick.bCanEverTick = false;
 
+	IsInitialized = false;
+
 	BoxComponent = CreateDefaultSubobject<UBoxComponent>(TEXT("Box Component"));
 	RootComponent = BoxComponent;
 
@@ -26,9 +28,9 @@ void ABullet::BeginPlay()
 
 void ABullet::OnBulletHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
-	float Damage = FMath::RandRange(MinDamage, MaxDamage);
+	if (!IsInitialized) return;
 
-	UGameplayStatics::ApplyDamage(OtherActor, Damage, Instigator, this, DamageTypeClass);
+	UGameplayStatics::ApplyDamage(OtherActor, Damage, BulletInfoModifiers.InstigatedBy, this, DamageTypeClass);
 
 	UFunctionLibrary::SpawnParticlesAndSound(World, HitParticles, HitSound, GetActorLocation());
 
@@ -37,19 +39,29 @@ void ABullet::OnBulletHit(UPrimitiveComponent* HitComponent, AActor* OtherActor,
 
 void ABullet::OnBulletOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
+	if (!IsInitialized) return;
+
 	IHealthInterface* HealthInterfaceActor = Cast<IHealthInterface>(OtherActor);
 	if (!HealthInterfaceActor) return;
 
-	float Damage = FMath::RandRange(MinDamage, MaxDamage);
-
-	UGameplayStatics::ApplyDamage(OtherActor, Damage, Instigator, this, DamageTypeClass);
+	UGameplayStatics::ApplyDamage(OtherActor, Damage, BulletInfoModifiers.InstigatedBy, this, DamageTypeClass);
 
 	Destroy();
 }
 
-void ABullet::FireInDirection(const FVector& Direction, AController* InstigatedBy)
+void ABullet::FireInDirection(const FBulletInfo& BulletModifiers)
 {
-	Instigator = InstigatedBy;
+	ModifyBulletInfo(BulletModifiers);
 
-	ProjectileMovementComponent->Velocity = Direction.GetSafeNormal() * ProjectileMovementComponent->InitialSpeed;
+	ProjectileMovementComponent->Velocity = BulletModifiers.StartDirection.GetSafeNormal() * ProjectileMovementComponent->InitialSpeed;
+}
+
+void ABullet::ModifyBulletInfo(const FBulletInfo& BulletModifiers)
+{
+	BulletInfoModifiers.InstigatedBy = BulletModifiers.InstigatedBy;
+
+	Damage = FMath::RandRange(MinDamage, MaxDamage);
+	Damage *= BulletModifiers.DamageMultiplier;
+
+	IsInitialized = true;
 }

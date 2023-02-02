@@ -13,12 +13,15 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		FString SlotName = "SaveSlot";
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Volume")
 		float EffectsVolume;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Volume")
 		float MusicVolume;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Volume")
 		float UIVolume;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Volume")
+		float FOVShake;
 };

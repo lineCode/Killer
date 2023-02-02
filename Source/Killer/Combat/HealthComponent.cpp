@@ -30,7 +30,9 @@ void UHealthComponent::OnActorTakeAnyDamage(AActor* DamagedActor, float Damage, 
 {
 	if (Damage <= 0.0f || !Owner || !World) return;
 
+	float OldCurrentHealth = CurrentHealth;
 	CurrentHealth = FMath::Clamp(CurrentHealth - Damage, 0.0f, MaxHealth);
+	Damage = OldCurrentHealth - CurrentHealth;
 
 	SpawnNumbers(DamageNumbersClass, Damage);
 
@@ -63,7 +65,9 @@ void UHealthComponent::Heal(float HealAmount)
 {
 	if (HealAmount <= 0.0f) return;
 
+	float OldCurrentHealth = CurrentHealth;
 	CurrentHealth = FMath::Clamp(CurrentHealth + HealAmount, 0.0f, MaxHealth);
+	HealAmount = CurrentHealth - OldCurrentHealth;
 
 	if (HealNumbersClass)
 	{

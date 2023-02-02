@@ -16,7 +16,7 @@ AGun::AGun()
 	MuzzleLocation->SetupAttachment(RootComponent);
 }
 
-void AGun::FireFromMuzzle(AController* InstigatedBy)
+void AGun::FireFromMuzzle(FBulletInfo& BulletModifiers)
 {
 	UWorld* World = GetWorld();
 	if (!World) return;
@@ -24,7 +24,8 @@ void AGun::FireFromMuzzle(AController* InstigatedBy)
 	ABullet* Bullet = World->SpawnActor<ABullet>(BulletClass, MuzzleLocation->GetComponentLocation(), MuzzleLocation->GetComponentRotation());
 	if (!Bullet) return;
 
-	Bullet->FireInDirection(MuzzleLocation->GetForwardVector(), InstigatedBy);
+	BulletModifiers.StartDirection = MuzzleLocation->GetForwardVector();
+	Bullet->FireInDirection(BulletModifiers);
 
 	UFunctionLibrary::SpawnParticlesAndSound(World, ShootParticles, ShootSound, MuzzleLocation->GetComponentLocation(), MuzzleLocation->GetComponentRotation());
 }

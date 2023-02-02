@@ -28,5 +28,5 @@ protected:
 public:
 	ASpawner();
 
-	void SpawnTargetAtRandomFreeSpawn(AActor* FreeSpawn);
+	void SpawnObjectAtRandomFreeSpawn(AActor* FreeSpawn);
 };

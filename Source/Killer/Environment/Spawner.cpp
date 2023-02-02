@@ -5,7 +5,6 @@
 ASpawner::ASpawner()
 {
 	PrimaryActorTick.bCanEverTick = false;
-
 }
 
 void ASpawner::BeginPlay()
@@ -38,7 +37,7 @@ void ASpawner::BeginPlay()
 	}
 }
 
-void ASpawner::SpawnTargetAtRandomFreeSpawn(AActor* FreeSpawn)
+void ASpawner::SpawnObjectAtRandomFreeSpawn(AActor* FreeSpawn)
 {
 	int32 RandomIndex = FMath::RandRange(0, FreeSpawns.Num() - 1);
 

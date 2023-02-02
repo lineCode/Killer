@@ -8,6 +8,7 @@
 #include "NiagaraFunctionLibrary.h"
 #include "Kismet/GameplayStatics.h"
 #include "Killer/General/FunctionLibrary.h"
+#include "Killer/Combat/BulletInfo.h"
 #include "Bullet.generated.h"
 
 UCLASS()
@@ -16,7 +17,13 @@ class KILLER_API ABullet : public AActor
 	GENERATED_BODY()
 	
 private:
-	AController* Instigator;
+	bool IsInitialized;
+
+	float Damage;
+
+	FBulletInfo BulletInfoModifiers;
+
+	void ModifyBulletInfo(const FBulletInfo& BulletModifiers);
 
 protected:
 	virtual void BeginPlay() override;
@@ -50,7 +57,7 @@ protected:
 public:
 	ABullet();
 
-	void FireInDirection(const FVector& Direction, AController* InstigatedBy);
+	void FireInDirection(const FBulletInfo& BulletModifiers);
 
 	UFUNCTION()
 		void OnBulletHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);

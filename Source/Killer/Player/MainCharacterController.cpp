@@ -45,7 +45,7 @@ void AMainCharacterController::Shoot()
 	AGun* Gun = MainCharacter->GetGun();
 	if (!Gun) return;
 
-	Gun->FireFromMuzzle(this);
+	Gun->FireFromMuzzle(MainCharacter->BulletModifiers);
 }
 
 void AMainCharacterController::Restart()
