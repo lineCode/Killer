@@ -14,7 +14,7 @@ class KILLER_API UFunctionLibrary : public UObject
 	
 public:
 	static void SpawnParticlesAndSound(UWorld* World, UNiagaraSystem* NiagaraSystem, USoundWave* SoundWave,
-		const FVector& Location, const FRotator& Rotation = FRotator(), bool RandomizePitch = true);
+		const FVector& Location, const FRotator& Rotation = FRotator(0.0f, 0.0f, 0.0f), bool RandomizePitch = true);
 
 	UFUNCTION(BlueprintCallable)
 		static USave* GetSave();
