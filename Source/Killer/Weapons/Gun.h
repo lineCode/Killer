@@ -17,7 +17,12 @@ class KILLER_API AGun : public AActor
 {
 	GENERATED_BODY()
 
+private:
+	float CurrentTimeToShoot;
+
 protected:
+	virtual void BeginPlay() override;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		UBoxComponent* BoxComponent;
 
@@ -36,8 +41,16 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		UNiagaraSystem* ShootParticles;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float TimeToShoot;
+
 public:
 	AGun();
+
+	virtual void Tick(float DeltaTime) override;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		bool IsAutomatic;
 
 	AMainCharacter* Owner;
 

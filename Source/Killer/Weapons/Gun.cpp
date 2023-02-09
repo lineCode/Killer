@@ -16,8 +16,25 @@ AGun::AGun()
 	MuzzleLocation->SetupAttachment(RootComponent);
 }
 
+void AGun::BeginPlay()
+{
+	Super::BeginPlay();
+
+	CurrentTimeToShoot = TimeToShoot;
+}
+
+void AGun::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+	CurrentTimeToShoot = FMath::Clamp(CurrentTimeToShoot - DeltaTime, 0.0f, TimeToShoot);
+}
+
 void AGun::FireFromMuzzle(FBulletInfo& BulletModifiers)
 {
+	if (CurrentTimeToShoot > 0.0f) return;
+	CurrentTimeToShoot = TimeToShoot;
+
 	UWorld* World = GetWorld();
 	if (!World) return;
 

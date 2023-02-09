@@ -12,12 +12,14 @@ class KILLER_API AMainCharacterController : public APlayerController
 	GENERATED_BODY()
 
 private:
+	bool CanShoot;
+
 	void MoveRight(float Value);
 
 	void Jump();
 	void StopJumping();
 
-	void Shoot();
+	void Shoot(float Value);
 
 	void Restart();
 
@@ -33,12 +35,11 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Jump")
 		USoundWave* JumpSound;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shoot")
-		bool CanShoot;
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Walk")
-		bool CanWalk;
+		bool IsInputEnabled;
 	
 public:
+	AMainCharacterController();
+
 	virtual void SetupInputComponent() override;
 };

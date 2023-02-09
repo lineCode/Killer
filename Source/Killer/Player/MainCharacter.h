@@ -36,6 +36,8 @@ private:
 	void RotateWeapon();
 
 	void TeleportPlayerToRandomSpawn();
+
+	void LoadFromSave();
 	
 protected:
 	virtual void BeginPlay() override;

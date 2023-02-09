@@ -4,6 +4,8 @@
 #include "GameFramework/SaveGame.h"
 #include "Save.generated.h"
 
+class AGun;
+
 UCLASS()
 class KILLER_API USave : public USaveGame
 {
@@ -27,4 +29,13 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Tutorial")
 		bool TutorialCompleted;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Player")
+		TSubclassOf<AGun> GunClass;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stats")
+		int32 MaxKillsPerMinute;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stats")
+		int32 TotalKills;
 };

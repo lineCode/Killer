@@ -6,16 +6,21 @@
 #include "NiagaraFunctionLibrary.h"
 #include "Components/CapsuleComponent.h"
 
+AMainCharacterController::AMainCharacterController()
+{
+	CanShoot = true;
+}
+
 void AMainCharacterController::MoveRight(float Value)
 {
-	if (!CanWalk || CheckIfDead()) return;
+	if (!IsInputEnabled || CheckIfDead()) return;
 
 	GetCharacter()->AddMovementInput(FVector(1, 0, 0), Value * Speed);
 }
 
 void AMainCharacterController::Jump()
 {
-	if (!CanWalk || CheckIfDead()) return;
+	if (!IsInputEnabled || CheckIfDead()) return;
 
 	ACharacter* OwnerCharacter = GetCharacter();
 	if (!OwnerCharacter) return;
@@ -32,14 +37,19 @@ void AMainCharacterController::Jump()
 
 void AMainCharacterController::StopJumping()
 {
-	if (!CanWalk || CheckIfDead()) return;
+	if (!IsInputEnabled || CheckIfDead()) return;
 
 	GetCharacter()->StopJumping();
 }
 
-void AMainCharacterController::Shoot()
+void AMainCharacterController::Shoot(float Value)
 {
-	if (!CanShoot) return;
+	if (!CanShoot && Value <= 0.0f)
+	{
+		CanShoot = true;
+	}
+
+	if (Value <= 0.0f || !IsInputEnabled || !CanShoot) return;
 
 	AMainCharacter* MainCharacter = Cast<AMainCharacter>(GetCharacter());
 	if (!MainCharacter || MainCharacter->GetIsDead()) return;
@@ -48,6 +58,11 @@ void AMainCharacterController::Shoot()
 	if (!Gun) return;
 
 	Gun->FireFromMuzzle(MainCharacter->BulletModifiers);
+
+	if (!Gun->IsAutomatic)
+	{
+		CanShoot = false;
+	}
 }
 
 void AMainCharacterController::Restart()
@@ -70,7 +85,7 @@ void AMainCharacterController::SetupInputComponent()
 	InputComponent->BindAction("Jump", IE_Pressed, this, &AMainCharacterController::Jump);
 	InputComponent->BindAction("Jump", IE_Released, this, &AMainCharacterController::StopJumping);
 
-	InputComponent->BindAction("Shoot", IE_Pressed, this, &AMainCharacterController::Shoot);
+	InputComponent->BindAxis("Shoot", this, &AMainCharacterController::Shoot);
 
 	InputComponent->BindAction("Restart", IE_Pressed, this, &AMainCharacterController::Restart);
 }

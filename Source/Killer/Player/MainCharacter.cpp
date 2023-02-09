@@ -4,6 +4,7 @@
 
 AMainCharacter::AMainCharacter()
 {
+	World = nullptr;
 	PlayerController = nullptr;
 	Gun = nullptr;
 	IsDead = false;
@@ -42,17 +43,7 @@ void AMainCharacter::BeginPlay()
 		PlayerController = Cast<APlayerController>(BaseController);
 	}
 
-	if (Weapon)
-	{
-		Gun = Cast<AGun>(Weapon->GetChildActor());
-
-		if (Gun)
-		{
-			GetMaterialEmission(Gun->GetSprite(), WeaponDynamicMaterial, WeaponEmission);
-
-			Gun->Owner = this;
-		}
-	}
+	LoadFromSave();
 
 	GetMaterialEmission(GetSprite(), PlayerDynamicMaterial, PlayerEmission);
 
@@ -93,6 +84,13 @@ void AMainCharacter::OnHealed(float HealAmount)
 void AMainCharacter::OnTargetKilled(AController* InstigatedBy, AActor* DamageCauser)
 {
 	Kills++;
+
+	USave* Save = UFunctionLibrary::GetSave();
+	if (Save)
+	{
+		Save->TotalKills++;
+		UGameplayStatics::SaveGameToSlot(Save, Save->SlotName, 0);
+	}
 }
 
 void AMainCharacter::UpdateMaterialEmission(UMaterialInstanceDynamic* DynamicMaterial, float Emission)
@@ -151,6 +149,23 @@ void AMainCharacter::TeleportPlayerToRandomSpawn()
 		{
 			int32 RandomIndex = FMath::RandRange(0, AllSpawns.Num() - 1);
 			SetActorLocation(AllSpawns[RandomIndex]->GetActorLocation(), false, nullptr, ETeleportType::TeleportPhysics);
+		}
+	}
+}
+
+void AMainCharacter::LoadFromSave()
+{
+	USave* Save = UFunctionLibrary::GetSave();
+	if (Save && Save->GunClass && Weapon)
+	{
+		Weapon->SetChildActorClass(Save->GunClass);
+
+		Gun = Cast<AGun>(Weapon->GetChildActor());
+		if (Gun)
+		{
+			GetMaterialEmission(Gun->GetSprite(), WeaponDynamicMaterial, WeaponEmission);
+
+			Gun->Owner = this;
 		}
 	}
 }
