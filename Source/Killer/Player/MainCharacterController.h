@@ -4,6 +4,7 @@
 #include "GameFramework/PlayerController.h"
 #include "Killer/General/FunctionLibrary.h"
 #include "NiagaraFunctionLibrary.h"
+#include "Killer/Combat/ParticlesAndSound.h"
 #include "MainCharacterController.generated.h"
 
 UCLASS()
@@ -29,17 +30,17 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Walk")
 		float Speed;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Jump")
-		UNiagaraSystem* JumpParticles;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Jump")
-		USoundWave* JumpSound;
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Walk")
 		bool IsInputEnabled;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Effects")
+		TSubclassOf<AParticlesAndSound> JumpEffects;
 	
 public:
 	AMainCharacterController();
 
 	virtual void SetupInputComponent() override;
+
+	UFUNCTION(Server, Reliable)
+		void FireGunServer(const float Value);
 };

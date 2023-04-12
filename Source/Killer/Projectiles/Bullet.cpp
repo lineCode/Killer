@@ -32,7 +32,10 @@ void ABullet::OnBulletHit(UPrimitiveComponent* HitComponent, AActor* OtherActor,
 
 	UGameplayStatics::ApplyDamage(OtherActor, Damage, BulletInfoModifiers.InstigatedBy, this, DamageTypeClass);
 
-	UFunctionLibrary::SpawnParticlesAndSound(World, HitParticles, HitSound, GetActorLocation());
+	if (World)
+	{
+		World->SpawnActor<AParticlesAndSound>(HitEffects, GetActorLocation(), GetActorRotation());
+	}
 
 	Destroy();
 }
@@ -52,8 +55,6 @@ void ABullet::OnBulletOverlapBegin(UPrimitiveComponent* OverlappedComponent, AAc
 void ABullet::FireInDirection(const FBulletInfo& BulletModifiers)
 {
 	ModifyBulletInfo(BulletModifiers);
-
-	ProjectileMovementComponent->Velocity = BulletModifiers.StartDirection.GetSafeNormal() * ProjectileMovementComponent->InitialSpeed;
 }
 
 void ABullet::ModifyBulletInfo(const FBulletInfo& BulletModifiers)

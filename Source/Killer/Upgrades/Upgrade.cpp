@@ -42,5 +42,5 @@ void AUpgrade::Activate(AMainCharacter* MainCharacter)
 {
 	if (!World) return;
 
-	UFunctionLibrary::SpawnParticlesAndSound(World, ActivatedParticles, ActivatedSound, GetActorLocation(), FRotator(0.0f, 0.0f, 0.0f), false);
+	World->SpawnActor<AParticlesAndSound>(PickupEffects, GetActorLocation(), GetActorRotation());
 }

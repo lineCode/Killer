@@ -27,11 +27,8 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		UPaperFlipbookComponent* FlipbookComponent;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Activate")
-		USoundWave* ActivatedSound;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Activate")
-		UNiagaraSystem* ActivatedParticles;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Effects")
+		TSubclassOf<AParticlesAndSound> PickupEffects;
 
 public:
 	AUpgrade();

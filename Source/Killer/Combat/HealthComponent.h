@@ -5,6 +5,7 @@
 #include "Killer/Combat/HealthInterface.h"
 #include "NiagaraFunctionLibrary.h"
 #include "Killer/General/FunctionLibrary.h"
+#include "Killer/Combat/ParticlesAndSound.h"
 #include "HealthComponent.generated.h"
 
 class ADamageNumbers;
@@ -19,9 +20,6 @@ private:
 
 	AActor* Owner;
 	IHealthInterface* HealthInterfaceOwner;
-
-	float CurrentHealth;
-	float MaxHealth;
 
 	void SpawnNumbers(TSubclassOf<ADamageNumbers> NumbersClass, float Value);
 
@@ -43,14 +41,13 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health")
 		float NumbersSpawnRadius;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health")
-		USoundWave* DamageSound;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Effects")
+		TSubclassOf<AParticlesAndSound> DamageEffects;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health")
-		UNiagaraSystem* BloodParticles;
+	float MaxHealth;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health")
-		TSubclassOf<UDamageType> ReturnToPlayerDamageType;
+	UPROPERTY()
+		float CurrentHealth;
 
 public:
 	UHealthComponent();

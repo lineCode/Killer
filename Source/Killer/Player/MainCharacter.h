@@ -21,19 +21,20 @@ class KILLER_API AMainCharacter : public APaperCharacter, public IHealthInterfac
 private:
 	UWorld* World;
 
-	APlayerController* PlayerController;
 	AGun* Gun;
+
+	APlayerController* PlayerController;
 
 	UMaterialInstanceDynamic* PlayerDynamicMaterial;
 	UMaterialInstanceDynamic* WeaponDynamicMaterial;
 	float PlayerEmission;
 	float WeaponEmission;
 
-	void UpdateMaterialEmission(UMaterialInstanceDynamic* DynamicMaterial, float Emission);
-	void GetMaterialEmission(UPaperFlipbookComponent* FlipbookSprite, UMaterialInstanceDynamic*& DynamicMaterial, float& Emission);
-
 	void MoveWeapon();
 	void RotateWeapon();
+
+	void UpdateMaterialEmission(UMaterialInstanceDynamic* DynamicMaterial, float Emission);
+	void GetMaterialEmission(UPaperFlipbookComponent* FlipbookSprite, UMaterialInstanceDynamic*& DynamicMaterial, float& Emission);
 
 	void TeleportPlayerToRandomSpawn();
 
@@ -47,9 +48,6 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		USpringArmComponent* SpringArm;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		UChildActorComponent* Weapon;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		UAudioComponent* AudioComp;
@@ -83,4 +81,13 @@ public:
 
 	UFUNCTION(BlueprintImplementableEvent)
 		void _OnKilled(AController* InstigatedBy, AActor* DamageCauser);
+
+	UFUNCTION(NetMulticast, Reliable)
+		void SpawnWeaponMulticast();
+
+	UFUNCTION(Server, Unreliable)
+		void MoveWeaponMulticast(const FVector& Location);
+
+	UFUNCTION(Server, Unreliable)
+		void RotateWeaponMulticast(const FQuat& Rotation);
 };

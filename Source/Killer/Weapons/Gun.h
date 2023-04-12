@@ -8,6 +8,7 @@
 #include "Components/BoxComponent.h"
 #include "Killer/General/FunctionLibrary.h"
 #include "Killer/Combat/BulletInfo.h"
+#include "Killer/Combat/ParticlesAndSound.h"
 #include "Gun.generated.h"
 
 class ABullet;
@@ -36,13 +37,10 @@ protected:
 		TSubclassOf<ABullet> BulletClass;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		USoundWave* ShootSound;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		UNiagaraSystem* ShootParticles;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float TimeToShoot;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		TSubclassOf<AParticlesAndSound> GunshotEffects;
 
 public:
 	AGun();
@@ -54,7 +52,7 @@ public:
 
 	AMainCharacter* Owner;
 
-	void FireFromMuzzle(FBulletInfo& BulletModifiers);
+	void FireFromMuzzle(const FBulletInfo& BulletModifiers);
 
 	UPaperFlipbookComponent* GetSprite();
 };

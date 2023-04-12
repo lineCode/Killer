@@ -30,7 +30,7 @@ void AGun::Tick(float DeltaTime)
 	CurrentTimeToShoot = FMath::Clamp(CurrentTimeToShoot - DeltaTime, 0.0f, TimeToShoot);
 }
 
-void AGun::FireFromMuzzle(FBulletInfo& BulletModifiers)
+void AGun::FireFromMuzzle(const FBulletInfo& BulletModifiers)
 {
 	if (CurrentTimeToShoot > 0.0f) return;
 	CurrentTimeToShoot = TimeToShoot;
@@ -41,10 +41,9 @@ void AGun::FireFromMuzzle(FBulletInfo& BulletModifiers)
 	ABullet* Bullet = World->SpawnActor<ABullet>(BulletClass, MuzzleLocation->GetComponentLocation(), MuzzleLocation->GetComponentRotation());
 	if (!Bullet) return;
 
-	BulletModifiers.StartDirection = MuzzleLocation->GetForwardVector();
 	Bullet->FireInDirection(BulletModifiers);
 
-	UFunctionLibrary::SpawnParticlesAndSound(World, ShootParticles, ShootSound, MuzzleLocation->GetComponentLocation(), MuzzleLocation->GetComponentRotation());
+	World->SpawnActor<AParticlesAndSound>(GunshotEffects, MuzzleLocation->GetComponentLocation(), MuzzleLocation->GetComponentRotation());
 }
 
 UPaperFlipbookComponent* AGun::GetSprite()

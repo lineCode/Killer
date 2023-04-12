@@ -30,26 +30,17 @@ void UHealthComponent::OnActorTakeAnyDamage(AActor* DamagedActor, float Damage, 
 {
 	if (Damage <= 0.0f || !Owner || !World) return;
 
-	float OldCurrentHealth = CurrentHealth;
-	CurrentHealth = FMath::Clamp(CurrentHealth - Damage, 0.0f, MaxHealth);
-	Damage = OldCurrentHealth - CurrentHealth;
+	Damage = FMath::Clamp(Damage, 0.0f, CurrentHealth);
+
+	CurrentHealth -= Damage;
 
 	SpawnNumbers(DamageNumbersClass, Damage);
 
-	UFunctionLibrary::SpawnParticlesAndSound(World, BloodParticles, DamageSound, Owner->GetActorLocation());
+	World->SpawnActor<AParticlesAndSound>(DamageEffects, Owner->GetActorLocation(), Owner->GetActorRotation());
 
 	if (HealthInterfaceOwner)
 	{
 		HealthInterfaceOwner->OnDamageTaken(InstigatedBy, DamageCauser);
-	}
-
-	if (!Cast<AMainCharacter>(Owner) && InstigatedBy)
-	{
-		AMainCharacter* MainCharacter = Cast<AMainCharacter>(InstigatedBy->GetCharacter());
-		if (MainCharacter)
-		{
-			UGameplayStatics::ApplyDamage(MainCharacter, Damage, InstigatedBy, DamageCauser, ReturnToPlayerDamageType);
-		}
 	}
 
 	if (CurrentHealth <= 0.0f)

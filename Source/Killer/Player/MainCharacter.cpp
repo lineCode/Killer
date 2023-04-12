@@ -20,9 +20,6 @@ AMainCharacter::AMainCharacter()
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	Camera->SetupAttachment(SpringArm);
 
-	Weapon = CreateDefaultSubobject<UChildActorComponent>(TEXT("Weapon"));
-	Weapon->SetupAttachment(RootComponent);
-
 	AudioComp = CreateDefaultSubobject<UAudioComponent>(TEXT("Audio Component"));
 	AudioComp->SetupAttachment(RootComponent);
 
@@ -34,6 +31,11 @@ void AMainCharacter::BeginPlay()
 	Super::BeginPlay();
 
 	World = GetWorld();
+
+	if (GetLocalRole() == ROLE_Authority)
+	{
+		SpawnWeaponMulticast();
+	}
 
 	TeleportPlayerToRandomSpawn();
 
@@ -93,6 +95,33 @@ void AMainCharacter::OnTargetKilled(AController* InstigatedBy, AActor* DamageCau
 	}
 }
 
+void AMainCharacter::MoveWeapon()
+{
+	if (!PlayerController) return;
+
+	FVector CursorLocation;
+	FVector CursorDirection;
+	PlayerController->DeprojectMousePositionToWorld(CursorLocation, CursorDirection);
+
+	FVector CursorWorldLocation = CursorLocation.Y / CursorDirection.Y * -CursorDirection + CursorLocation;
+
+	GEngine->AddOnScreenDebugMessage(2, 100.0f, FColor::Transparent, CursorLocation.ToString());
+
+	MoveWeaponMulticast(CursorWorldLocation);
+}
+
+void AMainCharacter::RotateWeapon()
+{
+	if (!Gun) return;
+
+	FVector Direction = Gun->GetActorLocation() - GetActorLocation();
+	Direction.Y = 0.0f;
+
+	FQuat GunRotation = FQuat(Direction.Rotation());
+	
+	RotateWeaponMulticast(GunRotation);
+}
+
 void AMainCharacter::UpdateMaterialEmission(UMaterialInstanceDynamic* DynamicMaterial, float Emission)
 {
 	if (!HealthComp || !DynamicMaterial || Emission < 0.0f) return;
@@ -112,30 +141,20 @@ void AMainCharacter::GetMaterialEmission(UPaperFlipbookComponent* FlipbookSprite
 	DynamicMaterial->GetScalarParameterValue(MaterialInfo, Emission);
 }
 
-void AMainCharacter::MoveWeapon()
-{
-	if (!PlayerController) return;
-
-	FVector CursorLocation;
-	FVector CursorDirection;
-	PlayerController->DeprojectMousePositionToWorld(CursorLocation, CursorDirection);
-
-	FVector CursorWorldLocation = CursorLocation.Y / CursorDirection.Y * -CursorDirection + CursorLocation;
-
-	Weapon->SetWorldLocation(CursorWorldLocation, true);
-
-	GEngine->AddOnScreenDebugMessage(1, 1.0f, FColor::Transparent, CursorWorldLocation.ToString());
-}
-
-void AMainCharacter::RotateWeapon()
+void AMainCharacter::MoveWeaponMulticast_Implementation(const FVector& Location)
 {
 	if (!Gun) return;
 
-	FVector Direction = Weapon->GetComponentLocation() - GetActorLocation();
-	Direction.Y = 0.0f;
+	GEngine->AddOnScreenDebugMessage(1, 100.0f, FColor::Transparent, Location.ToString());
 
-	FQuat WeaponRotation = FQuat(Direction.Rotation());
-	Weapon->SetWorldRotation(WeaponRotation);
+	Gun->SetActorLocation(Location, true);
+}
+
+void AMainCharacter::RotateWeaponMulticast_Implementation(const FQuat& Rotation)
+{
+	if (!Gun) return;
+
+	Gun->SetActorRotation(Rotation);
 }
 
 void AMainCharacter::TeleportPlayerToRandomSpawn()
@@ -155,19 +174,19 @@ void AMainCharacter::TeleportPlayerToRandomSpawn()
 
 void AMainCharacter::LoadFromSave()
 {
-	USave* Save = UFunctionLibrary::GetSave();
-	if (Save && Save->GunClass && Weapon)
-	{
-		Weapon->SetChildActorClass(Save->GunClass);
+	//USave* Save = UFunctionLibrary::GetSave();
+	//if (Save && Save->GunClass && Weapon)
+	//{
+	//	//Weapon->SetChildActorClass(Save->GunClass);
 
-		Gun = Cast<AGun>(Weapon->GetChildActor());
-		if (Gun)
-		{
-			GetMaterialEmission(Gun->GetSprite(), WeaponDynamicMaterial, WeaponEmission);
+	//	//Gun = Cast<AGun>(Weapon->GetChildActor());
+	//	/*if (Gun)
+	//	{
+	//		GetMaterialEmission(Gun->GetSprite(), WeaponDynamicMaterial, WeaponEmission);
 
-			Gun->Owner = this;
-		}
-	}
+	//		Gun->Owner = this;
+	//	}*/
+	//}
 }
 
 AGun* AMainCharacter::GetGun()
@@ -183,4 +202,21 @@ UHealthComponent* AMainCharacter::GetHealthComponent()
 bool AMainCharacter::GetIsDead()
 {
 	return IsDead;
+}
+
+void AMainCharacter::SpawnWeaponMulticast_Implementation()
+{
+	USave* Save = UFunctionLibrary::GetSave();
+
+	if (!World || !Save) return;
+
+	Gun = World->SpawnActor<AGun>(Save->GunClass, FVector::ZeroVector, FRotator::ZeroRotator);
+
+	//FAttachmentTransformRules AttachmentRules(EAttachmentRule::KeepWorld, true);
+
+	//Gun->AttachToActor(this, AttachmentRules);
+
+	GetMaterialEmission(Gun->GetSprite(), WeaponDynamicMaterial, WeaponEmission);
+
+	Gun->Owner = this;
 }

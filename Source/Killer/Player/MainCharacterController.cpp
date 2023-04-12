@@ -27,9 +27,14 @@ void AMainCharacterController::Jump()
 
 	if (OwnerCharacter->CanJump())
 	{
-		FVector ParticlesLocation = OwnerCharacter->GetActorLocation();
-		ParticlesLocation.Z -= OwnerCharacter->GetCapsuleComponent()->GetScaledCapsuleHalfHeight();
-		UFunctionLibrary::SpawnParticlesAndSound(GetWorld(), JumpParticles, JumpSound, ParticlesLocation, (-OwnerCharacter->GetActorUpVector()).Rotation());
+		FVector EffectsLocation = OwnerCharacter->GetActorLocation();
+		EffectsLocation.Z -= OwnerCharacter->GetCapsuleComponent()->GetScaledCapsuleHalfHeight();
+		
+		UWorld* World = GetWorld();
+		if (World)
+		{
+			World->SpawnActor<AParticlesAndSound>(JumpEffects, EffectsLocation, OwnerCharacter->GetActorRotation());
+		}
 	}
 
 	OwnerCharacter->Jump();
@@ -44,25 +49,7 @@ void AMainCharacterController::StopJumping()
 
 void AMainCharacterController::Shoot(float Value)
 {
-	if (!CanShoot && Value <= 0.0f)
-	{
-		CanShoot = true;
-	}
-
-	if (Value <= 0.0f || !IsInputEnabled || !CanShoot) return;
-
-	AMainCharacter* MainCharacter = Cast<AMainCharacter>(GetCharacter());
-	if (!MainCharacter || MainCharacter->GetIsDead()) return;
-
-	AGun* Gun = MainCharacter->GetGun();
-	if (!Gun) return;
-
-	Gun->FireFromMuzzle(MainCharacter->BulletModifiers);
-
-	if (!Gun->IsAutomatic)
-	{
-		CanShoot = false;
-	}
+	FireGunServer(Value);
 }
 
 void AMainCharacterController::Restart()
@@ -88,6 +75,29 @@ void AMainCharacterController::SetupInputComponent()
 	InputComponent->BindAxis("Shoot", this, &AMainCharacterController::Shoot);
 
 	InputComponent->BindAction("Restart", IE_Pressed, this, &AMainCharacterController::Restart);
+}
+
+void AMainCharacterController::FireGunServer_Implementation(const float Value)
+{
+	if (!CanShoot && Value <= 0.0f)
+	{
+		CanShoot = true;
+	}
+
+	if (Value <= 0.0f || !IsInputEnabled || !CanShoot) return;
+
+	AMainCharacter* MainCharacter = Cast<AMainCharacter>(GetCharacter());
+	if (!MainCharacter || MainCharacter->GetIsDead()) return;
+
+	AGun* Gun = MainCharacter->GetGun();
+	if (!Gun) return;
+
+	Gun->FireFromMuzzle(MainCharacter->BulletModifiers);
+
+	if (!Gun->IsAutomatic)
+	{
+		CanShoot = false;
+	}
 }
 
 bool AMainCharacterController::CheckIfDead()

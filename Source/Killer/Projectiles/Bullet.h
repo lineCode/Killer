@@ -9,6 +9,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Killer/General/FunctionLibrary.h"
 #include "Killer/Combat/BulletInfo.h"
+#include "Killer/Combat/ParticlesAndSound.h"
 #include "Bullet.generated.h"
 
 UCLASS()
@@ -48,11 +49,8 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Damage")
 		TSubclassOf<UDamageType> DamageTypeClass;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hit")
-		UNiagaraSystem* HitParticles;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hit")
-		USoundWave* HitSound;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Effects")
+		TSubclassOf<AParticlesAndSound> HitEffects;
 
 public:
 	ABullet();

@@ -1,27 +1,5 @@
 #include "FunctionLibrary.h"
-
-void UFunctionLibrary::SpawnParticlesAndSound(UWorld* World, UNiagaraSystem* NiagaraSystem, USoundWave* SoundWave,
-	const FVector& Location, const FRotator& Rotation, bool RandomizePitch)
-{
-	if (!World) return;
-
-	if (NiagaraSystem)
-	{
-		UNiagaraFunctionLibrary::SpawnSystemAtLocation(World, NiagaraSystem, Location, Rotation);
-	}
-
-	if (SoundWave)
-	{
-		float PitchMultiplier = 1.0f;
-
-		if (RandomizePitch)
-		{
-			PitchMultiplier = FMath::RandRange(0.95f, 1.05f);
-		}
-
-		UGameplayStatics::PlaySoundAtLocation(World, SoundWave, Location, 1.0f, PitchMultiplier);
-	}
-}
+#include "Killer/Combat/ParticlesAndSound.h"
 
 USave* UFunctionLibrary::GetSave()
 {
