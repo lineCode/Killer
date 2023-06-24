@@ -2,11 +2,11 @@
 
 void ADamageUpgrade::Activate(AMainCharacter* MainCharacter)
 {
-	if (!MainCharacter) return;
+    Super::Activate(MainCharacter);
+    
+    if (!MainCharacter) return;
 
-	MainCharacter->BulletModifiers.DamageMultiplier *= DamageMultiplier;
+    MainCharacter->BulletModifiers.DamageMultiplier *= DamageMultiplier;
 
-	Super::Activate(MainCharacter);
-
-	Destroy();
+    Destroy();
 }

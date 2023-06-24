@@ -1,7 +1,6 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "UObject/NoExportTypes.h"
 #include "HealthInterface.generated.h"
 
 UINTERFACE(MinimalAPI, Blueprintable)
@@ -19,4 +18,7 @@ public:
     virtual void OnKilled(AController* InstigatedBy, AActor* DamageCauser);
 
     virtual void OnHealed(float HealAmount);
+
+    virtual void OnDamageCaused(AActor* DamageCausedTo, float Damage);
+    virtual void OnKillCaused(AActor* KillCausedTo);
 };

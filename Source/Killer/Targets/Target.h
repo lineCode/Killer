@@ -6,56 +6,64 @@
 #include "PaperFlipbookComponent.h"
 #include "Killer/Combat/HealthInterface.h"
 #include "Killer/Combat/HealthComponent.h"
-#include "Killer/Targets/TargetEventsInterface.h"
 #include "Target.generated.h"
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnTargetKilled, AController*, InstigatedBy, AActor*, DamageCauser);
 
 UCLASS()
 class KILLER_API ATarget : public APawn, public IHealthInterface
 {
-	GENERATED_BODY()
-
-private:
-	FVector FirstLocation;
-	FVector SecondLocation;
-
-	bool IsMovingToFirstLocation;
-
-	void MoveToLocation(const FVector& Location);
-
-	void SetLocations();
+    GENERATED_BODY()
 
 protected:
-	virtual void BeginPlay() override;
+    virtual void BeginPlay() override;
 
-	UWorld* World;
+    UPROPERTY()
+    UWorld* World;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		UCapsuleComponent* CapsuleComponent;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
+    UCapsuleComponent* CapsuleComponent;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		UPaperFlipbookComponent* FlipbookComponent;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
+    UPaperFlipbookComponent* FlipbookComponent;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		UHealthComponent* HealthComponent;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
+    UHealthComponent* HealthComponent;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Patroul")
-		float HalfPatroulDistance;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Target|Patrol")
+    float HalfPatrolDistance;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Patroul")
-		float AcceptanceRadius;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Target|Patrol")
+    float AcceptanceRadius;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Patroul")
-		float Speed;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Target|Patrol")
+    float Speed;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Patroul")
-		bool IsPlacedInWorld;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Target|Patrol")
+    bool IsPlacedInWorld;
 
-public:	
-	ATarget();
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Target|Effects")
+    TSubclassOf<UCameraShakeBase> DamageCameraShakeClass;
 
-	void SetHalfPatroulDistance(float Value);
+    FVector FirstLocation;
+    FVector SecondLocation;
 
-	virtual void Tick(float DeltaTime) override;
+    bool IsMovingToFirstLocation;
 
-	virtual void OnKilled(AController* InstigatedBy, AActor* DamageCauser) override;
+    void MoveToLocation(const FVector& Location);
+
+    void SetLocations();
+
+public:
+    ATarget();
+
+    UPROPERTY(BlueprintAssignable)
+    FOnTargetKilled OnTargetKilled;
+
+    void SetHalfPatrolDistance(float Value);
+
+    virtual void Tick(float DeltaTime) override;
+
+    virtual void OnDamageTaken(AController* InstigatedBy, AActor* DamageCauser) override;
+    virtual void OnKilled(AController* InstigatedBy, AActor* DamageCauser) override;
 };

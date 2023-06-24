@@ -4,49 +4,72 @@
 
 AGun::AGun()
 {
-	PrimaryActorTick.bCanEverTick = false;
+    PrimaryActorTick.bCanEverTick = false;
 
-	BoxComponent = CreateDefaultSubobject<UBoxComponent>(TEXT("Box Component"));
-	RootComponent = BoxComponent;
+    BoxComponent = CreateDefaultSubobject<UBoxComponent>(TEXT("Box Component"));
+    RootComponent = BoxComponent;
 
-	FlipbookComponent = CreateDefaultSubobject<UPaperFlipbookComponent>(TEXT("Flipbook Component"));
-	FlipbookComponent->SetupAttachment(RootComponent);
+    FlipbookComponent = CreateDefaultSubobject<UPaperFlipbookComponent>(TEXT("Flipbook Component"));
+    FlipbookComponent->SetupAttachment(RootComponent);
 
-	MuzzleLocation = CreateDefaultSubobject<USceneComponent>(TEXT("Muzzle Location"));
-	MuzzleLocation->SetupAttachment(RootComponent);
-}
+    MuzzleLocation = CreateDefaultSubobject<USceneComponent>(TEXT("Muzzle Location"));
+    MuzzleLocation->SetupAttachment(RootComponent);
 
-void AGun::BeginPlay()
-{
-	Super::BeginPlay();
-
-	CurrentTimeToShoot = TimeToShoot;
-}
-
-void AGun::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-
-	CurrentTimeToShoot = FMath::Clamp(CurrentTimeToShoot - DeltaTime, 0.0f, TimeToShoot);
+    bCanShoot = true;
 }
 
 void AGun::FireFromMuzzle(const FBulletInfo& BulletModifiers)
 {
-	if (CurrentTimeToShoot > 0.0f) return;
-	CurrentTimeToShoot = TimeToShoot;
+    if (!bCanShoot) return;
 
-	UWorld* World = GetWorld();
-	if (!World) return;
+    SpawnBullet(BulletModifiers);
 
-	ABullet* Bullet = World->SpawnActor<ABullet>(BulletClass, MuzzleLocation->GetComponentLocation(), MuzzleLocation->GetComponentRotation());
-	if (!Bullet) return;
+    SpawnEffects();
 
-	Bullet->FireInDirection(BulletModifiers);
+    bCanShoot = false;
 
-	World->SpawnActor<AParticlesAndSound>(GunshotEffects, MuzzleLocation->GetComponentLocation(), MuzzleLocation->GetComponentRotation());
+    GetWorldTimerManager().SetTimer(FireRateTimerHandle, this, &AGun::ResetFireRate, TimeToShoot, false, TimeToShoot);
 }
 
-UPaperFlipbookComponent* AGun::GetSprite()
+void AGun::SpawnBullet(const FBulletInfo& BulletModifiers)
 {
-	return FlipbookComponent;
+    UWorld* World = GetWorld();
+    if (!World) return;
+
+    FTransform BulletSpawnTransform;
+    BulletSpawnTransform.SetLocation(MuzzleLocation->GetComponentLocation());
+    BulletSpawnTransform.SetRotation(MuzzleLocation->GetComponentRotation().Quaternion());
+
+    ABullet* Bullet = World->SpawnActorDeferred<ABullet>(BulletClass, BulletSpawnTransform, this, GetInstigator());
+    if (!Bullet) return;
+
+    Bullet->SetActorRotation(MuzzleLocation->GetComponentRotation());
+
+    Bullet->ModifyBulletInfo(BulletModifiers);
+
+    UGameplayStatics::FinishSpawningActor(Bullet, BulletSpawnTransform);
+}
+
+void AGun::SpawnEffects()
+{
+    if (MuzzleLocation)
+    {
+        if (AController* InstigatorController = GetInstigatorController())
+        {
+            if (const APlayerController* PlayerController = Cast<APlayerController>(InstigatorController))
+            {
+                GunshotEffectsInfo.PlayerCameraManager = PlayerController->PlayerCameraManager;
+            }
+        }
+        
+        GunshotEffectsInfo.Location = MuzzleLocation->GetComponentLocation();
+        GunshotEffectsInfo.Rotation = MuzzleLocation->GetComponentRotation();
+        
+        UFunctionLibrary::ActivateEffects(this, GunshotEffectsInfo);
+    }
+}
+
+void AGun::ResetFireRate()
+{
+    bCanShoot = true;
 }

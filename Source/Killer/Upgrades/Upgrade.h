@@ -5,37 +5,48 @@
 #include "PaperFlipbookComponent.h"
 #include "Components/BoxComponent.h"
 #include "Killer/Player/MainCharacter.h"
-#include "NiagaraFunctionLibrary.h"
-#include "Kismet/GameplayStatics.h"
 #include "Killer/Weapons/Gun.h"
-#include "Killer/General/FunctionLibrary.h"
 #include "Upgrade.generated.h"
 
 UCLASS()
 class KILLER_API AUpgrade : public AActor
 {
-	GENERATED_BODY()
-	
+    GENERATED_BODY()
+
 protected:
-	UWorld* World;
+    UPROPERTY()
+    UWorld* World;
 
-	virtual void BeginPlay() override;
+    virtual void BeginPlay() override;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		UBoxComponent* BoxComponent;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
+    UBoxComponent* BoxComponent;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		UPaperFlipbookComponent* FlipbookComponent;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
+    UPaperFlipbookComponent* FlipbookComponent;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Effects")
-		TSubclassOf<AParticlesAndSound> PickupEffects;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Upgrade|Effects")
+    FEffectsInfo PickupEffectsInfo;
+
+    /**
+     * UpgradeLocation = Sin(TimeSinceGameStarted * AnimationHalfHeightMultiplier) * AnimationSpeed * DeltaSeconds;
+     */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Upgrade|Animation")
+    float AnimationHalfHeightMultiplier;
+    
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Upgrade|Animation")
+    float AnimationSpeed;
+
+    void AnimateUpgrade(float DeltaSeconds);
 
 public:
-	AUpgrade();
+    AUpgrade();
 
-	virtual void Activate(AMainCharacter* MainCharacter);
+    virtual void Tick(float DeltaSeconds) override;
 
-	UFUNCTION()
-		void OnUpgradeBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent*
-			OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+    virtual void Activate(AMainCharacter* MainCharacter);
+
+    UFUNCTION()
+    void OnUpgradeBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent*
+                               OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 };

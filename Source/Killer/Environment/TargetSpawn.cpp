@@ -1,12 +1,30 @@
 #include "TargetSpawn.h"
+
+#include "Killer/KillerGameModeBase.h"
 #include "Killer/Targets/Target.h"
 
-AActor* ATargetSpawn::SpawnObject(ASpawner* Spawner)
+AActor* ATargetSpawn::SpawnRandomObject(AObjectSpawner* Spawner)
 {
-	ATarget* Target = Cast<ATarget>(Super::SpawnObject(Spawner));
-	if (!Target) return nullptr;
+    AActor* SpawnedObject = Super::SpawnRandomObject(Spawner);
+    if (!SpawnedObject)
+    {
+        return nullptr;
+    }
+    
+    ATarget* Target = Cast<ATarget>(SpawnedObject);
+    if (!Target) return nullptr;
 
-	Target->SetHalfPatroulDistance(HalfPatroulDistance);
+    Target->SetHalfPatrolDistance(HalfPatrolDistance);
 
-	return Target;
+    Target->OnTargetKilled.AddDynamic(this, &ATargetSpawn::OnTargetKilled);
+
+    return Target;
+}
+
+void ATargetSpawn::OnTargetKilled(AController* InstigatedBy, AActor* DamageCauser)
+{
+    if (KillerGameModeBase)
+    {
+        KillerGameModeBase->IncrementEnemiesKilled();
+    }
 }

@@ -1,18 +1,21 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Spawn.h"
+#include "ObjectSpawn.h"
 #include "TargetSpawn.generated.h"
 
 UCLASS()
-class KILLER_API ATargetSpawn : public ASpawn
+class KILLER_API ATargetSpawn : public AObjectSpawn
 {
-	GENERATED_BODY()
+    GENERATED_BODY()
 
 protected:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float HalfPatroulDistance;
-	
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Target")
+    float HalfPatrolDistance;
+
+    UFUNCTION()
+    void OnTargetKilled(AController* InstigatedBy, AActor* DamageCauser);
+    
 public:
-	virtual AActor* SpawnObject(ASpawner* Spawner) override;
+    virtual AActor* SpawnRandomObject(AObjectSpawner* Spawner) override;
 };

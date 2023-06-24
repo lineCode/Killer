@@ -1,0 +1,3 @@
+﻿<component name="DependencyValidationManager">
+  <scope name="MyFiles" pattern="file:Source/Killer/Combat//*||file:Source/Killer/Environment//*||file:Source/Killer/General//*||file:Source/Killer/Player//*||file:Source/Killer/Projectiles//*||file:Source/Killer/Targets//*||file:Source/Killer/Upgrades//*||file:Source/Killer/Weapons//*" />
+</component>

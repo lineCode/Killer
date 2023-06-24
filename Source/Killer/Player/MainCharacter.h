@@ -6,88 +6,115 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "Killer/Combat/HealthComponent.h"
 #include "Killer/Combat/HealthInterface.h"
-#include "Components/AudioComponent.h"
 #include "Killer/Combat/BulletInfo.h"
-#include "Killer/Targets/TargetEventsInterface.h"
+#include "Killer/Projectiles/Bullet.h"
 #include "MainCharacter.generated.h"
 
+class AMainCharacterHUD;
+class AMainCharacterController;
+class UWeaponComponent;
 class AGun;
 
 UCLASS()
-class KILLER_API AMainCharacter : public APaperCharacter, public IHealthInterface, public ITargetEventsInterface
+class KILLER_API AMainCharacter : public APaperCharacter, public IHealthInterface
 {
-	GENERATED_BODY()
+    GENERATED_BODY()
 
-private:
-	UWorld* World;
-
-	AGun* Gun;
-
-	APlayerController* PlayerController;
-
-	UMaterialInstanceDynamic* PlayerDynamicMaterial;
-	UMaterialInstanceDynamic* WeaponDynamicMaterial;
-	float PlayerEmission;
-	float WeaponEmission;
-
-	void MoveWeapon();
-	void RotateWeapon();
-
-	void UpdateMaterialEmission(UMaterialInstanceDynamic* DynamicMaterial, float Emission);
-	void GetMaterialEmission(UPaperFlipbookComponent* FlipbookSprite, UMaterialInstanceDynamic*& DynamicMaterial, float& Emission);
-
-	void TeleportPlayerToRandomSpawn();
-
-	void LoadFromSave();
-	
 protected:
-	virtual void BeginPlay() override;
+    virtual void BeginPlay() override;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		UCameraComponent* Camera;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
+    UCameraComponent* CameraComponent;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		USpringArmComponent* SpringArm;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
+    USpringArmComponent* SpringArmComponent;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		UAudioComponent* AudioComp;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
+    UAudioComponent* AudioComponent;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		UHealthComponent* HealthComp;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
+    UHealthComponent* HealthComponent;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health")
-		bool IsDead;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
+    UWeaponComponent* WeaponComponent;
 
-	UPROPERTY(BlueprintReadWrite)
-		int32 Kills;
+    /** When player causes damage to others, he takes damage too. Damage multiplied by this value. */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Main Character|Self Damage")
+    float SelfDamageMultiplier;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Main Character|Self Damage")
+    TSubclassOf<UDamageType> SelfDamageTypeClass;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Main Character|Animation")
+    UPaperFlipbook* IdleFlipbook;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Main Character|Animation")
+    UPaperFlipbook* RunFlipbook;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Main Character|Animation")
+    UPaperFlipbook* JumpFlipbook;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Main Character|Effects|Footsteps")
+    UNiagaraSystem* WalkParticles;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Main Character|Effects|Footsteps")
+    float SpeedForWalkParticles;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Main Character|Effects|Footsteps")
+    float FootstepsSoundInterval;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Main Character|Effects|Footsteps")
+    USoundWave* FootstepsSound;
+
+    UPROPERTY(BlueprintReadWrite, Category = "Main Character|Effects|Footsteps")
+    UNiagaraComponent* WalkParticlesComponent;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Main Character|Effects|Landing")
+    float LandingImpactSpeed;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Main Character|Effects|Landing")
+    FEffectsInfo LandingEffectsInfo;
+
+    UPROPERTY(BlueprintReadWrite)
+    int32 Kills;
+
+    UPROPERTY()
+    AMainCharacterController* MainCharacterController;
+
+    UPROPERTY()
+    AMainCharacterHUD* MainCharacterHUD;
+
+    void TeleportPlayerToRandomSpawn();
+
+    void UpdateCharacterAnimation() const;
+    void RotateCharacter() const;
+
+    void ActivateWalkParticles();
+
+    FTimerHandle FootstepsTimerHandle;
+    void PlayFootstepsSound();
+
+    void InitializeFootstepsEffects();
 
 public:
-	AMainCharacter();
+    virtual void Tick(float DeltaSeconds) override;
+    
+    virtual void PossessedBy(AController* NewController) override;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		FBulletInfo BulletModifiers;
+    void Landed(const FHitResult& Hit) override;
+    
+    AMainCharacter();
 
-	virtual void Tick(float DeltaTime) override;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    FBulletInfo BulletModifiers;
 
-	virtual void OnDamageTaken(AController* InstigatedBy, AActor* DamageCauser) override;
-	virtual void OnKilled(AController* InstigatedBy, AActor* DamageCauser) override;
-	virtual void OnHealed(float HealAmount) override;
+    virtual void OnKilled(AController* InstigatedBy, AActor* DamageCauser) override;
 
-	virtual void OnTargetKilled(AController* InstigatedBy, AActor* DamageCauser) override;
+    virtual void OnDamageCaused(AActor* DamageCausedTo, float Damage) override;
+    virtual void OnKillCaused(AActor* KillCausedTo) override;
+    
+    UHealthComponent* GetHealthComponent() const { return HealthComponent; }
+    UWeaponComponent* GetWeaponComponent() const { return WeaponComponent; }
 
-	AGun* GetGun();
-	UHealthComponent* GetHealthComponent();
-	bool GetIsDead();
-
-	UFUNCTION(BlueprintImplementableEvent)
-		void _OnKilled(AController* InstigatedBy, AActor* DamageCauser);
-
-	UFUNCTION(NetMulticast, Reliable)
-		void SpawnWeaponMulticast();
-
-	UFUNCTION(Server, Unreliable)
-		void MoveWeaponMulticast(const FVector& Location);
-
-	UFUNCTION(Server, Unreliable)
-		void RotateWeaponMulticast(const FQuat& Rotation);
+    int32 GetKills() const { return Kills; }
 };

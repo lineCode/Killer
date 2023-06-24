@@ -1,222 +1,194 @@
 #include "MainCharacter.h"
-#include "Killer/Weapons/Gun.h"
-#include "Killer/Environment/Spawn.h"
+
+#include "MainCharacterController.h"
+#include "MainCharacterHUD.h"
+#include "NiagaraComponent.h"
+#include "PaperFlipbookComponent.h"
+#include "Components/AudioComponent.h"
+#include "Components/CapsuleComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
+#include "Killer/Environment/ObjectSpawn.h"
+#include "Killer/General/Save.h"
+#include "Killer/UI/HUDWidget.h"
+#include "Killer/Weapons/WeaponComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 AMainCharacter::AMainCharacter()
 {
-	World = nullptr;
-	PlayerController = nullptr;
-	Gun = nullptr;
-	IsDead = false;
-	PlayerDynamicMaterial = nullptr;
-	WeaponDynamicMaterial = nullptr;
-	PlayerEmission = 0.0f;
-	WeaponEmission = 0.0f;
-	Kills = 0;
+    PrimaryActorTick.bCanEverTick = true;
+    
+    SpringArmComponent = CreateDefaultSubobject<USpringArmComponent>(TEXT("Spring Arm"));
+    SpringArmComponent->SetupAttachment(RootComponent);
 
-	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("Spring Arm"));
-	SpringArm->SetupAttachment(RootComponent);
+    CameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
+    CameraComponent->SetupAttachment(SpringArmComponent);
 
-	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
-	Camera->SetupAttachment(SpringArm);
+    AudioComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("Audio Component"));
+    AudioComponent->SetupAttachment(RootComponent);
 
-	AudioComp = CreateDefaultSubobject<UAudioComponent>(TEXT("Audio Component"));
-	AudioComp->SetupAttachment(RootComponent);
+    HealthComponent = CreateDefaultSubobject<UHealthComponent>(TEXT("Health Component"));
+    WeaponComponent = CreateDefaultSubobject<UWeaponComponent>(TEXT("Weapon Component"));
+}
 
-	HealthComp = CreateDefaultSubobject<UHealthComponent>(TEXT("Health Component"));
+void AMainCharacter::PossessedBy(AController* NewController)
+{
+    Super::PossessedBy(NewController);
+
+    MainCharacterController = Cast<AMainCharacterController>(NewController);
+    if (MainCharacterController)
+    {
+        MainCharacterHUD = Cast<AMainCharacterHUD>(MainCharacterController->GetHUD());
+    }
 }
 
 void AMainCharacter::BeginPlay()
 {
-	Super::BeginPlay();
+    Super::BeginPlay();
 
-	World = GetWorld();
+    TeleportPlayerToRandomSpawn();
 
-	if (GetLocalRole() == ROLE_Authority)
-	{
-		SpawnWeaponMulticast();
-	}
-
-	TeleportPlayerToRandomSpawn();
-
-	AController* BaseController = GetController();
-	if (BaseController)
-	{
-		PlayerController = Cast<APlayerController>(BaseController);
-	}
-
-	LoadFromSave();
-
-	GetMaterialEmission(GetSprite(), PlayerDynamicMaterial, PlayerEmission);
-
-	BulletModifiers.InstigatedBy = GetController();
+    InitializeFootstepsEffects();
 }
 
-void AMainCharacter::Tick(float DeltaTime)
+void AMainCharacter::Tick(const float DeltaSeconds)
 {
-	Super::Tick(DeltaTime);
+    Super::Tick(DeltaSeconds);
 
-	if (IsDead) return;
+    UpdateCharacterAnimation();
+    
+    RotateCharacter();
 
-	MoveWeapon();
-	RotateWeapon();
+    ActivateWalkParticles();
+    
+    FVector FixedYLocation = GetActorLocation();
+    FixedYLocation.Y = 0.0f;
+    SetActorLocation(FixedYLocation);
 }
 
-void AMainCharacter::OnDamageTaken(AController* InstigatedBy, AActor* DamageCauser)
+void AMainCharacter::Landed(const FHitResult& Hit)
 {
-	UpdateMaterialEmission(PlayerDynamicMaterial, PlayerEmission);
-	UpdateMaterialEmission(WeaponDynamicMaterial, WeaponEmission);
+    Super::Landed(Hit);
+
+    if (FMath::Abs(GetCharacterMovement()->Velocity.Z) < LandingImpactSpeed)
+    {
+        return;
+    }
+
+    LandingEffectsInfo.PlayerCameraManager = MainCharacterController->PlayerCameraManager;
+    LandingEffectsInfo.Location = GetActorLocation();
+    LandingEffectsInfo.Rotation = FRotator::ZeroRotator;
+    
+    UFunctionLibrary::ActivateEffects(this, LandingEffectsInfo);
 }
 
 void AMainCharacter::OnKilled(AController* InstigatedBy, AActor* DamageCauser)
 {
-	IsDead = true;
+    SetActorHiddenInGame(true);
 
-	SetActorHiddenInGame(true);
-
-	_OnKilled(InstigatedBy, DamageCauser);
+    if (MainCharacterHUD)
+    {
+        MainCharacterHUD->GetHUDWidget()->ShowDeathText();
+    }
 }
 
-void AMainCharacter::OnHealed(float HealAmount)
+void AMainCharacter::OnDamageCaused(AActor* DamageCausedTo, const float Damage)
 {
-	UpdateMaterialEmission(PlayerDynamicMaterial, PlayerEmission);
-	UpdateMaterialEmission(WeaponDynamicMaterial, WeaponEmission);
+    if (DamageCausedTo != this)
+    {
+        UGameplayStatics::ApplyDamage(this, Damage * SelfDamageMultiplier, GetController(), this, SelfDamageTypeClass);
+    }
 }
 
-void AMainCharacter::OnTargetKilled(AController* InstigatedBy, AActor* DamageCauser)
+void AMainCharacter::OnKillCaused(AActor* KillCausedTo)
 {
-	Kills++;
+    Kills++;
 
-	USave* Save = UFunctionLibrary::GetSave();
-	if (Save)
-	{
-		Save->TotalKills++;
-		UGameplayStatics::SaveGameToSlot(Save, Save->SlotName, 0);
-	}
-}
-
-void AMainCharacter::MoveWeapon()
-{
-	if (!PlayerController) return;
-
-	FVector CursorLocation;
-	FVector CursorDirection;
-	PlayerController->DeprojectMousePositionToWorld(CursorLocation, CursorDirection);
-
-	FVector CursorWorldLocation = CursorLocation.Y / CursorDirection.Y * -CursorDirection + CursorLocation;
-
-	GEngine->AddOnScreenDebugMessage(2, 100.0f, FColor::Transparent, CursorLocation.ToString());
-
-	MoveWeaponMulticast(CursorWorldLocation);
-}
-
-void AMainCharacter::RotateWeapon()
-{
-	if (!Gun) return;
-
-	FVector Direction = Gun->GetActorLocation() - GetActorLocation();
-	Direction.Y = 0.0f;
-
-	FQuat GunRotation = FQuat(Direction.Rotation());
-	
-	RotateWeaponMulticast(GunRotation);
-}
-
-void AMainCharacter::UpdateMaterialEmission(UMaterialInstanceDynamic* DynamicMaterial, float Emission)
-{
-	if (!HealthComp || !DynamicMaterial || Emission < 0.0f) return;
-
-	DynamicMaterial->SetScalarParameterValue("Emission", Emission * HealthComp->GetHealthPercent());
-}
-
-void AMainCharacter::GetMaterialEmission(UPaperFlipbookComponent* FlipbookSprite, UMaterialInstanceDynamic*& DynamicMaterial, float& Emission)
-{
-	if (!FlipbookSprite) return;
-
-	DynamicMaterial = FlipbookSprite->CreateDynamicMaterialInstance(0);
-	if (!DynamicMaterial) return;
-
-	FMaterialParameterInfo MaterialInfo;
-	MaterialInfo.Name = "Emission";
-	DynamicMaterial->GetScalarParameterValue(MaterialInfo, Emission);
-}
-
-void AMainCharacter::MoveWeaponMulticast_Implementation(const FVector& Location)
-{
-	if (!Gun) return;
-
-	GEngine->AddOnScreenDebugMessage(1, 100.0f, FColor::Transparent, Location.ToString());
-
-	Gun->SetActorLocation(Location, true);
-}
-
-void AMainCharacter::RotateWeaponMulticast_Implementation(const FQuat& Rotation)
-{
-	if (!Gun) return;
-
-	Gun->SetActorRotation(Rotation);
+    if (USave* Save = USave::GetSave())
+    {
+        Save->TotalKills++;
+        
+        UGameplayStatics::SaveGameToSlot(Save, Save->SlotName, 0);
+    }
 }
 
 void AMainCharacter::TeleportPlayerToRandomSpawn()
 {
-	if (World)
-	{
-		TArray<AActor*> AllSpawns;
-		UGameplayStatics::GetAllActorsOfClass(World, ASpawn::StaticClass(), AllSpawns);
+    TArray<AActor*> AllSpawns;
+    UGameplayStatics::GetAllActorsOfClass(GetWorld(), AObjectSpawn::StaticClass(), AllSpawns);
 
-		if (AllSpawns.Num() > 0)
-		{
-			int32 RandomIndex = FMath::RandRange(0, AllSpawns.Num() - 1);
-			SetActorLocation(AllSpawns[RandomIndex]->GetActorLocation(), false, nullptr, ETeleportType::TeleportPhysics);
-		}
-	}
+    if (AllSpawns.Num() > 0)
+    {
+        const int32 RandomIndex = FMath::RandRange(0, AllSpawns.Num() - 1);
+        SetActorLocation(AllSpawns[RandomIndex]->GetActorLocation(), false, nullptr,
+                         ETeleportType::TeleportPhysics);
+    }
 }
 
-void AMainCharacter::LoadFromSave()
+void AMainCharacter::InitializeFootstepsEffects()
 {
-	//USave* Save = UFunctionLibrary::GetSave();
-	//if (Save && Save->GunClass && Weapon)
-	//{
-	//	//Weapon->SetChildActorClass(Save->GunClass);
+    FVector WalkParticlesLocation;
+    WalkParticlesLocation.Z = -GetCapsuleComponent()->GetScaledCapsuleHalfHeight();
+    
+    WalkParticlesComponent = UNiagaraFunctionLibrary::SpawnSystemAttached(WalkParticles, GetCapsuleComponent(), FName(),
+        WalkParticlesLocation, FRotator::ZeroRotator, EAttachLocation::KeepRelativeOffset, false, false);
 
-	//	//Gun = Cast<AGun>(Weapon->GetChildActor());
-	//	/*if (Gun)
-	//	{
-	//		GetMaterialEmission(Gun->GetSprite(), WeaponDynamicMaterial, WeaponEmission);
-
-	//		Gun->Owner = this;
-	//	}*/
-	//}
+    GetWorldTimerManager().SetTimer(FootstepsTimerHandle, this, &AMainCharacter::PlayFootstepsSound,
+        FootstepsSoundInterval, true, FootstepsSoundInterval);
 }
 
-AGun* AMainCharacter::GetGun()
+void AMainCharacter::UpdateCharacterAnimation() const
 {
-	return Gun;
+    UPaperFlipbook* FinalFlipbook;
+    
+    if (GetCharacterMovement()->IsFalling())
+    {
+        FinalFlipbook = JumpFlipbook;
+    }
+    else if (FMath::Abs(GetCharacterMovement()->Velocity.X) > 0.0f)
+    {
+        FinalFlipbook = RunFlipbook;
+    }
+    else
+    {
+        FinalFlipbook = IdleFlipbook;
+    }
+    
+    GetSprite()->SetFlipbook(FinalFlipbook);
 }
 
-UHealthComponent* AMainCharacter::GetHealthComponent()
+void AMainCharacter::RotateCharacter() const
 {
-	return HealthComp;
+    FRotator Rotation = GetSprite()->GetComponentRotation();
+    
+    GetCharacterMovement()->Velocity.X > 0 ? Rotation.Yaw = 0.0f : Rotation.Yaw = 180.0f;
+    
+    GetSprite()->SetWorldRotation(Rotation);
 }
 
-bool AMainCharacter::GetIsDead()
+void AMainCharacter::ActivateWalkParticles()
 {
-	return IsDead;
+    if (!WalkParticlesComponent)
+    {
+        return;
+    }
+    
+    if (FMath::Abs(GetCharacterMovement()->Velocity.X) >= SpeedForWalkParticles && !GetCharacterMovement()->IsFalling())
+    {
+        WalkParticlesComponent->Activate();
+    }
+    else
+    {
+        WalkParticlesComponent->Deactivate();
+    }
 }
 
-void AMainCharacter::SpawnWeaponMulticast_Implementation()
+void AMainCharacter::PlayFootstepsSound()
 {
-	USave* Save = UFunctionLibrary::GetSave();
-
-	if (!World || !Save) return;
-
-	Gun = World->SpawnActor<AGun>(Save->GunClass, FVector::ZeroVector, FRotator::ZeroRotator);
-
-	//FAttachmentTransformRules AttachmentRules(EAttachmentRule::KeepWorld, true);
-
-	//Gun->AttachToActor(this, AttachmentRules);
-
-	GetMaterialEmission(Gun->GetSprite(), WeaponDynamicMaterial, WeaponEmission);
-
-	Gun->Owner = this;
+    if (!GetCharacterMovement()->IsFalling() && FMath::Abs(GetCharacterMovement()->Velocity.X) >= SpeedForWalkParticles)
+    {
+        const float PitchMultiplier = FMath::RandRange(0.95f, 1.05f);
+        
+        UGameplayStatics::PlaySoundAtLocation(this, FootstepsSound, GetActorLocation(),
+            FRotator::ZeroRotator, 1.0f, PitchMultiplier);
+    }
 }

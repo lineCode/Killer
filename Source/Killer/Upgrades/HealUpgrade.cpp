@@ -2,16 +2,16 @@
 
 void AHealUpgrade::Activate(AMainCharacter* MainCharacter)
 {
-	if (!MainCharacter) return;
+    Super::Activate(MainCharacter);
+    
+    if (!MainCharacter) return;
 
-	UHealthComponent* HealthComponent = MainCharacter->GetHealthComponent();
-	if (!HealthComponent) return;
+    UHealthComponent* HealthComponent = MainCharacter->GetHealthComponent();
+    if (!HealthComponent) return;
 
-	float HealAmount = FMath::RandRange(MinHealAmount, MaxHealAmount);
+    const float HealAmount = FMath::RandRange(MinHealAmount, MaxHealAmount);
 
-	HealthComponent->Heal(HealAmount);
+    HealthComponent->Heal(HealAmount);
 
-	Super::Activate(MainCharacter);
-
-	Destroy();
+    Destroy();
 }

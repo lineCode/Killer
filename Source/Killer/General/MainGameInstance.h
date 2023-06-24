@@ -9,12 +9,12 @@ class AGun;
 UCLASS()
 class KILLER_API UMainGameInstance : public UGameInstance
 {
-	GENERATED_BODY()
-	
-public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		TSubclassOf<AGun> GunClass;
+    GENERATED_BODY()
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		FName Levelname;
+public:
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Main Menu Info")
+    TSubclassOf<AGun> GunClass;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Main Menu Info")
+    FName LevelName;
 };

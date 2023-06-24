@@ -9,33 +9,41 @@ class AGun;
 UCLASS()
 class KILLER_API USave : public USaveGame
 {
-	GENERATED_BODY()
-	
+    GENERATED_BODY()
+
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		FString SlotName = "SaveSlot";
+    USave();
+    
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    FString SlotName;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Volume")
-		float EffectsVolume;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Volume")
+    float EffectsVolume;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Volume")
-		float MusicVolume;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Volume")
+    float MusicVolume;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Volume")
-		float UIVolume;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Volume")
+    float UIVolume;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Volume")
-		float FOVShake;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Volume")
+    float FOVShake;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Tutorial")
-		bool TutorialCompleted;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Tutorial")
+    bool TutorialCompleted;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Player")
-		TSubclassOf<AGun> GunClass;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shop")
+    TSubclassOf<AGun> WeaponClass;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stats")
-		int32 MaxKillsPerMinute;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shop")
+    FName LastChosenLevelName;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stats")
-		int32 TotalKills;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stats")
+    int32 MaxKillsPerMinute;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stats")
+    int32 TotalKills;
+
+    UFUNCTION(BlueprintCallable, BlueprintPure)
+    static USave* GetSave();
 };

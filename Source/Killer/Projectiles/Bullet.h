@@ -5,62 +5,58 @@
 #include "PaperFlipbookComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Components/BoxComponent.h"
-#include "NiagaraFunctionLibrary.h"
-#include "Kismet/GameplayStatics.h"
-#include "Killer/General/FunctionLibrary.h"
 #include "Killer/Combat/BulletInfo.h"
-#include "Killer/Combat/ParticlesAndSound.h"
+#include "Killer/General/FunctionLibrary.h"
 #include "Bullet.generated.h"
 
 UCLASS()
 class KILLER_API ABullet : public AActor
 {
-	GENERATED_BODY()
-	
-private:
-	bool IsInitialized;
-
-	float Damage;
-
-	FBulletInfo BulletInfoModifiers;
-
-	void ModifyBulletInfo(const FBulletInfo& BulletModifiers);
+    GENERATED_BODY()
 
 protected:
-	virtual void BeginPlay() override;
+    virtual void BeginPlay() override;
 
-	UWorld* World;
+    UPROPERTY()
+    UWorld* World;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		UBoxComponent* BoxComponent;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Components")
+    UBoxComponent* BoxComponent;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		UPaperFlipbookComponent* FlipbookComponent;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Components")
+    UPaperFlipbookComponent* FlipbookComponent;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		UProjectileMovementComponent* ProjectileMovementComponent;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Components")
+    UProjectileMovementComponent* ProjectileMovementComponent;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Damage")
-		float MinDamage;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Bullet|Damage")
+    float MinDamage;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Damage")
-		float MaxDamage;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Bullet|Damage")
+    float MaxDamage;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Damage")
-		TSubclassOf<UDamageType> DamageTypeClass;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Bullet|Damage")
+    TSubclassOf<UDamageType> DamageTypeClass;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Effects")
-		TSubclassOf<AParticlesAndSound> HitEffects;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Bullet|Effects")
+    FEffectsInfo HitEffectsInfo;
+
+    float Damage;
+
+    FBulletInfo BulletInfoModifiers;
 
 public:
-	ABullet();
+    ABullet();
 
-	void FireInDirection(const FBulletInfo& BulletModifiers);
+    /** Needs to be called before bullet spawn finished. */
+    void ModifyBulletInfo(const FBulletInfo& BulletModifiers);
 
-	UFUNCTION()
-		void OnBulletHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
+    UFUNCTION()
+    void OnBulletHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
+                     FVector NormalImpulse, const FHitResult& Hit);
 
-	UFUNCTION()
-		void OnBulletOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-			UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+    UFUNCTION()
+    void OnBulletOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+                              UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep,
+                              const FHitResult& SweepResult);
 };

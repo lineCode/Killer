@@ -11,3 +11,11 @@ void IHealthInterface::OnKilled(AController* InstigatedBy, AActor* DamageCauser)
 void IHealthInterface::OnHealed(float HealAmount)
 {
 }
+
+void IHealthInterface::OnDamageCaused(AActor* DamageCausedTo, float Damage)
+{
+}
+
+void IHealthInterface::OnKillCaused(AActor* KillCausedTo)
+{
+}

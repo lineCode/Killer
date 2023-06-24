@@ -1,22 +1,34 @@
-#include "FunctionLibrary.h"
-#include "Killer/Combat/ParticlesAndSound.h"
+﻿#include "FunctionLibrary.h"
 
-USave* UFunctionLibrary::GetSave()
+#include "NiagaraFunctionLibrary.h"
+#include "NiagaraComponent.h"
+#include "Kismet/GameplayStatics.h"
+
+void UFunctionLibrary::ActivateEffects(const UObject* WorldContextObject, const FEffectsInfo& EffectsInfo)
 {
-	USaveGame* EmptySave = UGameplayStatics::CreateSaveGameObject(USave::StaticClass());
-	if (!EmptySave) return nullptr;
-
-	USave* Save = Cast<USave>(EmptySave);
-	if (!Save) return nullptr;
-
-	if (UGameplayStatics::DoesSaveGameExist(Save->SlotName, 0))
+	if (EffectsInfo.Particles)
 	{
-		EmptySave = UGameplayStatics::LoadGameFromSlot(Save->SlotName, 0);
-		if (EmptySave)
+		if (UNiagaraComponent* Particles = UNiagaraFunctionLibrary::SpawnSystemAtLocation(
+			WorldContextObject, EffectsInfo.Particles, EffectsInfo.Location, EffectsInfo.Rotation); EffectsInfo.ParticlesMaterial)
 		{
-			Save = Cast<USave>(EmptySave);
+			Particles->SetVariableMaterial("Material", EffectsInfo.ParticlesMaterial);
 		}
 	}
 
-	return Save;
+	if (EffectsInfo.Sound)
+	{
+		float PitchMultiplier = 1.0f;
+
+		if (EffectsInfo.bModifyPitch)
+		{
+			PitchMultiplier = FMath::RandRange(0.95f, 1.05f);
+		}
+
+		UGameplayStatics::PlaySoundAtLocation(WorldContextObject, EffectsInfo.Sound, EffectsInfo.Location, 1.0f, PitchMultiplier);
+	}
+
+	if (EffectsInfo.CameraShakeClass && EffectsInfo.PlayerCameraManager)
+	{
+		EffectsInfo.PlayerCameraManager->StartCameraShake(EffectsInfo.CameraShakeClass);
+	}
 }

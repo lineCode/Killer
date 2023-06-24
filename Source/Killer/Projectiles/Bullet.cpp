@@ -1,68 +1,60 @@
 #include "Bullet.h"
 #include "Killer/Combat/HealthInterface.h"
+#include "Kismet/GameplayStatics.h"
 
 ABullet::ABullet()
 {
-	PrimaryActorTick.bCanEverTick = false;
+    PrimaryActorTick.bCanEverTick = false;
 
-	IsInitialized = false;
+    BoxComponent = CreateDefaultSubobject<UBoxComponent>(TEXT("Box Component"));
+    RootComponent = BoxComponent;
 
-	BoxComponent = CreateDefaultSubobject<UBoxComponent>(TEXT("Box Component"));
-	RootComponent = BoxComponent;
+    FlipbookComponent = CreateDefaultSubobject<UPaperFlipbookComponent>(TEXT("Flipbook Component"));
+    FlipbookComponent->SetupAttachment(RootComponent);
 
-	FlipbookComponent = CreateDefaultSubobject<UPaperFlipbookComponent>(TEXT("Flipbook Component"));
-	FlipbookComponent->SetupAttachment(RootComponent);
-
-	ProjectileMovementComponent = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("Projectile Movement Component"));
+    ProjectileMovementComponent = CreateDefaultSubobject<UProjectileMovementComponent>(
+        TEXT("Projectile Movement Component"));
 }
 
 void ABullet::BeginPlay()
 {
-	Super::BeginPlay();
+    Super::BeginPlay();
 
-	World = GetWorld();
+    World = GetWorld();
 
-	BoxComponent->OnComponentHit.AddDynamic(this, &ABullet::OnBulletHit);
-	BoxComponent->OnComponentBeginOverlap.AddDynamic(this, &ABullet::OnBulletOverlapBegin);
+    BoxComponent->OnComponentHit.AddDynamic(this, &ABullet::OnBulletHit);
+    BoxComponent->OnComponentBeginOverlap.AddDynamic(this, &ABullet::OnBulletOverlapBegin);
 }
 
-void ABullet::OnBulletHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
+void ABullet::OnBulletHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
+                          FVector NormalImpulse, const FHitResult& Hit)
 {
-	if (!IsInitialized) return;
+    UGameplayStatics::ApplyDamage(OtherActor, Damage, GetInstigatorController(), this, DamageTypeClass);
 
-	UGameplayStatics::ApplyDamage(OtherActor, Damage, BulletInfoModifiers.InstigatedBy, this, DamageTypeClass);
+    if (Owner)
+    {
+        HitEffectsInfo.Location = GetActorLocation();
+        HitEffectsInfo.Rotation = GetActorRotation();
+        
+        UFunctionLibrary::ActivateEffects(this, HitEffectsInfo);
+    }
 
-	if (World)
-	{
-		World->SpawnActor<AParticlesAndSound>(HitEffects, GetActorLocation(), GetActorRotation());
-	}
-
-	Destroy();
+    Destroy();
 }
 
-void ABullet::OnBulletOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+void ABullet::OnBulletOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+                                   UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep,
+                                   const FHitResult& SweepResult)
 {
-	if (!IsInitialized) return;
+    if (const IHealthInterface* HealthInterfaceActor = Cast<IHealthInterface>(OtherActor); !HealthInterfaceActor) return;
 
-	IHealthInterface* HealthInterfaceActor = Cast<IHealthInterface>(OtherActor);
-	if (!HealthInterfaceActor) return;
+    UGameplayStatics::ApplyDamage(OtherActor, Damage, GetInstigatorController(), this, DamageTypeClass);
 
-	UGameplayStatics::ApplyDamage(OtherActor, Damage, BulletInfoModifiers.InstigatedBy, this, DamageTypeClass);
-
-	Destroy();
-}
-
-void ABullet::FireInDirection(const FBulletInfo& BulletModifiers)
-{
-	ModifyBulletInfo(BulletModifiers);
+    Destroy();
 }
 
 void ABullet::ModifyBulletInfo(const FBulletInfo& BulletModifiers)
 {
-	BulletInfoModifiers.InstigatedBy = BulletModifiers.InstigatedBy;
-
-	Damage = FMath::RandRange(MinDamage, MaxDamage);
-	Damage *= BulletModifiers.DamageMultiplier;
-
-	IsInitialized = true;
+    Damage = FMath::RandRange(MinDamage, MaxDamage);
+    Damage *= BulletModifiers.DamageMultiplier;
 }

@@ -8,12 +8,9 @@
 USTRUCT(BlueprintType)
 struct FBulletInfo
 {
-	GENERATED_BODY()
+    GENERATED_BODY()
 
 public:
-	FVector StartDirection;
-	AController* InstigatedBy;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float DamageMultiplier;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    float DamageMultiplier;
 };
