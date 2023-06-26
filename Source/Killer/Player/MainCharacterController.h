@@ -5,6 +5,7 @@
 #include "Killer/General/FunctionLibrary.h"
 #include "MainCharacterController.generated.h"
 
+class AEffectsActor;
 class AMainCharacter;
 
 UCLASS()
@@ -13,6 +14,8 @@ class KILLER_API AMainCharacterController : public APlayerController
     GENERATED_BODY()
 
 protected:
+    virtual void BeginPlay() override;
+    
     UPROPERTY()
     AMainCharacter* MainCharacter;
     
@@ -23,7 +26,7 @@ protected:
     bool IsInputEnabled;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Controller|Effects")
-    FEffectsInfo JumpEffectsInfo;
+    TSubclassOf<AEffectsActor> JumpEffectsActor;
 
     bool CanShoot;
 
@@ -36,13 +39,13 @@ protected:
 
     void Restart();
 
+    UFUNCTION(Server, Unreliable)
+    void Server_SpawnJumpEffects();
+
 public:
     AMainCharacterController();
     
     virtual void OnPossess(APawn* InPawn) override;
 
     virtual void SetupInputComponent() override;
-
-    UFUNCTION(Server, Reliable)
-    void FireGunServer(float Value);
 };

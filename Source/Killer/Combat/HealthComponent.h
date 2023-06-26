@@ -1,11 +1,10 @@
 #pragma once
-
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "Killer/Combat/HealthInterface.h"
-#include "Killer/General/FunctionLibrary.h"
 #include "HealthComponent.generated.h"
 
+class AEffectsActor;
 class AHealthNumbers;
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
@@ -35,7 +34,7 @@ protected:
     float NumbersSpawnRadius;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health Component|Effects")
-    FEffectsInfo DamageEffectsInfo;
+    TSubclassOf<AEffectsActor> DamageEffectsActor;
     
     /**
      * When HP changes, owner's and its children flipbooks change their emission in percentages.
@@ -52,23 +51,28 @@ protected:
 	
     void MultiplyDynamicMaterialsEmissions(TMap<UMaterialInstanceDynamic*, float> DynamicMaterials, float Value) const;
 
+    UPROPERTY(Replicated)
     float MaxHealth;
 
-    UPROPERTY()
+    UPROPERTY(Replicated)
     float CurrentHealth;
 
-    UPROPERTY()
-    UWorld* World;
-
-    UPROPERTY()
+    UPROPERTY(Replicated)
     AActor* Owner;
-    
-    IHealthInterface* HealthInterfaceOwner;
 
+    UPROPERTY(Replicated)
+    TScriptInterface<IHealthInterface> HealthInterfaceOwner;
+
+    UFUNCTION(Server, Unreliable)
     void ShowHealthNumbers(TSubclassOf<AHealthNumbers> NumbersClass, float Value) const;
+
+    UFUNCTION(Server, Unreliable)
+    void Server_SpawnDamageEffects();
 
 public:
     UHealthComponent();
+
+    virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
     void Heal(float HealAmount);
 
@@ -78,9 +82,13 @@ public:
 
     void InitializeOwnerDynamicMaterials();
 
+    UFUNCTION(Server, Reliable)
     void SetCurrentHealth(float Value);
 
+    UFUNCTION(Server, Reliable)
     void DamageOwner(AController* InstigatedBy, AActor* DamageCauser, float Damage);
+
+    UFUNCTION(Server, Reliable)
     void KillOwner(AController* InstigatedBy, AActor* DamageCauser);
     
     UFUNCTION()

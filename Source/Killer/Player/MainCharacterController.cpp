@@ -5,6 +5,7 @@
 #include "Killer/Weapons/Gun.h"
 #include "Kismet/GameplayStatics.h"
 #include "Components/CapsuleComponent.h"
+#include "Killer/Effects/EffectsActor.h"
 #include "Killer/Weapons/WeaponComponent.h"
 
 AMainCharacterController::AMainCharacterController()
@@ -15,8 +16,13 @@ AMainCharacterController::AMainCharacterController()
 void AMainCharacterController::OnPossess(APawn* InPawn)
 {
     Super::OnPossess(InPawn);
+}
 
-    MainCharacter = Cast<AMainCharacter>(InPawn);
+void AMainCharacterController::BeginPlay()
+{
+    Super::BeginPlay();
+
+    MainCharacter = Cast<AMainCharacter>(GetPawn());
 
     SetShowMouseCursor(false);
     UWidgetBlueprintLibrary::SetInputMode_GameOnly(this);
@@ -63,24 +69,18 @@ void AMainCharacterController::Jump()
         return;
     }
 
-    ACharacter* OwnerCharacter = GetCharacter();
-    if (!OwnerCharacter)
+    ACharacter* PossessedCharacter = GetCharacter();
+    if (!PossessedCharacter)
     {
         return;
     }
 
-    if (OwnerCharacter->CanJump())
+    if (PossessedCharacter->CanJump())
     {
-        FVector EffectsLocation = OwnerCharacter->GetActorLocation();
-        EffectsLocation.Z -= OwnerCharacter->GetCapsuleComponent()->GetScaledCapsuleHalfHeight();
+        PossessedCharacter->Jump();
 
-        JumpEffectsInfo.Location = EffectsLocation;
-        JumpEffectsInfo.Rotation = FRotator(0.0f, -1.0f, 0.0f);
-    
-        UFunctionLibrary::ActivateEffects(this, JumpEffectsInfo);
+        Server_SpawnJumpEffects();
     }
-
-    OwnerCharacter->Jump();
 }
 
 void AMainCharacterController::StopJumping()
@@ -100,7 +100,39 @@ void AMainCharacterController::StopJumping()
 
 void AMainCharacterController::Shoot(const float Value)
 {
-    FireGunServer(Value);
+    if (!MainCharacter || (MainCharacter && MainCharacter->GetHealthComponent()->IsDead()))
+    {
+        return;
+    }
+    
+    if (!CanShoot && Value <= 0.0f)
+    {
+        CanShoot = true;
+    }
+
+    if (Value <= 0.0f || !IsInputEnabled || !CanShoot)
+    {
+        return;
+    }
+
+    const UWeaponComponent* WeaponComponent = MainCharacter->GetWeaponComponent();
+    if (!WeaponComponent)
+    {
+        return;
+    }
+    
+    AGun* Gun = WeaponComponent->GetGun();
+    if (!Gun)
+    {
+        return;
+    }
+
+    Gun->FireFromMuzzle(MainCharacter->BulletModifiers);
+
+    if (!Gun->IsAutomatic())
+    {
+        CanShoot = false;
+    }
 }
 
 void AMainCharacterController::Restart()
@@ -119,33 +151,19 @@ void AMainCharacterController::Restart()
     UGameplayStatics::OpenLevel(World, FName(UGameplayStatics::GetCurrentLevelName(World)));
 }
 
-void AMainCharacterController::FireGunServer_Implementation(const float Value)
+void AMainCharacterController::Server_SpawnJumpEffects_Implementation()
 {
-    if (!MainCharacter || (MainCharacter && MainCharacter->GetHealthComponent()->IsDead()))
+    const ACharacter* PossessedCharacter = GetCharacter();
+    
+    UWorld* World = GetWorld();
+    
+    if (!PossessedCharacter || !World || !JumpEffectsActor)
     {
         return;
     }
     
-    if (!CanShoot && Value <= 0.0f)
-    {
-        CanShoot = true;
-    }
-
-    if (Value <= 0.0f || !IsInputEnabled || !CanShoot)
-    {
-        return;
-    }
-
-    AGun* Gun = MainCharacter->GetWeaponComponent()->GetGun();
-    if (!Gun)
-    {
-        return;
-    }
-
-    Gun->FireFromMuzzle(MainCharacter->BulletModifiers);
-
-    if (!Gun->IsAutomatic())
-    {
-        CanShoot = false;
-    }
+    FVector JumpEffectsLocation = PossessedCharacter->GetActorLocation();
+    JumpEffectsLocation.Z -= PossessedCharacter->GetCapsuleComponent()->GetScaledCapsuleHalfHeight();
+    
+    World->SpawnActor<AEffectsActor>(JumpEffectsActor, JumpEffectsLocation, FRotator::ZeroRotator);
 }

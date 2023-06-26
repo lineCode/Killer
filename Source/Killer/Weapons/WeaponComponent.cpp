@@ -1,29 +1,33 @@
 ﻿#include "WeaponComponent.h"
 #include "Gun.h"
 #include "Killer/General/Save.h"
+#include "Killer/Player/MainCharacter.h"
+#include "Killer/Player/MainCharacterController.h"
+#include "Net/UnrealNetwork.h"
 
 UWeaponComponent::UWeaponComponent()
 {
 	PrimaryComponentTick.bCanEverTick = true;
 }
 
+void UWeaponComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME_CONDITION(UWeaponComponent, Gun, COND_OwnerOnly);
+	DOREPLIFETIME_CONDITION(UWeaponComponent, MainCharacterOwner, COND_OwnerOnly);
+	DOREPLIFETIME_CONDITION(UWeaponComponent, MainCharacterController, COND_OwnerOnly);
+}
+
 void UWeaponComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	Owner = GetOwner();
-	
-	if (Owner)
-	{
-		if (const APawn* OwnerPawn = Cast<APawn>(Owner))
-		{
-			OwnerController = Cast<APlayerController>(OwnerPawn->GetController());
-		}
-	}
-	
 	if (GetOwnerRole() == ROLE_Authority)
 	{
-		SpawnWeaponMulticast();
+		MainCharacterOwner = Cast<AMainCharacter>(GetOwner());
+
+		SpawnWeapon();
 	}
 }
 
@@ -32,42 +36,14 @@ void UWeaponComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	MoveWeapon();
-	RotateWeapon();
-}
-
-void UWeaponComponent::MoveWeapon()
-{
-	if (!OwnerController)
+	if (MainCharacterController && MainCharacterController->IsLocalController())
 	{
-		return;
+		MoveWeapon();
+		Server_RotateWeapon();
 	}
-
-	FVector CursorLocation;
-	FVector CursorDirection;
-	OwnerController->DeprojectMousePositionToWorld(CursorLocation, CursorDirection);
-
-	const FVector CursorWorldLocation = CursorLocation.Y / CursorDirection.Y * -CursorDirection + CursorLocation;
-
-	MoveWeaponMulticast(CursorWorldLocation);
 }
 
-void UWeaponComponent::RotateWeapon()
-{
-	if (!Gun || !Owner)
-	{
-		return;
-	}
-
-	FVector Direction = Gun->GetActorLocation() - Owner->GetActorLocation();
-	Direction.Y = 0.0f;
-
-	const FQuat GunRotation = FQuat(Direction.Rotation());
-
-	RotateWeaponMulticast(GunRotation);
-}
-
-void UWeaponComponent::SpawnWeaponMulticast_Implementation()
+void UWeaponComponent::SpawnWeapon()
 {
 	if (bLoadFromSave)
 	{
@@ -80,19 +56,31 @@ void UWeaponComponent::SpawnWeaponMulticast_Implementation()
 	if (UWorld* World = GetWorld(); WeaponClass)
 	{
 		FActorSpawnParameters GunSpawnParameters;
-	
-		if (OwnerController)
-		{
-			GunSpawnParameters.Instigator = OwnerController->GetPawn();
-		}
-	
-		GunSpawnParameters.Owner = Owner;
+		
+		GunSpawnParameters.Instigator = MainCharacterOwner;
+		GunSpawnParameters.Owner = MainCharacterOwner;
 		
 		Gun = World->SpawnActor<AGun>(WeaponClass, FVector::ZeroVector, FRotator::ZeroRotator, GunSpawnParameters);
 	}
 }
 
-void UWeaponComponent::MoveWeaponMulticast_Implementation(const FVector& Location)
+void UWeaponComponent::MoveWeapon() const
+{
+	if (!MainCharacterOwner || !MainCharacterController)
+	{
+		return;
+	}
+
+	FVector CursorLocation;
+	FVector CursorDirection;
+	MainCharacterController->DeprojectMousePositionToWorld(CursorLocation, CursorDirection);
+
+	const FVector CursorWorldLocation = CursorLocation.Y / CursorDirection.Y * -CursorDirection + CursorLocation;
+
+	Server_MoveWeapon(CursorWorldLocation);
+}
+
+void UWeaponComponent::Server_MoveWeapon_Implementation(const FVector& Location) const
 {
 	if (!Gun)
 	{
@@ -102,12 +90,17 @@ void UWeaponComponent::MoveWeaponMulticast_Implementation(const FVector& Locatio
 	Gun->SetActorLocation(Location, true);
 }
 
-void UWeaponComponent::RotateWeaponMulticast_Implementation(const FQuat& Rotation)
+void UWeaponComponent::Server_RotateWeapon_Implementation() const
 {
-	if (!Gun)
+	if (!Gun || !MainCharacterOwner)
 	{
 		return;
 	}
 
-	Gun->SetActorRotation(Rotation);
+	FVector Direction = Gun->GetActorLocation() - MainCharacterOwner->GetActorLocation();
+	Direction.Y = 0.0f;
+
+	const FQuat GunRotation = FQuat(Direction.Rotation());
+
+	Gun->SetActorRotation(GunRotation);
 }

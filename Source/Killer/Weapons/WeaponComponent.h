@@ -4,15 +4,14 @@
 #include "Components/ActorComponent.h"
 #include "WeaponComponent.generated.h"
 
+class AMainCharacterController;
+class AMainCharacter;
 class AGun;
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class KILLER_API UWeaponComponent : public UActorComponent
 {
 	GENERATED_BODY()
-
-public:
-	UWeaponComponent();
 
 protected:
 	virtual void BeginPlay() override;
@@ -23,29 +22,34 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Weapon Component", meta=(EditCondition="!bLoadFromSave"))
 	TSubclassOf<AGun> WeaponClass;
 
-	UPROPERTY()
-	AActor* Owner;
+	UPROPERTY(Replicated)
+	AMainCharacter* MainCharacterOwner;
 
-	UPROPERTY()
-	APlayerController* OwnerController;
+	UPROPERTY(Replicated)
+	AMainCharacterController* MainCharacterController;
 
-	UPROPERTY()
+	UPROPERTY(Replicated)
 	AGun* Gun;
 
-	void MoveWeapon(); 
-	void RotateWeapon();
+	void SpawnWeapon();
+
+	UFUNCTION(Server, Unreliable)
+	void Server_MoveWeapon(const FVector& Location) const;
+
+	UFUNCTION(Server, Unreliable)
+	void Server_RotateWeapon() const;
+
+	void MoveWeapon() const;
 
 public:
+	UWeaponComponent();
+	
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+	
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 	
-	AGun* GetGun() const { return Gun; }
+	UFUNCTION(BlueprintPure, Category="Weapon")
+	FORCEINLINE AGun* GetGun() const { return Gun; }
 
-	UFUNCTION(NetMulticast, Reliable)
-	void SpawnWeaponMulticast();
-
-	UFUNCTION(Server, Unreliable)
-	void MoveWeaponMulticast(const FVector& Location);
-
-	UFUNCTION(Server, Unreliable)
-	void RotateWeaponMulticast(const FQuat& Rotation);
+	void SetMainCharacterController(AMainCharacterController* Controller) { MainCharacterController = Controller; }
 };

@@ -7,6 +7,7 @@
 #include "Killer/General/FunctionLibrary.h"
 #include "Gun.generated.h"
 
+class AEffectsActor;
 class ABullet;
 
 UCLASS()
@@ -34,15 +35,23 @@ protected:
     bool bIsAutomatic;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Gun|Shooting|Effects")
-    FEffectsInfo GunshotEffectsInfo;
+    TSubclassOf<AEffectsActor> GunshotEffectsActor;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Gun|Shooting|Effects")
+    TSubclassOf<UCameraShakeBase> GunshotCameraShakeClass;
 
     bool bCanShoot;
 
     FTimerHandle FireRateTimerHandle;
     void ResetFireRate();
 
-    void SpawnBullet(const FBulletInfo& BulletModifiers);
-    void SpawnEffects();
+    UFUNCTION(Server, Reliable)
+    void Server_SpawnBullet(const FBulletInfo& BulletModifiers);
+
+    UFUNCTION(Server, Unreliable)
+    void Server_SpawnGunshotEffects();
+
+    void StartGunshotCameraShake() const;
 
 public:
     AGun();

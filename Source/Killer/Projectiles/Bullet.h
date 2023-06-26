@@ -9,6 +9,8 @@
 #include "Killer/General/FunctionLibrary.h"
 #include "Bullet.generated.h"
 
+class AEffectsActor;
+
 UCLASS()
 class KILLER_API ABullet : public AActor
 {
@@ -39,11 +41,14 @@ protected:
     TSubclassOf<UDamageType> DamageTypeClass;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Bullet|Effects")
-    FEffectsInfo HitEffectsInfo;
+    TSubclassOf<AEffectsActor> DestroyEffectsActor;
 
     float Damage;
 
     FBulletInfo BulletInfoModifiers;
+
+    UFUNCTION(Server, Unreliable)
+    void Server_SpawnBulletDestroyEffects();
 
 public:
     ABullet();

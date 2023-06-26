@@ -8,10 +8,12 @@
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Killer/Environment/ObjectSpawn.h"
+#include "Killer/Effects/EffectsActor.h"
 #include "Killer/General/Save.h"
 #include "Killer/UI/HUDWidget.h"
 #include "Killer/Weapons/WeaponComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "Net/UnrealNetwork.h"
 
 AMainCharacter::AMainCharacter()
 {
@@ -30,11 +32,24 @@ AMainCharacter::AMainCharacter()
     WeaponComponent = CreateDefaultSubobject<UWeaponComponent>(TEXT("Weapon Component"));
 }
 
+void AMainCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+    Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+    DOREPLIFETIME(AMainCharacter, MainCharacterController);
+}
+
 void AMainCharacter::PossessedBy(AController* NewController)
 {
     Super::PossessedBy(NewController);
 
-    MainCharacterController = Cast<AMainCharacterController>(NewController);
+    if (HasAuthority())
+    {
+        MainCharacterController = Cast<AMainCharacterController>(NewController);
+
+        WeaponComponent->SetMainCharacterController(MainCharacterController);
+    }
+    
     if (MainCharacterController)
     {
         MainCharacterHUD = Cast<AMainCharacterHUD>(MainCharacterController->GetHUD());
@@ -74,11 +89,12 @@ void AMainCharacter::Landed(const FHitResult& Hit)
         return;
     }
 
-    LandingEffectsInfo.PlayerCameraManager = MainCharacterController->PlayerCameraManager;
-    LandingEffectsInfo.Location = GetActorLocation();
-    LandingEffectsInfo.Rotation = FRotator::ZeroRotator;
+    if (MainCharacterController && LandingCameraShake)
+    {
+        MainCharacterController->PlayerCameraManager->StartCameraShake(LandingCameraShake);
+    }
     
-    UFunctionLibrary::ActivateEffects(this, LandingEffectsInfo);
+    Server_SpawnLandingEffects();
 }
 
 void AMainCharacter::OnKilled(AController* InstigatedBy, AActor* DamageCauser)
@@ -165,7 +181,7 @@ void AMainCharacter::RotateCharacter() const
     GetSprite()->SetWorldRotation(Rotation);
 }
 
-void AMainCharacter::ActivateWalkParticles()
+void AMainCharacter::ActivateWalkParticles() const
 {
     if (!WalkParticlesComponent)
     {
@@ -182,7 +198,7 @@ void AMainCharacter::ActivateWalkParticles()
     }
 }
 
-void AMainCharacter::PlayFootstepsSound()
+void AMainCharacter::PlayFootstepsSound() const
 {
     if (!GetCharacterMovement()->IsFalling() && FMath::Abs(GetCharacterMovement()->Velocity.X) >= SpeedForWalkParticles)
     {
@@ -190,5 +206,13 @@ void AMainCharacter::PlayFootstepsSound()
         
         UGameplayStatics::PlaySoundAtLocation(this, FootstepsSound, GetActorLocation(),
             FRotator::ZeroRotator, 1.0f, PitchMultiplier);
+    }
+}
+
+void AMainCharacter::Server_SpawnLandingEffects_Implementation()
+{
+    if (UWorld* World = GetWorld(); LandingEffectsActor)
+    {
+        World->SpawnActor<AEffectsActor>(LandingEffectsActor, GetActorLocation(), FRotator::ZeroRotator);
     }
 }

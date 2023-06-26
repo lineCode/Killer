@@ -1,5 +1,4 @@
 #include "HealthNumbers.h"
-
 #include "Killer/UI/HealthNumbersWidget.h"
 
 AHealthNumbers::AHealthNumbers()
@@ -10,7 +9,7 @@ AHealthNumbers::AHealthNumbers()
     NumbersWidgetComponent->SetupAttachment(RootComponent);
 }
 
-void AHealthNumbers::ShowHealthNumbers(const float Value) const
+void AHealthNumbers::ShowHealthNumbers_Implementation(const float Value) const
 {
     if (UUserWidget* UserWidget = NumbersWidgetComponent->GetWidget())
     {

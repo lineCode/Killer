@@ -1,5 +1,6 @@
 #include "Bullet.h"
 #include "Killer/Combat/HealthInterface.h"
+#include "Killer/Effects/EffectsActor.h"
 #include "Kismet/GameplayStatics.h"
 
 ABullet::ABullet()
@@ -31,13 +32,7 @@ void ABullet::OnBulletHit(UPrimitiveComponent* HitComponent, AActor* OtherActor,
 {
     UGameplayStatics::ApplyDamage(OtherActor, Damage, GetInstigatorController(), this, DamageTypeClass);
 
-    if (Owner)
-    {
-        HitEffectsInfo.Location = GetActorLocation();
-        HitEffectsInfo.Rotation = GetActorRotation();
-        
-        UFunctionLibrary::ActivateEffects(this, HitEffectsInfo);
-    }
+    Server_SpawnBulletDestroyEffects();
 
     Destroy();
 }
@@ -57,4 +52,14 @@ void ABullet::ModifyBulletInfo(const FBulletInfo& BulletModifiers)
 {
     Damage = FMath::RandRange(MinDamage, MaxDamage);
     Damage *= BulletModifiers.DamageMultiplier;
+}
+
+void ABullet::Server_SpawnBulletDestroyEffects_Implementation()
+{
+    if (!DestroyEffectsActor || !World)
+    {
+        return;
+    }
+
+    World->SpawnActor<AEffectsActor>(DestroyEffectsActor, GetActorLocation(), GetActorRotation());
 }

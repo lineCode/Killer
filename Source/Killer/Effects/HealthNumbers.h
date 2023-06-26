@@ -20,5 +20,6 @@ protected:
 public:
     AHealthNumbers();
 
+    UFUNCTION(NetMulticast, Unreliable)
     void ShowHealthNumbers(float Value) const;
 };

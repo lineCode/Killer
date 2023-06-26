@@ -73,12 +73,15 @@ protected:
     float LandingImpactSpeed;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Main Character|Effects|Landing")
-    FEffectsInfo LandingEffectsInfo;
+    TSubclassOf<AEffectsActor> LandingEffectsActor;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Main Character|Effects|Landing")
+    TSubclassOf<UCameraShakeBase> LandingCameraShake;
 
     UPROPERTY(BlueprintReadWrite)
     int32 Kills;
 
-    UPROPERTY()
+    UPROPERTY(Replicated)
     AMainCharacterController* MainCharacterController;
 
     UPROPERTY()
@@ -89,21 +92,26 @@ protected:
     void UpdateCharacterAnimation() const;
     void RotateCharacter() const;
 
-    void ActivateWalkParticles();
+    void ActivateWalkParticles() const;
 
     FTimerHandle FootstepsTimerHandle;
-    void PlayFootstepsSound();
+    void PlayFootstepsSound() const;
 
     void InitializeFootstepsEffects();
 
+    UFUNCTION(Server, Unreliable)
+    void Server_SpawnLandingEffects();
+
 public:
+    AMainCharacter();
+
+    virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+    
     virtual void Tick(float DeltaSeconds) override;
     
     virtual void PossessedBy(AController* NewController) override;
 
-    void Landed(const FHitResult& Hit) override;
-    
-    AMainCharacter();
+    virtual void Landed(const FHitResult& Hit) override;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     FBulletInfo BulletModifiers;
@@ -112,6 +120,8 @@ public:
 
     virtual void OnDamageCaused(AActor* DamageCausedTo, float Damage) override;
     virtual void OnKillCaused(AActor* KillCausedTo) override;
+
+    AMainCharacterController* GetMainCharacterController() const { return MainCharacterController; }
     
     UHealthComponent* GetHealthComponent() const { return HealthComponent; }
     UWeaponComponent* GetWeaponComponent() const { return WeaponComponent; }

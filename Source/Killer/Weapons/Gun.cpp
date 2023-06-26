@@ -1,4 +1,5 @@
 #include "Gun.h"
+#include "Killer/Effects/EffectsActor.h"
 #include "Killer/Projectiles/Bullet.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -22,26 +23,34 @@ void AGun::FireFromMuzzle(const FBulletInfo& BulletModifiers)
 {
     if (!bCanShoot) return;
 
-    SpawnBullet(BulletModifiers);
+    Server_SpawnBullet(BulletModifiers);
 
-    SpawnEffects();
+    Server_SpawnGunshotEffects();
+
+    StartGunshotCameraShake();
 
     bCanShoot = false;
 
     GetWorldTimerManager().SetTimer(FireRateTimerHandle, this, &AGun::ResetFireRate, TimeToShoot, false, TimeToShoot);
 }
 
-void AGun::SpawnBullet(const FBulletInfo& BulletModifiers)
+void AGun::Server_SpawnBullet_Implementation(const FBulletInfo& BulletModifiers)
 {
     UWorld* World = GetWorld();
-    if (!World) return;
+    if (!World)
+    {
+        return;
+    }
 
     FTransform BulletSpawnTransform;
     BulletSpawnTransform.SetLocation(MuzzleLocation->GetComponentLocation());
     BulletSpawnTransform.SetRotation(MuzzleLocation->GetComponentRotation().Quaternion());
 
     ABullet* Bullet = World->SpawnActorDeferred<ABullet>(BulletClass, BulletSpawnTransform, this, GetInstigator());
-    if (!Bullet) return;
+    if (!Bullet)
+    {
+        return;
+    }
 
     Bullet->SetActorRotation(MuzzleLocation->GetComponentRotation());
 
@@ -50,22 +59,25 @@ void AGun::SpawnBullet(const FBulletInfo& BulletModifiers)
     UGameplayStatics::FinishSpawningActor(Bullet, BulletSpawnTransform);
 }
 
-void AGun::SpawnEffects()
+void AGun::Server_SpawnGunshotEffects_Implementation()
 {
-    if (MuzzleLocation)
+    if (UWorld* World = GetWorld(); GunshotEffectsActor)
+    {
+        World->SpawnActor<AEffectsActor>(GunshotEffectsActor, MuzzleLocation->GetComponentLocation(), MuzzleLocation->GetComponentRotation());
+    }
+}
+
+void AGun::StartGunshotCameraShake() const
+{
+    if (GunshotCameraShakeClass)
     {
         if (AController* InstigatorController = GetInstigatorController())
         {
             if (const APlayerController* PlayerController = Cast<APlayerController>(InstigatorController))
             {
-                GunshotEffectsInfo.PlayerCameraManager = PlayerController->PlayerCameraManager;
+                PlayerController->PlayerCameraManager->StartCameraShake(GunshotCameraShakeClass);
             }
         }
-        
-        GunshotEffectsInfo.Location = MuzzleLocation->GetComponentLocation();
-        GunshotEffectsInfo.Rotation = MuzzleLocation->GetComponentRotation();
-        
-        UFunctionLibrary::ActivateEffects(this, GunshotEffectsInfo);
     }
 }
 
