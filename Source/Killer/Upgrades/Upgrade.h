@@ -26,7 +26,7 @@ protected:
     UPaperFlipbookComponent* FlipbookComponent;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Upgrade|Effects")
-    FEffectsInfo PickupEffectsInfo;
+    TSubclassOf<AEffectsActor> PickupEffectsActor;
 
     /**
      * UpgradeLocation = Sin(TimeSinceGameStarted * AnimationHalfHeightMultiplier) * AnimationSpeed * DeltaSeconds;

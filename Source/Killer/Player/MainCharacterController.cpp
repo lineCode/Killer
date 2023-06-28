@@ -1,12 +1,12 @@
 #include "MainCharacterController.h"
 #include "GameFramework/Character.h"
 #include "MainCharacter.h"
-#include "Blueprint/WidgetBlueprintLibrary.h"
 #include "Killer/Weapons/Gun.h"
 #include "Kismet/GameplayStatics.h"
 #include "Components/CapsuleComponent.h"
 #include "Killer/Effects/EffectsActor.h"
 #include "Killer/Weapons/WeaponComponent.h"
+#include "Net/UnrealNetwork.h"
 
 AMainCharacterController::AMainCharacterController()
 {
@@ -16,16 +16,20 @@ AMainCharacterController::AMainCharacterController()
 void AMainCharacterController::OnPossess(APawn* InPawn)
 {
     Super::OnPossess(InPawn);
-}
 
-void AMainCharacterController::BeginPlay()
-{
-    Super::BeginPlay();
-
-    MainCharacter = Cast<AMainCharacter>(GetPawn());
+    if (HasAuthority())
+    {
+        MainCharacter = Cast<AMainCharacter>(InPawn);
+    }
 
     SetShowMouseCursor(false);
-    UWidgetBlueprintLibrary::SetInputMode_GameOnly(this);
+}
+
+void AMainCharacterController::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+    Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+    DOREPLIFETIME(AMainCharacterController, MainCharacter);
 }
 
 void AMainCharacterController::SetupInputComponent()
@@ -81,6 +85,23 @@ void AMainCharacterController::Jump()
 
         Server_SpawnJumpEffects();
     }
+}
+
+void AMainCharacterController::Server_SpawnJumpEffects_Implementation()
+{
+    const ACharacter* PossessedCharacter = GetCharacter();
+    
+    UWorld* World = GetWorld();
+    
+    if (!PossessedCharacter || !World || !JumpEffectsActor)
+    {
+        return;
+    }
+    
+    FVector JumpEffectsLocation = PossessedCharacter->GetActorLocation();
+    JumpEffectsLocation.Z -= PossessedCharacter->GetCapsuleComponent()->GetScaledCapsuleHalfHeight();
+    
+    World->SpawnActor<AEffectsActor>(JumpEffectsActor, JumpEffectsLocation, FRotator::ZeroRotator);
 }
 
 void AMainCharacterController::StopJumping()
@@ -149,21 +170,4 @@ void AMainCharacterController::Restart()
     }
 
     UGameplayStatics::OpenLevel(World, FName(UGameplayStatics::GetCurrentLevelName(World)));
-}
-
-void AMainCharacterController::Server_SpawnJumpEffects_Implementation()
-{
-    const ACharacter* PossessedCharacter = GetCharacter();
-    
-    UWorld* World = GetWorld();
-    
-    if (!PossessedCharacter || !World || !JumpEffectsActor)
-    {
-        return;
-    }
-    
-    FVector JumpEffectsLocation = PossessedCharacter->GetActorLocation();
-    JumpEffectsLocation.Z -= PossessedCharacter->GetCapsuleComponent()->GetScaledCapsuleHalfHeight();
-    
-    World->SpawnActor<AEffectsActor>(JumpEffectsActor, JumpEffectsLocation, FRotator::ZeroRotator);
 }

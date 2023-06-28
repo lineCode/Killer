@@ -18,6 +18,7 @@ public:
     virtual void OnKilled(AController* InstigatedBy, AActor* DamageCauser);
 
     virtual void OnHealed(float HealAmount);
+    virtual void OnRevived();
 
     virtual void OnDamageCaused(AActor* DamageCausedTo, float Damage);
     virtual void OnKillCaused(AActor* KillCausedTo);

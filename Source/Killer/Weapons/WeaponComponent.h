@@ -36,8 +36,7 @@ protected:
 	UFUNCTION(Server, Unreliable)
 	void Server_MoveWeapon(const FVector& Location) const;
 
-	UFUNCTION(Server, Unreliable)
-	void Server_RotateWeapon() const;
+	void RotateWeapon() const;
 
 	void MoveWeapon() const;
 

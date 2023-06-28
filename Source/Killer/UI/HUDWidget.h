@@ -5,6 +5,8 @@
 #include "Components/TextBlock.h"
 #include "HUDWidget.generated.h"
 
+class UPlayersPanelWidget;
+
 UCLASS()
 class KILLER_API UHUDWidget : public UUserWidget
 {
@@ -17,6 +19,12 @@ protected:
 	UPROPERTY(Transient, BlueprintReadWrite, meta=(BindWidgetAnim))
 	UWidgetAnimation* RestartTextBlockAnimation;
 
+	UPROPERTY(BlueprintReadWrite, meta=(BindWidget))
+	UPlayersPanelWidget* PlayersPanelWidget;
+
 public:
-	void ShowDeathText();
+	virtual void ShowDeathText();
+	virtual void HideDeathText();
+
+	UPlayersPanelWidget* GetPlayersPanelWidget() const { return PlayersPanelWidget; }
 };

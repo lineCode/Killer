@@ -1,7 +1,6 @@
 #pragma once
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
-#include "Killer/Combat/HealthInterface.h"
 #include "HealthComponent.generated.h"
 
 class AEffectsActor;
@@ -21,7 +20,7 @@ protected:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health Component|Health")
     float MaxMaxHealth;
 
-    UPROPERTY(BlueprintReadWrite)
+    UPROPERTY(Replicated, BlueprintReadWrite)
     bool bIsDead;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health Component|Numbers")
@@ -48,48 +47,48 @@ protected:
     TMap<UMaterialInstanceDynamic*, float> OwnerDynamicMaterials;
 
     TMap<UMaterialInstanceDynamic*, float> GetAllDynamicMaterialsFromActor(const AActor* Actor) const;
-	
+
     void MultiplyDynamicMaterialsEmissions(TMap<UMaterialInstanceDynamic*, float> DynamicMaterials, float Value) const;
 
     UPROPERTY(Replicated)
+    AActor* Owner;
+    
+    UPROPERTY(Replicated)
     float MaxHealth;
 
-    UPROPERTY(Replicated)
+    UPROPERTY(ReplicatedUsing="OnRep_CurrentHealth")
     float CurrentHealth;
 
-    UPROPERTY(Replicated)
-    AActor* Owner;
+    UFUNCTION()
+    void OnRep_CurrentHealth();
 
-    UPROPERTY(Replicated)
-    TScriptInterface<IHealthInterface> HealthInterfaceOwner;
+    void SpawnHealthNumbers(TSubclassOf<AHealthNumbers> NumbersClass, float Value) const;
 
-    UFUNCTION(Server, Unreliable)
-    void ShowHealthNumbers(TSubclassOf<AHealthNumbers> NumbersClass, float Value) const;
-
-    UFUNCTION(Server, Unreliable)
-    void Server_SpawnDamageEffects();
+    void SpawnDamageEffects() const;
 
 public:
     UHealthComponent();
 
     virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
-
-    void Heal(float HealAmount);
-
-    float GetHealthPercent() const { return CurrentHealth / MaxHealth; }
     
     bool IsDead() const { return bIsDead; }
 
     void InitializeOwnerDynamicMaterials();
 
     UFUNCTION(Server, Reliable)
-    void SetCurrentHealth(float Value);
+    void Server_ReviveOwner();
 
     UFUNCTION(Server, Reliable)
-    void DamageOwner(AController* InstigatedBy, AActor* DamageCauser, float Damage);
+    void Server_HealOwner(float HealAmount);
 
     UFUNCTION(Server, Reliable)
-    void KillOwner(AController* InstigatedBy, AActor* DamageCauser);
+    void Server_SetCurrentHealth(float Value);
+
+    UFUNCTION(Server, Reliable)
+    void Server_DamageOwner(AController* InstigatedBy, AActor* DamageCauser, float Damage);
+
+    UFUNCTION(Server, Reliable)
+    void Server_KillOwner(AController* InstigatedBy, AActor* DamageCauser);
     
     UFUNCTION()
     void OnActorTakeAnyDamage(AActor* DamagedActor, float Damage, const class UDamageType* DamageType,

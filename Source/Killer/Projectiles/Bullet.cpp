@@ -1,5 +1,4 @@
 #include "Bullet.h"
-#include "Killer/Combat/HealthInterface.h"
 #include "Killer/Effects/EffectsActor.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -21,10 +20,10 @@ void ABullet::BeginPlay()
 {
     Super::BeginPlay();
 
-    World = GetWorld();
-
-    BoxComponent->OnComponentHit.AddDynamic(this, &ABullet::OnBulletHit);
-    BoxComponent->OnComponentBeginOverlap.AddDynamic(this, &ABullet::OnBulletOverlapBegin);
+    if (HasAuthority())
+    {
+        BoxComponent->OnComponentHit.AddDynamic(this, &ABullet::OnBulletHit);
+    }
 }
 
 void ABullet::OnBulletHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
@@ -32,18 +31,7 @@ void ABullet::OnBulletHit(UPrimitiveComponent* HitComponent, AActor* OtherActor,
 {
     UGameplayStatics::ApplyDamage(OtherActor, Damage, GetInstigatorController(), this, DamageTypeClass);
 
-    Server_SpawnBulletDestroyEffects();
-
-    Destroy();
-}
-
-void ABullet::OnBulletOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-                                   UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep,
-                                   const FHitResult& SweepResult)
-{
-    if (const IHealthInterface* HealthInterfaceActor = Cast<IHealthInterface>(OtherActor); !HealthInterfaceActor) return;
-
-    UGameplayStatics::ApplyDamage(OtherActor, Damage, GetInstigatorController(), this, DamageTypeClass);
+    SpawnBulletDestroyEffects();
 
     Destroy();
 }
@@ -54,8 +42,9 @@ void ABullet::ModifyBulletInfo(const FBulletInfo& BulletModifiers)
     Damage *= BulletModifiers.DamageMultiplier;
 }
 
-void ABullet::Server_SpawnBulletDestroyEffects_Implementation()
+void ABullet::SpawnBulletDestroyEffects() const
 {
+    UWorld* World = GetWorld();
     if (!DestroyEffectsActor || !World)
     {
         return;

@@ -1,5 +1,6 @@
 #include "HealthNumbers.h"
 #include "Killer/UI/HealthNumbersWidget.h"
+#include "Net/UnrealNetwork.h"
 
 AHealthNumbers::AHealthNumbers()
 {
@@ -9,13 +10,22 @@ AHealthNumbers::AHealthNumbers()
     NumbersWidgetComponent->SetupAttachment(RootComponent);
 }
 
-void AHealthNumbers::ShowHealthNumbers_Implementation(const float Value) const
+void AHealthNumbers::BeginPlay()
 {
+    Super::BeginPlay();
+
     if (UUserWidget* UserWidget = NumbersWidgetComponent->GetWidget())
     {
-        if (UHealthNumbersWidget* HealthNumbersWidget = Cast<UHealthNumbersWidget>(UserWidget))
+        if (auto* HealthNumbersWidget = Cast<UHealthNumbersWidget>(UserWidget))
         {
-            HealthNumbersWidget->ShowHealthNumbers(Value, Color);
+            HealthNumbersWidget->ShowHealthNumbers(HealthValue, Color);
         }
     }
+}
+
+void AHealthNumbers::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+    Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+    DOREPLIFETIME(AHealthNumbers, HealthValue);
 }

@@ -2,7 +2,6 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
-#include "Killer/General/FunctionLibrary.h"
 #include "MainCharacterController.generated.h"
 
 class AEffectsActor;
@@ -14,9 +13,9 @@ class KILLER_API AMainCharacterController : public APlayerController
     GENERATED_BODY()
 
 protected:
-    virtual void BeginPlay() override;
+    virtual void OnPossess(APawn* InPawn) override;
     
-    UPROPERTY()
+    UPROPERTY(Replicated)
     AMainCharacter* MainCharacter;
     
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Controller|Move")
@@ -37,15 +36,15 @@ protected:
 
     void Shoot(float Value);
 
-    void Restart();
+    virtual void Restart();
 
     UFUNCTION(Server, Unreliable)
     void Server_SpawnJumpEffects();
 
 public:
     AMainCharacterController();
-    
-    virtual void OnPossess(APawn* InPawn) override;
+
+    virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
     virtual void SetupInputComponent() override;
 };

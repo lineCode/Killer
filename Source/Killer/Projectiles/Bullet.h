@@ -6,7 +6,6 @@
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Components/BoxComponent.h"
 #include "Killer/Combat/BulletInfo.h"
-#include "Killer/General/FunctionLibrary.h"
 #include "Bullet.generated.h"
 
 class AEffectsActor;
@@ -18,9 +17,6 @@ class KILLER_API ABullet : public AActor
 
 protected:
     virtual void BeginPlay() override;
-
-    UPROPERTY()
-    UWorld* World;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Components")
     UBoxComponent* BoxComponent;
@@ -47,8 +43,7 @@ protected:
 
     FBulletInfo BulletInfoModifiers;
 
-    UFUNCTION(Server, Unreliable)
-    void Server_SpawnBulletDestroyEffects();
+    void SpawnBulletDestroyEffects() const;
 
 public:
     ABullet();
@@ -59,9 +54,4 @@ public:
     UFUNCTION()
     void OnBulletHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
                      FVector NormalImpulse, const FHitResult& Hit);
-
-    UFUNCTION()
-    void OnBulletOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-                              UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep,
-                              const FHitResult& SweepResult);
 };

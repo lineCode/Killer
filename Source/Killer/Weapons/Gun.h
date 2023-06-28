@@ -4,7 +4,6 @@
 #include "PaperFlipbookComponent.h"
 #include "Components/BoxComponent.h"
 #include "Killer/Combat/BulletInfo.h"
-#include "Killer/General/FunctionLibrary.h"
 #include "Gun.generated.h"
 
 class AEffectsActor;

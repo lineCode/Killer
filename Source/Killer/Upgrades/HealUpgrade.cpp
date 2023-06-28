@@ -11,7 +11,7 @@ void AHealUpgrade::Activate(AMainCharacter* MainCharacter)
 
     const float HealAmount = FMath::RandRange(MinHealAmount, MaxHealAmount);
 
-    HealthComponent->Heal(HealAmount);
+    HealthComponent->Server_HealOwner(HealAmount);
 
     Destroy();
 }

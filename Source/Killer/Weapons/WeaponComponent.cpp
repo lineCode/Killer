@@ -39,7 +39,11 @@ void UWeaponComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 	if (MainCharacterController && MainCharacterController->IsLocalController())
 	{
 		MoveWeapon();
-		Server_RotateWeapon();
+	}
+	
+	if (GetOwnerRole() == ROLE_Authority)
+	{
+		RotateWeapon();
 	}
 }
 
@@ -90,7 +94,7 @@ void UWeaponComponent::Server_MoveWeapon_Implementation(const FVector& Location)
 	Gun->SetActorLocation(Location, true);
 }
 
-void UWeaponComponent::Server_RotateWeapon_Implementation() const
+void UWeaponComponent::RotateWeapon() const
 {
 	if (!Gun || !MainCharacterOwner)
 	{

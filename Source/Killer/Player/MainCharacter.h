@@ -40,37 +40,37 @@ protected:
 
     /** When player causes damage to others, he takes damage too. Damage multiplied by this value. */
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Main Character|Self Damage")
-    float SelfDamageMultiplier;
+    float SelfDamageMultiplier{};
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Main Character|Self Damage")
     TSubclassOf<UDamageType> SelfDamageTypeClass;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Main Character|Animation")
-    UPaperFlipbook* IdleFlipbook;
+    UPaperFlipbook* IdleFlipbook{};
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Main Character|Animation")
-    UPaperFlipbook* RunFlipbook;
+    UPaperFlipbook* RunFlipbook{};
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Main Character|Animation")
-    UPaperFlipbook* JumpFlipbook;
+    UPaperFlipbook* JumpFlipbook{};
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Main Character|Effects|Footsteps")
-    UNiagaraSystem* WalkParticles;
+    UNiagaraSystem* WalkParticles{};
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Main Character|Effects|Footsteps")
-    float SpeedForWalkParticles;
+    float SpeedForWalkParticles{};
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Main Character|Effects|Footsteps")
-    float FootstepsSoundInterval;
+    float FootstepsSoundInterval{};
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Main Character|Effects|Footsteps")
-    USoundWave* FootstepsSound;
+    USoundWave* FootstepsSound{};
 
     UPROPERTY(BlueprintReadWrite, Category = "Main Character|Effects|Footsteps")
-    UNiagaraComponent* WalkParticlesComponent;
+    UNiagaraComponent* WalkParticlesComponent{};
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Main Character|Effects|Landing")
-    float LandingImpactSpeed;
+    float LandingImpactSpeed{};
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Main Character|Effects|Landing")
     TSubclassOf<AEffectsActor> LandingEffectsActor;
@@ -78,14 +78,11 @@ protected:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Main Character|Effects|Landing")
     TSubclassOf<UCameraShakeBase> LandingCameraShake;
 
-    UPROPERTY(BlueprintReadWrite)
-    int32 Kills;
-
     UPROPERTY(Replicated)
-    AMainCharacterController* MainCharacterController;
+    AMainCharacterController* MainCharacterController{};
 
     UPROPERTY()
-    AMainCharacterHUD* MainCharacterHUD;
+    AMainCharacterHUD* MainCharacterHUD{};
 
     void TeleportPlayerToRandomSpawn();
 
@@ -99,9 +96,6 @@ protected:
 
     void InitializeFootstepsEffects();
 
-    UFUNCTION(Server, Unreliable)
-    void Server_SpawnLandingEffects();
-
 public:
     AMainCharacter();
 
@@ -114,17 +108,32 @@ public:
     virtual void Landed(const FHitResult& Hit) override;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    FBulletInfo BulletModifiers;
+    FBulletInfo BulletModifiers{};
 
     virtual void OnKilled(AController* InstigatedBy, AActor* DamageCauser) override;
+    void OnRevived() override;
 
     virtual void OnDamageCaused(AActor* DamageCausedTo, float Damage) override;
     virtual void OnKillCaused(AActor* KillCausedTo) override;
 
     AMainCharacterController* GetMainCharacterController() const { return MainCharacterController; }
+    AMainCharacterHUD* GetMainCharacterHUD() const { return MainCharacterHUD; }
+
+    void SetMainCharacterController(AMainCharacterController* NewController) { MainCharacterController = NewController; }
+    void SetMainCharacterHUD(AMainCharacterHUD* NewHUD) { MainCharacterHUD = NewHUD; }
     
     UHealthComponent* GetHealthComponent() const { return HealthComponent; }
     UWeaponComponent* GetWeaponComponent() const { return WeaponComponent; }
 
-    int32 GetKills() const { return Kills; }
+    UFUNCTION(Client, Reliable)
+    void Client_OnKilled();
+
+    UFUNCTION(Client, Reliable)
+    void Client_OnRevived();
+
+    UFUNCTION(NetMulticast, Reliable)
+    void Multicast_OnRevived();
+
+    UFUNCTION(NetMulticast, Reliable)
+    void Multicast_OnKilled();
 };

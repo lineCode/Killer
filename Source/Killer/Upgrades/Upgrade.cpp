@@ -1,5 +1,6 @@
 #include "Upgrade.h"
 
+#include "Killer/Effects/EffectsActor.h"
 #include "Kismet/GameplayStatics.h"
 
 AUpgrade::AUpgrade()
@@ -53,10 +54,7 @@ void AUpgrade::Activate(AMainCharacter* MainCharacter)
 {
     if (!World || !MainCharacter) return;
 
-    PickupEffectsInfo.Location = GetActorLocation();
-    PickupEffectsInfo.Rotation = GetActorRotation();
-    
-    UFunctionLibrary::ActivateEffects(this, PickupEffectsInfo);
+    World->SpawnActor<AEffectsActor>(PickupEffectsActor, GetActorLocation(), GetActorRotation());
 }
 
 void AUpgrade::AnimateUpgrade(const float DeltaSeconds)

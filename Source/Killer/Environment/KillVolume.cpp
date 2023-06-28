@@ -16,7 +16,10 @@ void AKillVolume::BeginPlay()
 {
     Super::BeginPlay();
 
-    BoxComponent->OnComponentBeginOverlap.AddDynamic(this, &AKillVolume::OnKillVolumeOverlapBegin);
+    if (HasAuthority())
+    {
+        BoxComponent->OnComponentBeginOverlap.AddDynamic(this, &AKillVolume::OnKillVolumeOverlapBegin);
+    }
 }
 
 void AKillVolume::OnKillVolumeOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
@@ -25,13 +28,9 @@ void AKillVolume::OnKillVolumeOverlapBegin(UPrimitiveComponent* OverlappedCompon
 {
     if (UActorComponent* ActorHealthComponent = OtherActor->GetComponentByClass(UHealthComponent::StaticClass()))
     {
-        if (UHealthComponent* HealthComponent = Cast<UHealthComponent>(ActorHealthComponent))
+        if (auto* HealthComponent = Cast<UHealthComponent>(ActorHealthComponent))
         {
-            HealthComponent->KillOwner(nullptr, this);
-
-            return;
+            HealthComponent->Server_KillOwner(nullptr, this);
         }
     }
-    
-    OtherActor->Destroy();
 }

@@ -12,6 +12,10 @@ void IHealthInterface::OnHealed(float HealAmount)
 {
 }
 
+void IHealthInterface::OnRevived()
+{
+}
+
 void IHealthInterface::OnDamageCaused(AActor* DamageCausedTo, float Damage)
 {
 }

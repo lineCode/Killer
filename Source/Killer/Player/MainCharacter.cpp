@@ -1,9 +1,9 @@
 #include "MainCharacter.h"
-
 #include "MainCharacterController.h"
 #include "MainCharacterHUD.h"
 #include "NiagaraComponent.h"
 #include "PaperFlipbookComponent.h"
+#include "PlayerStateMultiplayer.h"
 #include "Components/AudioComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -11,6 +11,7 @@
 #include "Killer/Effects/EffectsActor.h"
 #include "Killer/General/Save.h"
 #include "Killer/UI/HUDWidget.h"
+#include "Killer/Weapons/Gun.h"
 #include "Killer/Weapons/WeaponComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
@@ -43,24 +44,19 @@ void AMainCharacter::PossessedBy(AController* NewController)
 {
     Super::PossessedBy(NewController);
 
-    if (HasAuthority())
-    {
-        MainCharacterController = Cast<AMainCharacterController>(NewController);
+    MainCharacterController = Cast<AMainCharacterController>(NewController);
 
-        WeaponComponent->SetMainCharacterController(MainCharacterController);
-    }
-    
-    if (MainCharacterController)
-    {
-        MainCharacterHUD = Cast<AMainCharacterHUD>(MainCharacterController->GetHUD());
-    }
+    WeaponComponent->SetMainCharacterController(MainCharacterController);
 }
 
 void AMainCharacter::BeginPlay()
 {
     Super::BeginPlay();
-
-    TeleportPlayerToRandomSpawn();
+    
+    if (HasAuthority())
+    {
+        TeleportPlayerToRandomSpawn();
+    }
 
     InitializeFootstepsEffects();
 }
@@ -93,23 +89,66 @@ void AMainCharacter::Landed(const FHitResult& Hit)
     {
         MainCharacterController->PlayerCameraManager->StartCameraShake(LandingCameraShake);
     }
-    
-    Server_SpawnLandingEffects();
+
+    if (UWorld* World = GetWorld(); LandingEffectsActor)
+    {
+        World->SpawnActor<AEffectsActor>(LandingEffectsActor, GetActorLocation(), FRotator::ZeroRotator);
+    }
 }
 
 void AMainCharacter::OnKilled(AController* InstigatedBy, AActor* DamageCauser)
 {
     SetActorHiddenInGame(true);
+    WeaponComponent->GetGun()->SetActorHiddenInGame(true);
+    
+    Multicast_OnKilled();
+    Client_OnKilled();
 
+    GetCharacterMovement()->SetMovementMode(MOVE_None);
+}
+
+void AMainCharacter::OnRevived()
+{
+    SetActorHiddenInGame(false);
+    WeaponComponent->GetGun()->SetActorHiddenInGame(false);
+    
+    Multicast_OnRevived();
+    Client_OnRevived();
+
+    GetCharacterMovement()->SetMovementMode(MOVE_Walking);
+    
+    TeleportPlayerToRandomSpawn();
+}
+
+void AMainCharacter::Multicast_OnRevived_Implementation()
+{
+    GetCapsuleComponent()->SetCollisionProfileName("PlayerAlive");
+}
+
+void AMainCharacter::Multicast_OnKilled_Implementation()
+{
+    GetCapsuleComponent()->SetCollisionProfileName("PlayerDead");
+}
+
+void AMainCharacter::Client_OnKilled_Implementation()
+{
     if (MainCharacterHUD)
     {
         MainCharacterHUD->GetHUDWidget()->ShowDeathText();
     }
 }
 
+void AMainCharacter::Client_OnRevived_Implementation()
+{
+    if (MainCharacterHUD)
+    {
+        MainCharacterHUD->GetHUDWidget()->HideDeathText();
+    }
+}
+
 void AMainCharacter::OnDamageCaused(AActor* DamageCausedTo, const float Damage)
 {
-    if (DamageCausedTo != this)
+    if (!Cast<AMainCharacter>(DamageCausedTo))
     {
         UGameplayStatics::ApplyDamage(this, Damage * SelfDamageMultiplier, GetController(), this, SelfDamageTypeClass);
     }
@@ -117,8 +156,14 @@ void AMainCharacter::OnDamageCaused(AActor* DamageCausedTo, const float Damage)
 
 void AMainCharacter::OnKillCaused(AActor* KillCausedTo)
 {
-    Kills++;
-
+    if (MainCharacterController)
+    {
+        if (auto* PlayerStateMultiplayer = MainCharacterController->GetPlayerState<APlayerStateMultiplayer>())
+        {
+            PlayerStateMultiplayer->Server_IncrementKillsCount();
+        }
+    }
+    
     if (USave* Save = USave::GetSave())
     {
         Save->TotalKills++;
@@ -206,13 +251,5 @@ void AMainCharacter::PlayFootstepsSound() const
         
         UGameplayStatics::PlaySoundAtLocation(this, FootstepsSound, GetActorLocation(),
             FRotator::ZeroRotator, 1.0f, PitchMultiplier);
-    }
-}
-
-void AMainCharacter::Server_SpawnLandingEffects_Implementation()
-{
-    if (UWorld* World = GetWorld(); LandingEffectsActor)
-    {
-        World->SpawnActor<AEffectsActor>(LandingEffectsActor, GetActorLocation(), FRotator::ZeroRotator);
     }
 }

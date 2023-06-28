@@ -11,6 +11,8 @@ class KILLER_API AHealthNumbers : public AActor
     GENERATED_BODY()
 
 protected:
+    void BeginPlay() override;
+    
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Components")
     UWidgetComponent* NumbersWidgetComponent;
 
@@ -20,6 +22,8 @@ protected:
 public:
     AHealthNumbers();
 
-    UFUNCTION(NetMulticast, Unreliable)
-    void ShowHealthNumbers(float Value) const;
+    virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
+    UPROPERTY(Replicated)
+    float HealthValue;
 };
