@@ -1,34 +1,34 @@
-D:\Projects\UE\Killer\Plugins\Developer\RiderLink\Source\RD\thirdparty\clsocket\src\ActiveSocket.cpp
+D:\Projects\Unreal\Killer\Plugins\Developer\RiderLink\Source\RD\thirdparty\clsocket\src\ActiveSocket.cpp
 /I .
-/I D:\Projects\UE\Killer\Plugins\Developer\RiderLink\Source
-/I D:\Projects\UE\Killer\Plugins\Developer\RiderLink\Source\RD\src
-/I D:\Projects\UE\Killer\Plugins\Developer\RiderLink\Source\RD\src\rd_core_cpp
-/I D:\Projects\UE\Killer\Plugins\Developer\RiderLink\Source\RD\src\rd_core_cpp\src\main
-/I D:\Projects\UE\Killer\Plugins\Developer\RiderLink\Source\RD\src\rd_framework_cpp
-/I D:\Projects\UE\Killer\Plugins\Developer\RiderLink\Source\RD\src\rd_framework_cpp\src\main
-/I D:\Projects\UE\Killer\Plugins\Developer\RiderLink\Source\RD\src\rd_framework_cpp\src\main\util
-/I D:\Projects\UE\Killer\Plugins\Developer\RiderLink\Source\RD\src\rd_gen_cpp\src
-/I D:\Projects\UE\Killer\Plugins\Developer\RiderLink\Source\RD\thirdparty
-/I D:\Projects\UE\Killer\Plugins\Developer\RiderLink\Source\RD\thirdparty\ordered-map\include
-/I D:\Projects\UE\Killer\Plugins\Developer\RiderLink\Source\RD\thirdparty\optional\tl
-/I D:\Projects\UE\Killer\Plugins\Developer\RiderLink\Source\RD\thirdparty\variant\include
-/I D:\Projects\UE\Killer\Plugins\Developer\RiderLink\Source\RD\thirdparty\string-view-lite\include
-/I D:\Projects\UE\Killer\Plugins\Developer\RiderLink\Source\RD\thirdparty\spdlog\include
-/I D:\Projects\UE\Killer\Plugins\Developer\RiderLink\Source\RD\thirdparty\clsocket\src
-/I D:\Projects\UE\Killer\Plugins\Developer\RiderLink\Source\RD\thirdparty\CTPL\include
+/I D:\Projects\Unreal\Killer\Plugins\Developer\RiderLink\Source
+/I D:\Projects\Unreal\Killer\Plugins\Developer\RiderLink\Source\RD\src
+/I D:\Projects\Unreal\Killer\Plugins\Developer\RiderLink\Source\RD\src\rd_core_cpp
+/I D:\Projects\Unreal\Killer\Plugins\Developer\RiderLink\Source\RD\src\rd_core_cpp\src\main
+/I D:\Projects\Unreal\Killer\Plugins\Developer\RiderLink\Source\RD\src\rd_framework_cpp
+/I D:\Projects\Unreal\Killer\Plugins\Developer\RiderLink\Source\RD\src\rd_framework_cpp\src\main
+/I D:\Projects\Unreal\Killer\Plugins\Developer\RiderLink\Source\RD\src\rd_framework_cpp\src\main\util
+/I D:\Projects\Unreal\Killer\Plugins\Developer\RiderLink\Source\RD\src\rd_gen_cpp\src
+/I D:\Projects\Unreal\Killer\Plugins\Developer\RiderLink\Source\RD\thirdparty
+/I D:\Projects\Unreal\Killer\Plugins\Developer\RiderLink\Source\RD\thirdparty\ordered-map\include
+/I D:\Projects\Unreal\Killer\Plugins\Developer\RiderLink\Source\RD\thirdparty\optional\tl
+/I D:\Projects\Unreal\Killer\Plugins\Developer\RiderLink\Source\RD\thirdparty\variant\include
+/I D:\Projects\Unreal\Killer\Plugins\Developer\RiderLink\Source\RD\thirdparty\string-view-lite\include
+/I D:\Projects\Unreal\Killer\Plugins\Developer\RiderLink\Source\RD\thirdparty\spdlog\include
+/I D:\Projects\Unreal\Killer\Plugins\Developer\RiderLink\Source\RD\thirdparty\clsocket\src
+/I D:\Projects\Unreal\Killer\Plugins\Developer\RiderLink\Source\RD\thirdparty\CTPL\include
 /I Runtime
 /I Runtime\TraceLog\Public
 /I Runtime\Core\Public
 /external:W0
 /external:I ThirdParty\mimalloc\include
-/external:I D:\Programs\VisualStudio\VS\VC\Tools\MSVC\14.35.32215\INCLUDE
-/external:I "C:\Program Files (x86)\Windows Kits\10\include\10.0.22000.0\ucrt"
-/external:I "C:\Program Files (x86)\Windows Kits\10\include\10.0.22000.0\shared"
-/external:I "C:\Program Files (x86)\Windows Kits\10\include\10.0.22000.0\um"
-/external:I "C:\Program Files (x86)\Windows Kits\10\include\10.0.22000.0\winrt"
-/FI"D:\Projects\UE\Killer\Plugins\Developer\RiderLink\Intermediate\Build\Win64\UnrealEditor\Development\RD\Definitions.h"
-/Fo"D:\Projects\UE\Killer\Plugins\Developer\RiderLink\Intermediate\Build\Win64\UnrealEditor\Development\RD\ActiveSocket.cpp.obj"
-/sourceDependencies D:\Projects\UE\Killer\Plugins\Developer\RiderLink\Intermediate\Build\Win64\UnrealEditor\Development\RD\ActiveSocket.cpp.dep.json
+/external:I "D:\Programs\Visual Studio\VS\VC\Tools\MSVC\14.35.32215\INCLUDE"
+/external:I "D:\Windows SDK\include\10.0.22621.0\ucrt"
+/external:I "D:\Windows SDK\include\10.0.22621.0\shared"
+/external:I "D:\Windows SDK\include\10.0.22621.0\um"
+/external:I "D:\Windows SDK\include\10.0.22621.0\winrt"
+/FI"D:\Projects\Unreal\Killer\Plugins\Developer\RiderLink\Intermediate\Build\Win64\UnrealEditor\Development\RD\Definitions.h"
+/Fo"D:\Projects\Unreal\Killer\Plugins\Developer\RiderLink\Intermediate\Build\Win64\UnrealEditor\Development\RD\ActiveSocket.cpp.obj"
+/sourceDependencies D:\Projects\Unreal\Killer\Plugins\Developer\RiderLink\Intermediate\Build\Win64\UnrealEditor\Development\RD\ActiveSocket.cpp.dep.json
 /Zc:inline
 /nologo
 /Oi

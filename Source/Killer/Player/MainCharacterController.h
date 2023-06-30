@@ -2,8 +2,10 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
+#include "InputMappingContext.h"
 #include "MainCharacterController.generated.h"
 
+class UInputActionsData;
 class AEffectsActor;
 class AMainCharacter;
 
@@ -17,26 +19,30 @@ protected:
     
     UPROPERTY(Replicated)
     AMainCharacter* MainCharacter;
-    
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Controller|Move")
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Controller|Input")
+    bool bIsInputEnabled;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Controller|Input")
+    UInputMappingContext* InputMapping;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Controller|Input")
+    UInputActionsData* InputActionsData;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Controller|Move")
     float Speed;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Controller|Input")
-    bool IsInputEnabled;
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Controller|Effects")
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Controller|Effects")
     TSubclassOf<AEffectsActor> JumpEffectsActor;
 
     bool CanShoot;
-
-    void MoveRight(float Value);
-
-    void Jump();
-    void StopJumping();
-
-    void Shoot(float Value);
-
-    virtual void Restart();
+    
+    void Move(const FInputActionValue& Value);
+    void Shoot(const FInputActionValue& Value);
+    void Jump(const FInputActionValue& Value);
+    void StopJumping(const FInputActionValue& Value);
+    void PauseGame(const FInputActionValue& Value);
+    virtual void Restart(const FInputActionValue& Value);
 
     UFUNCTION(Server, Unreliable)
     void Server_SpawnJumpEffects();
@@ -47,4 +53,7 @@ public:
     virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
     virtual void SetupInputComponent() override;
+
+    virtual void Pause() override;
+    virtual void UnPause();
 };

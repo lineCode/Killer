@@ -1,28 +1,28 @@
-D:\Projects\UE\Killer\Plugins\Developer\RiderLink\Source\RiderGameControl\Private\RiderGameControl.cpp
+D:\Projects\Unreal\Killer\Plugins\Developer\RiderLink\Source\RiderGameControl\Private\RiderGameControl.cpp
 /I .
-/I D:\Projects\UE\Killer\Plugins\Developer\RiderLink\Source\RiderGameControl\Private
-/I D:\Projects\UE\Killer\Plugins\Developer\RiderLink\Source
-/I D:\Projects\UE\Killer\Plugins\Developer\RiderLink\Source\RD\src
-/I D:\Projects\UE\Killer\Plugins\Developer\RiderLink\Source\RD\src\rd_core_cpp
-/I D:\Projects\UE\Killer\Plugins\Developer\RiderLink\Source\RD\src\rd_core_cpp\src\main
-/I D:\Projects\UE\Killer\Plugins\Developer\RiderLink\Source\RD\src\rd_framework_cpp
-/I D:\Projects\UE\Killer\Plugins\Developer\RiderLink\Source\RD\src\rd_framework_cpp\src\main
-/I D:\Projects\UE\Killer\Plugins\Developer\RiderLink\Source\RD\src\rd_framework_cpp\src\main\util
-/I D:\Projects\UE\Killer\Plugins\Developer\RiderLink\Source\RD\src\rd_gen_cpp\src
-/I D:\Projects\UE\Killer\Plugins\Developer\RiderLink\Source\RD\thirdparty
-/I D:\Projects\UE\Killer\Plugins\Developer\RiderLink\Source\RD\thirdparty\ordered-map\include
-/I D:\Projects\UE\Killer\Plugins\Developer\RiderLink\Source\RD\thirdparty\optional\tl
-/I D:\Projects\UE\Killer\Plugins\Developer\RiderLink\Source\RD\thirdparty\variant\include
-/I D:\Projects\UE\Killer\Plugins\Developer\RiderLink\Source\RD\thirdparty\string-view-lite\include
-/I D:\Projects\UE\Killer\Plugins\Developer\RiderLink\Source\RD\thirdparty\spdlog\include
-/I D:\Projects\UE\Killer\Plugins\Developer\RiderLink\Source\RD\thirdparty\clsocket\src
-/I D:\Projects\UE\Killer\Plugins\Developer\RiderLink\Source\RD\thirdparty\CTPL\include
+/I D:\Projects\Unreal\Killer\Plugins\Developer\RiderLink\Source\RiderGameControl\Private
+/I D:\Projects\Unreal\Killer\Plugins\Developer\RiderLink\Source
+/I D:\Projects\Unreal\Killer\Plugins\Developer\RiderLink\Source\RD\src
+/I D:\Projects\Unreal\Killer\Plugins\Developer\RiderLink\Source\RD\src\rd_core_cpp
+/I D:\Projects\Unreal\Killer\Plugins\Developer\RiderLink\Source\RD\src\rd_core_cpp\src\main
+/I D:\Projects\Unreal\Killer\Plugins\Developer\RiderLink\Source\RD\src\rd_framework_cpp
+/I D:\Projects\Unreal\Killer\Plugins\Developer\RiderLink\Source\RD\src\rd_framework_cpp\src\main
+/I D:\Projects\Unreal\Killer\Plugins\Developer\RiderLink\Source\RD\src\rd_framework_cpp\src\main\util
+/I D:\Projects\Unreal\Killer\Plugins\Developer\RiderLink\Source\RD\src\rd_gen_cpp\src
+/I D:\Projects\Unreal\Killer\Plugins\Developer\RiderLink\Source\RD\thirdparty
+/I D:\Projects\Unreal\Killer\Plugins\Developer\RiderLink\Source\RD\thirdparty\ordered-map\include
+/I D:\Projects\Unreal\Killer\Plugins\Developer\RiderLink\Source\RD\thirdparty\optional\tl
+/I D:\Projects\Unreal\Killer\Plugins\Developer\RiderLink\Source\RD\thirdparty\variant\include
+/I D:\Projects\Unreal\Killer\Plugins\Developer\RiderLink\Source\RD\thirdparty\string-view-lite\include
+/I D:\Projects\Unreal\Killer\Plugins\Developer\RiderLink\Source\RD\thirdparty\spdlog\include
+/I D:\Projects\Unreal\Killer\Plugins\Developer\RiderLink\Source\RD\thirdparty\clsocket\src
+/I D:\Projects\Unreal\Killer\Plugins\Developer\RiderLink\Source\RD\thirdparty\CTPL\include
 /I Runtime
 /I Runtime\TraceLog\Public
 /I Runtime\Core\Public
-/I D:\Projects\UE\Killer\Plugins\Developer\RiderLink\Source\RiderLink\Public\Model\Library
-/I D:\Projects\UE\Killer\Plugins\Developer\RiderLink\Source\RiderLink\Public\Model\RdEditorProtocol
-/I D:\Projects\UE\Killer\Plugins\Developer\RiderLink\Source\RiderLink\Public
+/I D:\Projects\Unreal\Killer\Plugins\Developer\RiderLink\Source\RiderLink\Public\Model\Library
+/I D:\Projects\Unreal\Killer\Plugins\Developer\RiderLink\Source\RiderLink\Public\Model\RdEditorProtocol
+/I D:\Projects\Unreal\Killer\Plugins\Developer\RiderLink\Source\RiderLink\Public
 /I ..\Intermediate\Build\Win64\UnrealEditor\Inc\HeadMountedDisplay\UHT
 /I Runtime\HeadMountedDisplay\Public
 /I ..\Intermediate\Build\Win64\UnrealEditor\Inc\AugmentedReality\UHT
@@ -293,19 +293,19 @@ D:\Projects\UE\Killer\Plugins\Developer\RiderLink\Source\RiderGameControl\Privat
 /I ..\Intermediate\Build\Win64\UnrealEditor\Inc\ToolWidgets\UHT
 /I Developer\ToolWidgets\Public
 /I Runtime\Windows
-/I D:\Projects\UE\Killer\Plugins\Developer\RiderLink\Source\RiderGameControl\Public
+/I D:\Projects\Unreal\Killer\Plugins\Developer\RiderLink\Source\RiderGameControl\Public
 /external:W0
 /external:I ThirdParty\mimalloc\include
 /external:I ThirdParty\LibTiff\Source\Win64
 /external:I ThirdParty\LibTiff\Source
-/external:I D:\Programs\VisualStudio\VS\VC\Tools\MSVC\14.35.32215\INCLUDE
-/external:I "C:\Program Files (x86)\Windows Kits\10\include\10.0.22000.0\ucrt"
-/external:I "C:\Program Files (x86)\Windows Kits\10\include\10.0.22000.0\shared"
-/external:I "C:\Program Files (x86)\Windows Kits\10\include\10.0.22000.0\um"
-/external:I "C:\Program Files (x86)\Windows Kits\10\include\10.0.22000.0\winrt"
-/FI"D:\Projects\UE\Killer\Plugins\Developer\RiderLink\Intermediate\Build\Win64\UnrealEditor\Development\RiderGameControl\Definitions.h"
-/Fo"D:\Projects\UE\Killer\Plugins\Developer\RiderLink\Intermediate\Build\Win64\UnrealEditor\Development\RiderGameControl\RiderGameControl.cpp.obj"
-/sourceDependencies D:\Projects\UE\Killer\Plugins\Developer\RiderLink\Intermediate\Build\Win64\UnrealEditor\Development\RiderGameControl\RiderGameControl.cpp.dep.json
+/external:I "D:\Programs\Visual Studio\VS\VC\Tools\MSVC\14.35.32215\INCLUDE"
+/external:I "D:\Windows SDK\include\10.0.22621.0\ucrt"
+/external:I "D:\Windows SDK\include\10.0.22621.0\shared"
+/external:I "D:\Windows SDK\include\10.0.22621.0\um"
+/external:I "D:\Windows SDK\include\10.0.22621.0\winrt"
+/FI"D:\Projects\Unreal\Killer\Plugins\Developer\RiderLink\Intermediate\Build\Win64\UnrealEditor\Development\RiderGameControl\Definitions.h"
+/Fo"D:\Projects\Unreal\Killer\Plugins\Developer\RiderLink\Intermediate\Build\Win64\UnrealEditor\Development\RiderGameControl\RiderGameControl.cpp.obj"
+/sourceDependencies D:\Projects\Unreal\Killer\Plugins\Developer\RiderLink\Intermediate\Build\Win64\UnrealEditor\Development\RiderGameControl\RiderGameControl.cpp.dep.json
 /Zc:inline
 /nologo
 /Oi

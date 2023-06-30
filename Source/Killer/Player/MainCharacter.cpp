@@ -10,7 +10,7 @@
 #include "Killer/Environment/ObjectSpawn.h"
 #include "Killer/Effects/EffectsActor.h"
 #include "Killer/General/Save.h"
-#include "Killer/UI/HUDWidget.h"
+#include "Killer/UI/HUD/HUDWidget.h"
 #include "Killer/Weapons/Gun.h"
 #include "Killer/Weapons/WeaponComponent.h"
 #include "Kismet/GameplayStatics.h"
@@ -105,6 +105,14 @@ void AMainCharacter::OnKilled(AController* InstigatedBy, AActor* DamageCauser)
     Client_OnKilled();
 
     GetCharacterMovement()->SetMovementMode(MOVE_None);
+
+    if (MainCharacterController)
+    {
+        if (auto* PlayerStateMultiplayer = MainCharacterController->GetPlayerState<APlayerStateMultiplayer>())
+        {
+            PlayerStateMultiplayer->Server_IncrementDeathsCount();
+        }
+    }
 }
 
 void AMainCharacter::OnRevived()

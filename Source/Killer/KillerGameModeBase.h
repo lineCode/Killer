@@ -10,6 +10,8 @@ class KILLER_API AKillerGameModeBase : public AGameModeBase
 	GENERATED_BODY()
 
 protected:
+	virtual void OnPostLogin(AController* NewPlayer) override;
+	
 	int32 EnemiesKilled;
 
 public:

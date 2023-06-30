@@ -10,8 +10,19 @@ class KILLER_API AMainCharacterControllerMultiplayer : public AMainCharacterCont
 	GENERATED_BODY()
 
 protected:
-	virtual void Restart() override;
+	virtual void Restart(const FInputActionValue& Value) override;
 
 	UFUNCTION(Server, Reliable)
 	void Server_Restart();
+
+	bool bIsPaused;
+
+	void ShowPlayersTable(const FInputActionValue& Value);
+	void HidePlayersTable(const FInputActionValue& Value);
+
+public:
+	virtual void SetupInputComponent() override;
+	
+	virtual void Pause() override;
+	virtual void UnPause() override;
 };

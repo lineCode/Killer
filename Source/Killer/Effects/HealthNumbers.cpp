@@ -1,5 +1,5 @@
 #include "HealthNumbers.h"
-#include "Killer/UI/HealthNumbersWidget.h"
+#include "Killer/UI/Game/HealthNumbersWidget.h"
 #include "Net/UnrealNetwork.h"
 
 AHealthNumbers::AHealthNumbers()

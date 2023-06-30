@@ -1,8 +1,7 @@
 ﻿#include "PlayerStateMultiplayer.h"
 #include "MainCharacterController.h"
-#include "MainCharacterHUD.h"
-#include "Killer/UI/HUDWidget.h"
-#include "Killer/UI/PlayersPanelWidget.h"
+#include "MainCharacterHUDMultiplayer.h"
+#include "Killer/UI/HUD/PlayersTableWidget.h"
 #include "Net/UnrealNetwork.h"
 
 APlayerStateMultiplayer::APlayerStateMultiplayer()
@@ -14,8 +13,8 @@ void APlayerStateMultiplayer::GetLifetimeReplicatedProps(TArray<FLifetimePropert
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	DOREPLIFETIME(APlayerStateMultiplayer, PlayerDisplayName);
 	DOREPLIFETIME(APlayerStateMultiplayer, KillsCount);
+	DOREPLIFETIME(APlayerStateMultiplayer, DeathsCount);
 }
 
 void APlayerStateMultiplayer::Server_IncrementKillsCount_Implementation()
@@ -25,13 +24,30 @@ void APlayerStateMultiplayer::Server_IncrementKillsCount_Implementation()
 	OnRep_KillsCount();
 }
 
+void APlayerStateMultiplayer::Server_IncrementDeathsCount_Implementation()
+{
+	DeathsCount++;
+
+	OnRep_DeathsCount();
+}
+
 void APlayerStateMultiplayer::OnRep_KillsCount()
+{
+	RefreshPlayersTable();
+}
+
+void APlayerStateMultiplayer::OnRep_DeathsCount()
+{
+	RefreshPlayersTable();
+}
+
+void APlayerStateMultiplayer::RefreshPlayersTable() const
 {
 	if (const auto* MainCharacterController = Cast<AMainCharacterController>(GetOwningController()))
 	{
-		if (const auto* MainCharacterHUD = Cast<AMainCharacterHUD>(MainCharacterController->GetHUD()))
+		if (const auto* MainCharacterHUD = Cast<AMainCharacterHUDMultiplayer>(MainCharacterController->GetHUD()))
 		{
-			MainCharacterHUD->GetHUDWidget()->GetPlayersPanelWidget()->DisplayKillsCount(KillsCount);
+			MainCharacterHUD->GetPlayersTableWidget()->RefreshPlayersTable();
 		}
 	}
 }

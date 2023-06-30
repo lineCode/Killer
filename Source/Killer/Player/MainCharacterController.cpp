@@ -6,6 +6,10 @@
 #include "Components/CapsuleComponent.h"
 #include "Killer/Effects/EffectsActor.h"
 #include "Killer/Weapons/WeaponComponent.h"
+#include "EnhancedInputSubsystems.h"
+#include "EnhancedInputComponent.h"
+#include "MainCharacterHUD.h"
+#include "Killer/Input/InputActionsData.h"
 #include "Net/UnrealNetwork.h"
 
 AMainCharacterController::AMainCharacterController()
@@ -36,39 +40,45 @@ void AMainCharacterController::SetupInputComponent()
 {
     Super::SetupInputComponent();
 
-    InputComponent->BindAxis("MoveRight", this, &AMainCharacterController::MoveRight);
+    UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer());
+    
+    Subsystem->ClearAllMappings();
+    Subsystem->AddMappingContext(InputMapping, 0);
 
-    InputComponent->BindAction("Jump", IE_Pressed, this, &AMainCharacterController::Jump);
-    InputComponent->BindAction("Jump", IE_Released, this, &AMainCharacterController::StopJumping);
+    auto* EnhancedInputComponent = Cast<UEnhancedInputComponent>(InputComponent);
 
-    InputComponent->BindAxis("Shoot", this, &AMainCharacterController::Shoot);
-
-    InputComponent->BindAction("Restart", IE_Pressed, this, &AMainCharacterController::Restart);
+    if (InputActionsData)
+    {
+        EnhancedInputComponent->BindAction(InputActionsData->MoveInput, ETriggerEvent::Triggered, this, &AMainCharacterController::Move);
+        EnhancedInputComponent->BindAction(InputActionsData->ShootInput, ETriggerEvent::Triggered, this, &AMainCharacterController::Shoot);
+        EnhancedInputComponent->BindAction(InputActionsData->JumpInput, ETriggerEvent::Started, this, &AMainCharacterController::Jump);
+        EnhancedInputComponent->BindAction(InputActionsData->JumpInput, ETriggerEvent::Completed, this, &AMainCharacterController::StopJumping);
+        EnhancedInputComponent->BindAction(InputActionsData->JumpInput, ETriggerEvent::Canceled, this, &AMainCharacterController::StopJumping);
+        EnhancedInputComponent->BindAction(InputActionsData->PauseInput, ETriggerEvent::Triggered, this, &AMainCharacterController::PauseGame);
+        EnhancedInputComponent->BindAction(InputActionsData->RestartInput, ETriggerEvent::Triggered, this, &AMainCharacterController::Restart);
+    }
 }
 
-void AMainCharacterController::MoveRight(const float Value)
+void AMainCharacterController::Move(const FInputActionValue& Value)
 {
-    if (!MainCharacter || (MainCharacter && MainCharacter->GetHealthComponent()->IsDead()))
-    {
-        return;
-    }
-    
-    if (!IsInputEnabled)
+    if (!MainCharacter
+       || (MainCharacter && MainCharacter->GetHealthComponent()->IsDead())
+       || !bIsInputEnabled)
     {
         return;
     }
 
-    MainCharacter->AddMovementInput(FVector(1, 0, 0), Value * Speed);
+    const FVector2D MoveValue = Value.Get<FVector2D>();
+ 
+    MainCharacter->AddMovementInput(FVector(1, 0, 0), MoveValue.Y);
+    MainCharacter->AddMovementInput(FVector(1, 0, 0), MoveValue.X);
 }
 
-void AMainCharacterController::Jump()
+void AMainCharacterController::Jump(const FInputActionValue& Value)
 {
-    if (!MainCharacter || (MainCharacter && MainCharacter->GetHealthComponent()->IsDead()))
-    {
-        return;
-    }
-    
-    if (!IsInputEnabled)
+    if (!MainCharacter
+       || (MainCharacter && MainCharacter->GetHealthComponent()->IsDead())
+       || !bIsInputEnabled)
     {
         return;
     }
@@ -85,6 +95,24 @@ void AMainCharacterController::Jump()
 
         Server_SpawnJumpEffects();
     }
+}
+
+void AMainCharacterController::StopJumping(const FInputActionValue& Value)
+{
+    if (!MainCharacter
+       || (MainCharacter && MainCharacter->GetHealthComponent()->IsDead())
+       || !bIsInputEnabled)
+    {
+        return;
+    }
+
+    ACharacter* PossessedCharacter = GetCharacter();
+    if (!PossessedCharacter)
+    {
+        return;
+    }
+    
+    PossessedCharacter->StopJumping();
 }
 
 void AMainCharacterController::Server_SpawnJumpEffects_Implementation()
@@ -104,34 +132,11 @@ void AMainCharacterController::Server_SpawnJumpEffects_Implementation()
     World->SpawnActor<AEffectsActor>(JumpEffectsActor, JumpEffectsLocation, FRotator::ZeroRotator);
 }
 
-void AMainCharacterController::StopJumping()
+void AMainCharacterController::Shoot(const FInputActionValue& Value)
 {
-    if (!MainCharacter || (MainCharacter && MainCharacter->GetHealthComponent()->IsDead()))
-    {
-        return;
-    }
-    
-    if (!IsInputEnabled)
-    {
-        return;
-    }
-
-    GetCharacter()->StopJumping();
-}
-
-void AMainCharacterController::Shoot(const float Value)
-{
-    if (!MainCharacter || (MainCharacter && MainCharacter->GetHealthComponent()->IsDead()))
-    {
-        return;
-    }
-    
-    if (!CanShoot && Value <= 0.0f)
-    {
-        CanShoot = true;
-    }
-
-    if (Value <= 0.0f || !IsInputEnabled || !CanShoot)
+    if (!MainCharacter
+        || (MainCharacter && MainCharacter->GetHealthComponent()->IsDead())
+        || !bIsInputEnabled)
     {
         return;
     }
@@ -148,15 +153,65 @@ void AMainCharacterController::Shoot(const float Value)
         return;
     }
 
-    Gun->FireFromMuzzle(MainCharacter->BulletModifiers);
-
-    if (!Gun->IsAutomatic())
+    if (Gun->IsAutomatic() && Value.Get<bool>())
     {
+        Gun->FireFromMuzzle(MainCharacter->BulletModifiers);
+    }
+    else if (!Gun->IsAutomatic() && Value.Get<bool>() && CanShoot)
+    {
+        Gun->FireFromMuzzle(MainCharacter->BulletModifiers);
+
         CanShoot = false;
+    }
+    else if (!Value.Get<bool>())
+    {
+        CanShoot = true;
     }
 }
 
-void AMainCharacterController::Restart()
+void AMainCharacterController::PauseGame(const FInputActionValue& Value)
+{
+    if (UGameplayStatics::IsGamePaused(this))
+    {
+        UnPause();
+    }
+    else
+    {
+        Pause();
+    }
+}
+
+void AMainCharacterController::Pause()
+{
+    UGameplayStatics::SetGamePaused(this, true);
+
+    const FInputModeGameAndUI InputModeGameAndUI;
+    SetInputMode(InputModeGameAndUI);
+
+    SetShowMouseCursor(true);
+
+    if (MainCharacter)
+    {
+        MainCharacter->GetMainCharacterHUD()->ShowPauseWidget();
+    }
+}
+
+void AMainCharacterController::UnPause()
+{
+    UGameplayStatics::SetGamePaused(this, false);
+
+    const FInputModeGameOnly InputModeGameOnly;
+    SetInputMode(InputModeGameOnly);
+
+    SetShowMouseCursor(false);
+
+    if (MainCharacter)
+    {
+        MainCharacter->GetMainCharacterHUD()->HidePauseWidget();
+    }
+}
+
+void AMainCharacterController::Restart(const FInputActionValue& Value)
 {
     const UWorld* World = GetWorld();
     if (!World)
