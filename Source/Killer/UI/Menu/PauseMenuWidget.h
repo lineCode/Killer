@@ -21,7 +21,7 @@ protected:
 
 	UPROPERTY(BlueprintReadWrite, meta=(BindWidget))
 	UVerticalBox* SettingsMenuBox;
-	
+
 	UPROPERTY(BlueprintReadWrite, meta=(BindWidget))
 	UButtonWidget* ContinueButton;
 

@@ -12,13 +12,14 @@ class KILLER_API UTextWidget : public UUserWidget
 
 protected:
 	virtual void NativePreConstruct() override;
-	
+
 	UPROPERTY(BlueprintReadWrite, meta=(BindWidget))
 	UTextBlock* TextBlock;
 
-	UPROPERTY(EditAnywhere, BlueprintSetter="SetDisplayText", Category="Text", meta=(MultiLine="true", ExposeOnSpawn="true"))
+	UPROPERTY(EditAnywhere, BlueprintSetter="SetDisplayText", Category="Text",
+		meta=(MultiLine="true", ExposeOnSpawn="true"))
 	FText DisplayText;
-	
+
 public:
 	UFUNCTION(BlueprintCallable)
 	void SetDisplayText(const FText& TextToDisplay);

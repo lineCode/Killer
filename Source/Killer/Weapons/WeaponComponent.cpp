@@ -1,8 +1,8 @@
 ﻿#include "WeaponComponent.h"
 #include "Gun.h"
-#include "Killer/General/Save.h"
-#include "Killer/Player/MainCharacter.h"
-#include "Killer/Player/MainCharacterController.h"
+#include "Killer/General/Save/Save.h"
+#include "Killer/Player/General/MainCharacter.h"
+#include "Killer/Player/General/MainCharacterController.h"
 #include "Net/UnrealNetwork.h"
 
 UWeaponComponent::UWeaponComponent()
@@ -26,13 +26,11 @@ void UWeaponComponent::BeginPlay()
 	if (GetOwnerRole() == ROLE_Authority)
 	{
 		MainCharacterOwner = Cast<AMainCharacter>(GetOwner());
-
-		SpawnWeapon();
 	}
 }
 
 void UWeaponComponent::TickComponent(float DeltaTime, ELevelTick TickType,
-	FActorComponentTickFunction* ThisTickFunction)
+                                     FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
@@ -40,15 +38,17 @@ void UWeaponComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 	{
 		MoveWeapon();
 	}
-	
+
 	if (GetOwnerRole() == ROLE_Authority)
 	{
 		RotateWeapon();
 	}
 }
 
-void UWeaponComponent::SpawnWeapon()
+void UWeaponComponent::Server_SpawnWeapon_Implementation(AMainCharacterController* Controller)
 {
+	MainCharacterController = Controller;
+
 	if (bLoadFromSave)
 	{
 		if (const USave* Save = USave::GetSave())
@@ -60,12 +60,17 @@ void UWeaponComponent::SpawnWeapon()
 	if (UWorld* World = GetWorld(); WeaponClass)
 	{
 		FActorSpawnParameters GunSpawnParameters;
-		
+
 		GunSpawnParameters.Instigator = MainCharacterOwner;
 		GunSpawnParameters.Owner = MainCharacterOwner;
-		
+
 		Gun = World->SpawnActor<AGun>(WeaponClass, FVector::ZeroVector, FRotator::ZeroRotator, GunSpawnParameters);
 	}
+}
+
+void UWeaponComponent::Server_DestroyWeapon_Implementation()
+{
+	Gun->Destroy();
 }
 
 void UWeaponComponent::MoveWeapon() const

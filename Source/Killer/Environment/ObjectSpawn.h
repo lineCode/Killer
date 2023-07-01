@@ -10,44 +10,44 @@ class AKillerGameModeBase;
 USTRUCT(BlueprintType)
 struct FObjectToSpawn
 {
-    GENERATED_BODY()
+	GENERATED_BODY()
 
 public:
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    TSubclassOf<AActor> ObjectClassToSpawn;
-    
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    int32 KillsToUnlock;
-    
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(UIMin = 0.0f, UIMax = 1.0f))
-    float ChanceToSpawn;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TSubclassOf<AActor> ObjectClassToSpawn;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int32 KillsToUnlock;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(UIMin = 0.0f, UIMax = 1.0f))
+	float ChanceToSpawn;
 };
 
 UCLASS()
 class KILLER_API AObjectSpawn : public AActor
 {
-    GENERATED_BODY()
+	GENERATED_BODY()
 
 protected:
-    virtual void BeginPlay() override;
-    
-    UPROPERTY()
-    AObjectSpawner* ObjectSpawner;
+	virtual void BeginPlay() override;
 
-    UPROPERTY()
-    AKillerGameModeBase* KillerGameModeBase;
+	UPROPERTY()
+	AObjectSpawner* ObjectSpawner;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Spawn")
-    TArray<FObjectToSpawn> ObjectsToSpawn;
+	UPROPERTY()
+	AKillerGameModeBase* KillerGameModeBase;
 
-    TArray<FObjectToSpawn> GetSpawnableObjects();
-    TSubclassOf<AActor> GetRandomObjectToSpawn(TArray<FObjectToSpawn> ObjectToSpawn);
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Spawn")
+	TArray<FObjectToSpawn> ObjectsToSpawn;
+
+	TArray<FObjectToSpawn> GetSpawnableObjects();
+	TSubclassOf<AActor> GetRandomObjectToSpawn(TArray<FObjectToSpawn> ObjectToSpawn);
 
 public:
-    AObjectSpawn();
+	AObjectSpawn();
 
-    virtual AActor* SpawnRandomObject(AObjectSpawner* Spawner);
+	virtual AActor* SpawnRandomObject(AObjectSpawner* Spawner);
 
-    UFUNCTION()
-    void OnObjectDestroyed(AActor* DestroyedActor);
+	UFUNCTION()
+	void OnObjectDestroyed(AActor* DestroyedActor);
 };

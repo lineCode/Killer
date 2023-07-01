@@ -6,7 +6,7 @@ AEffectsActor::AEffectsActor()
 	PrimaryActorTick.bCanEverTick = false;
 
 	InitialLifeSpan = 10.0f;
-	
+
 	bReplicates = true;
 	AActor::SetReplicateMovement(true);
 
@@ -16,4 +16,3 @@ AEffectsActor::AEffectsActor()
 	AudioComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("Sound"));
 	AudioComponent->SetupAttachment(RootComponent);
 }
-

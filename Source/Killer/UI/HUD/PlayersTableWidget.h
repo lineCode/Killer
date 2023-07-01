@@ -19,6 +19,8 @@ protected:
 
 	void ClearPlayersTable() const;
 
+	void SetPlayersTableColumns(const FText& Name, const FText& Kills, const FText& Deaths, int32 Row) const;
+
 public:
 	void RefreshPlayersTable() const;
 };

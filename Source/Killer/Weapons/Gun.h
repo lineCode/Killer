@@ -12,52 +12,52 @@ class ABullet;
 UCLASS()
 class KILLER_API AGun : public AActor
 {
-    GENERATED_BODY()
+	GENERATED_BODY()
 
 protected:
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Components")
-    UBoxComponent* BoxComponent;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Components")
+	UBoxComponent* BoxComponent;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Components")
-    UPaperFlipbookComponent* FlipbookComponent;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Components")
+	UPaperFlipbookComponent* FlipbookComponent;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Components")
-    USceneComponent* MuzzleLocation;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Components")
+	USceneComponent* MuzzleLocation;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Gun|Shooting")
-    TSubclassOf<ABullet> BulletClass;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Gun|Shooting")
+	TSubclassOf<ABullet> BulletClass;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Gun|Shooting")
-    float TimeToShoot;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Gun|Shooting")
+	float TimeToShoot;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Gun|Shooting")
-    bool bIsAutomatic;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Gun|Shooting")
+	bool bIsAutomatic;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Gun|Shooting|Effects")
-    TSubclassOf<AEffectsActor> GunshotEffectsActor;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Gun|Shooting|Effects")
+	TSubclassOf<AEffectsActor> GunshotEffectsActor;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Gun|Shooting|Effects")
-    TSubclassOf<UCameraShakeBase> GunshotCameraShakeClass;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Gun|Shooting|Effects")
+	TSubclassOf<UCameraShakeBase> GunshotCameraShakeClass;
 
-    bool bCanShoot;
+	bool bCanShoot;
 
-    FTimerHandle FireRateTimerHandle;
-    void ResetFireRate();
+	FTimerHandle FireRateTimerHandle;
+	void ResetFireRate();
 
-    UFUNCTION(Server, Reliable)
-    void Server_SpawnBullet(const FBulletInfo& BulletModifiers);
+	UFUNCTION(Server, Reliable)
+	void Server_SpawnBullet(const FBulletInfo& BulletModifiers);
 
-    UFUNCTION(Server, Unreliable)
-    void Server_SpawnGunshotEffects();
+	UFUNCTION(Server, Unreliable)
+	void Server_SpawnGunshotEffects();
 
-    void StartGunshotCameraShake() const;
+	void StartGunshotCameraShake() const;
 
 public:
-    AGun();
+	AGun();
 
-    bool IsAutomatic() const { return bIsAutomatic; }
+	bool IsAutomatic() const { return bIsAutomatic; }
 
-    void FireFromMuzzle(const FBulletInfo& BulletModifiers);
+	void FireFromMuzzle(const FBulletInfo& BulletModifiers);
 
-    UPaperFlipbookComponent* GetSprite() const { return FlipbookComponent; }
+	UPaperFlipbookComponent* GetSprite() const { return FlipbookComponent; }
 };

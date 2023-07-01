@@ -4,51 +4,60 @@
 
 AObjectSpawner::AObjectSpawner()
 {
-    PrimaryActorTick.bCanEverTick = false;
+	PrimaryActorTick.bCanEverTick = false;
 }
 
 void AObjectSpawner::BeginPlay()
 {
-    Super::BeginPlay();
+	Super::BeginPlay();
 
-    const UWorld* World = GetWorld();
-    if (!World) return;
+	const UWorld* World = GetWorld();
+	if (!World)
+	{
+		return;
+	}
 
-    UGameplayStatics::GetAllActorsOfClass(World, SpawnClass, FreeSpawns);
+	UGameplayStatics::GetAllActorsOfClass(World, SpawnClass, FreeSpawns);
 
-    MaxSpawnsCount = FMath::Clamp(MaxSpawnsCount, 0, FreeSpawns.Num());
-    const int32 SpawnsCount = FMath::RandRange(MinSpawnsCount, MaxSpawnsCount);
+	MaxSpawnsCount = FMath::Clamp(MaxSpawnsCount, 0, FreeSpawns.Num());
+	const int32 SpawnsCount = FMath::RandRange(MinSpawnsCount, MaxSpawnsCount);
 
-    TArray<AObjectSpawn*> ValidSpawns;
-    for (int32 i = 0; i < SpawnsCount; i++)
-    {
-        const int32 RandomIndex = FMath::RandRange(0, FreeSpawns.Num() - 1);
+	TArray<AObjectSpawn*> ValidSpawns;
+	for (int32 i = 0; i < SpawnsCount; i++)
+	{
+		const int32 RandomIndex = FMath::RandRange(0, FreeSpawns.Num() - 1);
 
-        AObjectSpawn* Spawn = Cast<AObjectSpawn>(FreeSpawns[RandomIndex]);
+		AObjectSpawn* Spawn = Cast<AObjectSpawn>(FreeSpawns[RandomIndex]);
 
-        FreeSpawns.RemoveAt(RandomIndex);
+		FreeSpawns.RemoveAt(RandomIndex);
 
-        ValidSpawns.Add(Spawn);
-    }
+		ValidSpawns.Add(Spawn);
+	}
 
-    for (const auto& Spawn : ValidSpawns)
-    {
-        Spawn->SpawnRandomObject(this);
-    }
+	for (const auto& Spawn : ValidSpawns)
+	{
+		Spawn->SpawnRandomObject(this);
+	}
 }
 
 void AObjectSpawner::SpawnObjectAtRandomFreeSpawn(AActor* FreeSpawn)
 {
-    const int32 RandomIndex = FMath::RandRange(0, FreeSpawns.Num() - 1);
+	const int32 RandomIndex = FMath::RandRange(0, FreeSpawns.Num() - 1);
 
-    AObjectSpawn* Spawn = Cast<AObjectSpawn>(FreeSpawns[RandomIndex]);
-    if (!Spawn) return;
+	AObjectSpawn* Spawn = Cast<AObjectSpawn>(FreeSpawns[RandomIndex]);
+	if (!Spawn)
+	{
+		return;
+	}
 
-    Spawn->SpawnRandomObject(this);
+	Spawn->SpawnRandomObject(this);
 
-    FreeSpawns.RemoveAt(RandomIndex);
+	FreeSpawns.RemoveAt(RandomIndex);
 
-    if (!FreeSpawn) return;
+	if (!FreeSpawn)
+	{
+		return;
+	}
 
-    FreeSpawns.Add(FreeSpawn);
+	FreeSpawns.Add(FreeSpawn);
 }

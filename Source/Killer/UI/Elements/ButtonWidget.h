@@ -16,9 +16,9 @@ class KILLER_API UButtonWidget : public UUserWidget
 
 protected:
 	virtual void NativePreConstruct() override;
-	
+
 	virtual void NativeConstruct() override;
-	
+
 	UPROPERTY(BlueprintReadWrite, meta=(BindWidget))
 	UButton* Button;
 

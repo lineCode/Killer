@@ -1,8 +1,9 @@
 ﻿#include "HUDWidget.h"
-#include "Killer/General/Save.h"
-#include "Killer/Player/MainCharacter.h"
-#include "Killer/Player/MainCharacterController.h"
-#include "Killer/Player/PlayerStateMultiplayer.h"
+
+#include "Killer/General/Save/Save.h"
+#include "Killer/Player/General/MainCharacter.h"
+#include "Killer/Player/General/MainCharacterController.h"
+#include "Killer/Player/Multiplayer/MainCharacterStateMultiplayer.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Kismet/KismetTextLibrary.h"
@@ -17,22 +18,24 @@ void UHUDWidget::ShowDeathText()
 		return;
 	}
 
-	const auto* MainCharacterPlayerState = MainCharacter->GetMainCharacterController()->GetPlayerState<APlayerStateMultiplayer>();
+	const auto* MainCharacterPlayerState = MainCharacter->GetMainCharacterController()->GetPlayerState<
+		AMainCharacterStateMultiplayer>();
 	if (!MainCharacterPlayerState)
 	{
 		return;
 	}
-	
-	const FTextFormat FormattedText(FText::FromString("Time: {Time}\nKills: {Kills}\nKills/Min: {KillsPerMin}\nPRESS R"));
+
+	const FTextFormat FormattedText(
+		FText::FromString("Time: {Time}\nKills: {Kills}\nKills/Min: {KillsPerMin}\nPRESS R"));
 	FFormatNamedArguments NamedArguments;
-	
+
 	const float TimeInSeconds = UGameplayStatics::GetTimeSeconds(MainCharacter);
-	
+
 	NamedArguments.Add(TEXT("Time"),
-		UKismetTextLibrary::AsTimespan_Timespan(UKismetMathLibrary::FromSeconds(TimeInSeconds)));
+	                   UKismetTextLibrary::AsTimespan_Timespan(UKismetMathLibrary::FromSeconds(TimeInSeconds)));
 
 	const int32 KillsPerMinute = FMath::Floor(MainCharacterPlayerState->GetKillsCount() * 60.0f / TimeInSeconds);
-	
+
 	NamedArguments.Add(TEXT("Kills"), MainCharacterPlayerState->GetKillsCount());
 	NamedArguments.Add(TEXT("KillsPerMin"), KillsPerMinute);
 

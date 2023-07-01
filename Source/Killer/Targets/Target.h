@@ -13,57 +13,57 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnTargetKilled, AController*, Inst
 UCLASS()
 class KILLER_API ATarget : public APawn, public IHealthInterface
 {
-    GENERATED_BODY()
+	GENERATED_BODY()
 
 protected:
-    virtual void BeginPlay() override;
+	virtual void BeginPlay() override;
 
-    UPROPERTY()
-    UWorld* World;
+	UPROPERTY()
+	UWorld* World;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
-    UCapsuleComponent* CapsuleComponent;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
+	UCapsuleComponent* CapsuleComponent;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
-    UPaperFlipbookComponent* FlipbookComponent;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
+	UPaperFlipbookComponent* FlipbookComponent;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
-    UHealthComponent* HealthComponent;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
+	UHealthComponent* HealthComponent;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Target|Patrol")
-    float HalfPatrolDistance;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Target|Patrol")
+	float HalfPatrolDistance;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Target|Patrol")
-    float AcceptanceRadius;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Target|Patrol")
+	float AcceptanceRadius;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Target|Patrol")
-    float Speed;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Target|Patrol")
+	float Speed;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Target|Patrol")
-    bool IsPlacedInWorld;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Target|Patrol")
+	bool IsPlacedInWorld;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Target|Effects")
-    TSubclassOf<UCameraShakeBase> DamageCameraShakeClass;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Target|Effects")
+	TSubclassOf<UCameraShakeBase> DamageCameraShakeClass;
 
-    FVector FirstLocation;
-    FVector SecondLocation;
+	FVector FirstLocation;
+	FVector SecondLocation;
 
-    bool IsMovingToFirstLocation;
+	bool IsMovingToFirstLocation;
 
-    void MoveToLocation(const FVector& Location);
+	void MoveToLocation(const FVector& Location);
 
-    void SetLocations();
+	void SetLocations();
 
 public:
-    ATarget();
+	ATarget();
 
-    UPROPERTY(BlueprintAssignable)
-    FOnTargetKilled OnTargetKilled;
+	UPROPERTY(BlueprintAssignable)
+	FOnTargetKilled OnTargetKilled;
 
-    void SetHalfPatrolDistance(float Value);
+	void SetHalfPatrolDistance(float Value);
 
-    virtual void Tick(float DeltaTime) override;
+	virtual void Tick(float DeltaTime) override;
 
-    virtual void OnDamageTaken(AController* InstigatedBy, AActor* DamageCauser) override;
-    virtual void OnKilled(AController* InstigatedBy, AActor* DamageCauser) override;
+	virtual void OnDamageTaken(AController* InstigatedBy, AActor* DamageCauser) override;
+	virtual void OnKilled(AController* InstigatedBy, AActor* DamageCauser) override;
 };

@@ -10,7 +10,7 @@ void UTextWidget::NativePreConstruct()
 void UTextWidget::SetDisplayText(const FText& TextToDisplay)
 {
 	DisplayText = TextToDisplay;
-	
+
 	if (TextBlock)
 	{
 		TextBlock->SetText(DisplayText);

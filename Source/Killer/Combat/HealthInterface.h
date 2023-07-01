@@ -6,20 +6,20 @@
 UINTERFACE(MinimalAPI, Blueprintable)
 class UHealthInterface : public UInterface
 {
-    GENERATED_BODY()
+	GENERATED_BODY()
 };
 
 class IHealthInterface
 {
-    GENERATED_BODY()
+	GENERATED_BODY()
 
 public:
-    virtual void OnDamageTaken(AController* InstigatedBy, AActor* DamageCauser);
-    virtual void OnKilled(AController* InstigatedBy, AActor* DamageCauser);
+	virtual void OnDamageTaken(AController* InstigatedBy, AActor* DamageCauser);
+	virtual void OnKilled(AController* InstigatedBy, AActor* DamageCauser);
 
-    virtual void OnHealed(float HealAmount);
-    virtual void OnRevived();
+	virtual void OnHealed(float HealAmount);
+	virtual void OnRevived();
 
-    virtual void OnDamageCaused(AActor* DamageCausedTo, float Damage);
-    virtual void OnKillCaused(AActor* KillCausedTo);
+	virtual void OnDamageCaused(AActor* DamageCausedTo, float Damage);
+	virtual void OnKillCaused(AActor* KillCausedTo);
 };

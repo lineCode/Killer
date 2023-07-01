@@ -9,25 +9,25 @@ class AObjectSpawn;
 UCLASS()
 class KILLER_API AObjectSpawner : public AActor
 {
-    GENERATED_BODY()
+	GENERATED_BODY()
 
 protected:
-    virtual void BeginPlay() override;
+	virtual void BeginPlay() override;
 
-    UPROPERTY()
-    TArray<AActor*> FreeSpawns;
+	UPROPERTY()
+	TArray<AActor*> FreeSpawns;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Spawner")
-    TSubclassOf<AObjectSpawn> SpawnClass;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Spawner")
+	TSubclassOf<AObjectSpawn> SpawnClass;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Spawner")
-    int32 MinSpawnsCount;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Spawner")
+	int32 MinSpawnsCount;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Spawner")
-    int32 MaxSpawnsCount;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Spawner")
+	int32 MaxSpawnsCount;
 
 public:
-    AObjectSpawner();
+	AObjectSpawner();
 
-    void SpawnObjectAtRandomFreeSpawn(AActor* FreeSpawn);
+	void SpawnObjectAtRandomFreeSpawn(AActor* FreeSpawn);
 };

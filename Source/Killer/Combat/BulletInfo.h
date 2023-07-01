@@ -8,9 +8,9 @@
 USTRUCT(BlueprintType)
 struct FBulletInfo
 {
-    GENERATED_BODY()
+	GENERATED_BODY()
 
 public:
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    float DamageMultiplier;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float DamageMultiplier;
 };

@@ -31,8 +31,6 @@ protected:
 	UPROPERTY(Replicated)
 	AGun* Gun;
 
-	void SpawnWeapon();
-
 	UFUNCTION(Server, Unreliable)
 	void Server_MoveWeapon(const FVector& Location) const;
 
@@ -42,13 +40,18 @@ protected:
 
 public:
 	UWeaponComponent();
-	
+
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
-	
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-	
+
+	virtual void TickComponent(float DeltaTime, ELevelTick TickType,
+	                           FActorComponentTickFunction* ThisTickFunction) override;
+
+	UFUNCTION(Server, Reliable)
+	void Server_SpawnWeapon(AMainCharacterController* Controller);
+
+	UFUNCTION(Server, Reliable)
+	void Server_DestroyWeapon();
+
 	UFUNCTION(BlueprintPure, Category="Weapon")
 	FORCEINLINE AGun* GetGun() const { return Gun; }
-
-	void SetMainCharacterController(AMainCharacterController* Controller) { MainCharacterController = Controller; }
 };

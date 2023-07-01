@@ -8,22 +8,22 @@
 UCLASS()
 class KILLER_API AHealthNumbers : public AActor
 {
-    GENERATED_BODY()
+	GENERATED_BODY()
 
 protected:
-    void BeginPlay() override;
-    
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Components")
-    UWidgetComponent* NumbersWidgetComponent;
+	virtual void BeginPlay() override;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Parameters")
-    FLinearColor Color;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Components")
+	UWidgetComponent* NumbersWidgetComponent;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Parameters")
+	FLinearColor Color;
 
 public:
-    AHealthNumbers();
+	AHealthNumbers();
 
-    virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
-    UPROPERTY(Replicated)
-    float HealthValue;
+	UPROPERTY(Replicated)
+	float HealthValue;
 };
