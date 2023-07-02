@@ -4,12 +4,15 @@
 #include "PaperCharacter.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
-#include "Killer/Combat/HealthComponent.h"
-#include "Killer/Combat/HealthInterface.h"
-#include "Killer/Combat/BulletInfo.h"
-#include "Killer/Projectiles/Bullet.h"
+#include "Killer/Combat/Health/HealthInterface.h"
+#include "Killer/Combat/Projectiles/BulletInfo.h"
 #include "MainCharacter.generated.h"
 
+class UNiagaraSystem;
+class UNiagaraComponent;
+class UPaperFlipbook;
+class AEffectsActor;
+class UHealthComponent;
 class AMainCharacterHUD;
 class AMainCharacterController;
 class UWeaponComponent;
@@ -123,7 +126,7 @@ public:
 
 	virtual void Landed(const FHitResult& Hit) override;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(Replicated, EditAnywhere, BlueprintReadWrite)
 	FBulletInfo BulletModifiers{};
 
 	virtual void OnKilled(AController* InstigatedBy, AActor* DamageCauser) override;

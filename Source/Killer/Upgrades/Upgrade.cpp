@@ -1,6 +1,7 @@
 #include "Upgrade.h"
+
+#include "Killer/Combat/Weapons/Gun.h"
 #include "Killer/Effects/EffectsActor.h"
-#include "Killer/Weapons/Gun.h"
 #include "Kismet/GameplayStatics.h"
 
 AUpgrade::AUpgrade()
@@ -15,6 +16,9 @@ AUpgrade::AUpgrade()
 
 	AnimationSpeed = 75.0f;
 	AnimationHalfHeightMultiplier = 5.0f;
+
+	bReplicates = true;
+	AActor::SetReplicateMovement(true);
 }
 
 void AUpgrade::Tick(const float DeltaSeconds)
@@ -28,9 +32,10 @@ void AUpgrade::BeginPlay()
 {
 	Super::BeginPlay();
 
-	World = GetWorld();
-
-	BoxComponent->OnComponentBeginOverlap.AddDynamic(this, &AUpgrade::OnUpgradeBeginOverlap);
+	if (HasAuthority())
+	{
+		BoxComponent->OnComponentBeginOverlap.AddDynamic(this, &AUpgrade::OnUpgradeBeginOverlap);
+	}
 }
 
 void AUpgrade::OnUpgradeBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
@@ -52,6 +57,7 @@ void AUpgrade::OnUpgradeBeginOverlap(UPrimitiveComponent* OverlappedComponent, A
 
 void AUpgrade::Activate(AMainCharacter* MainCharacter)
 {
+	UWorld* World = GetWorld();
 	if (!World || !MainCharacter)
 	{
 		return;

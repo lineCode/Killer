@@ -1,5 +1,4 @@
 #include "HealthComponent.h"
-
 #include "HealthInterface.h"
 #include "PaperFlipbookComponent.h"
 #include "Killer/Effects/HealthNumbers.h"
@@ -19,7 +18,6 @@ void UHealthComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 	DOREPLIFETIME(UHealthComponent, CurrentHealth);
 	DOREPLIFETIME(UHealthComponent, MaxHealth);
 	DOREPLIFETIME(UHealthComponent, bIsDead);
-	DOREPLIFETIME(UHealthComponent, Owner);
 }
 
 void UHealthComponent::BeginPlay()
@@ -28,21 +26,11 @@ void UHealthComponent::BeginPlay()
 
 	if (GetOwnerRole() == ROLE_Authority)
 	{
-		Owner = GetOwner();
-
-		if (Owner)
-		{
-			Owner->OnTakeAnyDamage.AddDynamic(this, &UHealthComponent::OnActorTakeAnyDamage);
-		}
+		GetOwner()->OnTakeAnyDamage.AddDynamic(this, &UHealthComponent::OnActorTakeAnyDamage);
 
 		MaxHealth = FMath::RandRange(MaxMinHealth, MaxMaxHealth);
 
 		Server_SetCurrentHealth(MaxHealth);
-	}
-
-	if (bShouldChangeMaterialEmission)
-	{
-		InitializeOwnerDynamicMaterials();
 	}
 }
 
@@ -66,7 +54,7 @@ void UHealthComponent::Server_ReviveOwner_Implementation()
 
 	Server_SetCurrentHealth(MaxHealth);
 
-	if (auto* HealthInterfaceOwner = Cast<IHealthInterface>(Owner))
+	if (auto* HealthInterfaceOwner = Cast<IHealthInterface>(GetOwner()))
 	{
 		HealthInterfaceOwner->OnRevived();
 	}
@@ -89,7 +77,7 @@ void UHealthComponent::Server_HealOwner_Implementation(float HealAmount)
 		SpawnHealthNumbers(HealNumbersClass, HealAmount);
 	}
 
-	if (auto* HealthInterfaceOwner = Cast<IHealthInterface>(Owner))
+	if (auto* HealthInterfaceOwner = Cast<IHealthInterface>(GetOwner()))
 	{
 		HealthInterfaceOwner->OnHealed(HealAmount);
 	}
@@ -99,14 +87,22 @@ void UHealthComponent::InitializeOwnerDynamicMaterials()
 {
 	OwnerDynamicMaterials.Empty();
 
-	OwnerDynamicMaterials.Append(GetAllDynamicMaterialsFromActor(Owner));
+	OwnerDynamicMaterials.Append(GetAllDynamicMaterialsFromActor(GetOwner()));
 
 	TArray<AActor*> AttachedActors;
-	Owner->GetAttachedActors(AttachedActors);
+	GetOwner()->GetAttachedActors(AttachedActors);
 
 	for (const auto& Actor : AttachedActors)
 	{
 		OwnerDynamicMaterials.Append(GetAllDynamicMaterialsFromActor(Actor));
+	}
+}
+
+void UHealthComponent::TryInitializeOwnerDynamicMaterials()
+{
+	if (bShouldChangeMaterialEmission)
+	{
+		InitializeOwnerDynamicMaterials();
 	}
 }
 
@@ -120,7 +116,7 @@ void UHealthComponent::Server_SetCurrentHealth_Implementation(const float Value)
 void UHealthComponent::Server_DamageOwner_Implementation(AController* InstigatedBy, AActor* DamageCauser,
                                                          const float Damage)
 {
-	if (auto* HealthInterfaceOwner = Cast<IHealthInterface>(Owner))
+	if (auto* HealthInterfaceOwner = Cast<IHealthInterface>(GetOwner()))
 	{
 		HealthInterfaceOwner->OnDamageTaken(InstigatedBy, DamageCauser);
 
@@ -128,7 +124,7 @@ void UHealthComponent::Server_DamageOwner_Implementation(AController* Instigated
 		{
 			if (auto* DamageCauserInterface = Cast<IHealthInterface>(InstigatedBy->GetPawn()))
 			{
-				DamageCauserInterface->OnDamageCaused(Owner, Damage);
+				DamageCauserInterface->OnDamageCaused(GetOwner(), Damage);
 			}
 		}
 
@@ -154,11 +150,11 @@ void UHealthComponent::Server_KillOwner_Implementation(AController* InstigatedBy
 	{
 		if (auto* DamageCauserInterface = Cast<IHealthInterface>(InstigatedBy->GetPawn()))
 		{
-			DamageCauserInterface->OnKillCaused(Owner);
+			DamageCauserInterface->OnKillCaused(GetOwner());
 		}
 	}
 
-	if (auto* HealthInterfaceOwner = Cast<IHealthInterface>(Owner))
+	if (auto* HealthInterfaceOwner = Cast<IHealthInterface>(GetOwner()))
 	{
 		HealthInterfaceOwner->OnKilled(InstigatedBy, DamageCauser);
 	}
@@ -224,17 +220,17 @@ void UHealthComponent::SpawnHealthNumbers(const TSubclassOf<AHealthNumbers> Numb
 
 	FTransform NumbersTransform;
 
-	FVector NumbersLocation = Owner->GetActorLocation();
+	FVector NumbersLocation = GetOwner()->GetActorLocation();
 
 	const float RandomAngle = FMath::RandRange(-180.0f, 180.0f);
 	NumbersLocation.X += NumbersSpawnRadius * FMath::Cos(RandomAngle);
 	NumbersLocation.Y += NumbersSpawnRadius * FMath::Sin(RandomAngle);
 
 	NumbersTransform.SetLocation(NumbersLocation);
-	NumbersTransform.SetRotation(Owner->GetActorRotation().Quaternion());
+	NumbersTransform.SetRotation(GetOwner()->GetActorRotation().Quaternion());
 
-	if (auto* HealthNumbers = World->SpawnActorDeferred<AHealthNumbers>(NumbersClass, NumbersTransform, Owner,
-	                                                                    Cast<APawn>(Owner)))
+	if (auto* HealthNumbers = World->SpawnActorDeferred<AHealthNumbers>(NumbersClass, NumbersTransform, GetOwner(),
+	                                                                    Cast<APawn>(GetOwner())))
 	{
 		HealthNumbers->HealthValue = Value;
 
@@ -244,8 +240,8 @@ void UHealthComponent::SpawnHealthNumbers(const TSubclassOf<AHealthNumbers> Numb
 
 void UHealthComponent::SpawnDamageEffects() const
 {
-	if (UWorld* World = GetWorld(); DamageEffectsActor && Owner)
+	if (UWorld* World = GetWorld(); DamageEffectsActor)
 	{
-		World->SpawnActor<AEffectsActor>(DamageEffectsActor, Owner->GetActorLocation(), Owner->GetActorRotation());
+		World->SpawnActor<AEffectsActor>(DamageEffectsActor, GetOwner()->GetActorLocation(), GetOwner()->GetActorRotation());
 	}
 }

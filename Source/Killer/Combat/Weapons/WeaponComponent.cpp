@@ -15,18 +15,14 @@ void UWeaponComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME_CONDITION(UWeaponComponent, Gun, COND_OwnerOnly);
-	DOREPLIFETIME_CONDITION(UWeaponComponent, MainCharacterOwner, COND_OwnerOnly);
-	DOREPLIFETIME_CONDITION(UWeaponComponent, MainCharacterController, COND_OwnerOnly);
 }
 
 void UWeaponComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (GetOwnerRole() == ROLE_Authority)
-	{
-		MainCharacterOwner = Cast<AMainCharacter>(GetOwner());
-	}
+	MainCharacterOwner = Cast<AMainCharacter>(GetOwner());
+	MainCharacterController = MainCharacterOwner->GetMainCharacterController();
 }
 
 void UWeaponComponent::TickComponent(float DeltaTime, ELevelTick TickType,
@@ -39,10 +35,7 @@ void UWeaponComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 		MoveWeapon();
 	}
 
-	if (GetOwnerRole() == ROLE_Authority)
-	{
-		RotateWeapon();
-	}
+	RotateWeapon();
 }
 
 void UWeaponComponent::Server_SpawnWeapon_Implementation(AMainCharacterController* Controller)
@@ -75,7 +68,7 @@ void UWeaponComponent::Server_DestroyWeapon_Implementation()
 
 void UWeaponComponent::MoveWeapon() const
 {
-	if (!MainCharacterOwner || !MainCharacterController)
+	if (!MainCharacterController)
 	{
 		return;
 	}

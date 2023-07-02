@@ -1,4 +1,7 @@
 #include "Bullet.h"
+#include "BulletInfo.h"
+#include "GameFramework/Character.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "Killer/Effects/EffectsActor.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -29,17 +32,30 @@ void ABullet::BeginPlay()
 void ABullet::OnBulletHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
                           FVector NormalImpulse, const FHitResult& Hit)
 {
-	UGameplayStatics::ApplyDamage(OtherActor, Damage, GetInstigatorController(), this, DamageTypeClass);
+	UGameplayStatics::ApplyDamage(OtherActor, BulletInfo.Damage, GetInstigatorController(), this, BulletInfo.DamageTypeClass);
 
 	SpawnBulletDestroyEffects();
+
+	if (const auto* Character = Cast<ACharacter>(OtherActor))
+	{
+		const FVector ImpulseDirection = (Character->GetActorLocation() - GetActorLocation()).GetSafeNormal();
+		Character->GetCharacterMovement()->AddImpulse(ImpulseDirection * BulletInfo.ImpulseForce, true);
+	}
 
 	Destroy();
 }
 
 void ABullet::ModifyBulletInfo(const FBulletInfo& BulletModifiers)
 {
-	Damage = FMath::RandRange(MinDamage, MaxDamage);
-	Damage *= BulletModifiers.DamageMultiplier;
+	BulletInfo.Damage = FMath::RandRange(BulletInfo.MinDamage, BulletInfo.MaxDamage) * BulletInfo.DamageMultiplier;
+	BulletInfo.Damage *= BulletModifiers.DamageMultiplier;
+	
+	if (BulletModifiers.DamageTypeClass)
+	{
+		BulletInfo.DamageTypeClass = BulletModifiers.DamageTypeClass;
+	}
+
+	BulletInfo.ImpulseForce *= BulletModifiers.ImpulseForce;
 }
 
 void ABullet::SpawnBulletDestroyEffects() const

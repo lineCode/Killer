@@ -1,7 +1,8 @@
 #include "Gun.h"
+
+#include "Killer/Combat/Projectiles/Bullet.h"
 #include "Killer/Effects/EffectsActor.h"
 #include "Killer/General/Save/Save.h"
-#include "Killer/Projectiles/Bullet.h"
 #include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
 

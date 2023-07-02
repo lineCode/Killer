@@ -51,9 +51,6 @@ protected:
 	void MultiplyDynamicMaterialsEmissions(TMap<UMaterialInstanceDynamic*, float> DynamicMaterials, float Value) const;
 
 	UPROPERTY(Replicated)
-	AActor* Owner;
-
-	UPROPERTY(Replicated)
 	float MaxHealth;
 
 	UPROPERTY(ReplicatedUsing="OnRep_CurrentHealth")
@@ -66,6 +63,12 @@ protected:
 
 	void SpawnDamageEffects() const;
 
+	void InitializeOwnerDynamicMaterials();
+
+	UFUNCTION()
+	void OnActorTakeAnyDamage(AActor* DamagedActor, float Damage, const class UDamageType* DamageType,
+							  class AController* InstigatedBy, AActor* DamageCauser);
+
 public:
 	UHealthComponent();
 
@@ -73,7 +76,7 @@ public:
 
 	bool IsDead() const { return bIsDead; }
 
-	void InitializeOwnerDynamicMaterials();
+	void TryInitializeOwnerDynamicMaterials();
 
 	UFUNCTION(Server, Reliable)
 	void Server_ReviveOwner();
@@ -89,8 +92,4 @@ public:
 
 	UFUNCTION(Server, Reliable)
 	void Server_KillOwner(AController* InstigatedBy, AActor* DamageCauser);
-
-	UFUNCTION()
-	void OnActorTakeAnyDamage(AActor* DamagedActor, float Damage, const class UDamageType* DamageType,
-	                          class AController* InstigatedBy, AActor* DamageCauser);
 };

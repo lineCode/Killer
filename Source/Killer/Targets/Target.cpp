@@ -1,5 +1,7 @@
 #include "Target.h"
 
+#include "Killer/Combat/Health/HealthComponent.h"
+
 ATarget::ATarget()
 {
 	PrimaryActorTick.bCanEverTick = true;

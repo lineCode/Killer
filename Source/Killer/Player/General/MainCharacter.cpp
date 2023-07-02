@@ -7,15 +7,17 @@
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/GameModeBase.h"
-#include "Killer/Environment/ObjectSpawn.h"
+#include "Killer/Combat/Health/HealthComponent.h"
+#include "Killer/Combat/Weapons/Gun.h"
+#include "Killer/Combat/Weapons/WeaponComponent.h"
 #include "Killer/Effects/EffectsActor.h"
 #include "Killer/General/Save/Save.h"
 #include "Killer/Player/Multiplayer/MainCharacterStateMultiplayer.h"
 #include "Killer/UI/HUD/HUDWidget.h"
-#include "Killer/Weapons/Gun.h"
-#include "Killer/Weapons/WeaponComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
+#include "NiagaraFunctionLibrary.h"
+#include "GameFramework/PlayerStart.h"
 
 AMainCharacter::AMainCharacter()
 {
@@ -40,6 +42,7 @@ void AMainCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLi
 
 	DOREPLIFETIME(AMainCharacter, MainCharacterController);
 	DOREPLIFETIME(AMainCharacter, PlayerMaterial);
+	DOREPLIFETIME(AMainCharacter, BulletModifiers);
 }
 
 void AMainCharacter::PossessedBy(AController* NewController)
@@ -202,6 +205,8 @@ void AMainCharacter::OnRep_PlayerMaterial()
 	GetSprite()->SetMaterial(0, PlayerMaterial);
 
 	InitializeFootstepsEffects();
+
+	HealthComponent->TryInitializeOwnerDynamicMaterials();
 }
 
 void AMainCharacter::Server_ChangePlayerMaterial_Implementation(UMaterialInterface* Material)
@@ -219,7 +224,7 @@ void AMainCharacter::Client_ChangePlayerMaterial_Implementation()
 void AMainCharacter::TeleportPlayerToRandomSpawn()
 {
 	TArray<AActor*> AllSpawns;
-	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AObjectSpawn::StaticClass(), AllSpawns);
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), APlayerStart::StaticClass(), AllSpawns);
 
 	if (AllSpawns.Num() > 0)
 	{

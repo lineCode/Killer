@@ -22,10 +22,10 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Weapon Component", meta=(EditCondition="!bLoadFromSave"))
 	TSubclassOf<AGun> WeaponClass;
 
-	UPROPERTY(Replicated)
+	UPROPERTY()
 	AMainCharacter* MainCharacterOwner;
 
-	UPROPERTY(Replicated)
+	UPROPERTY()
 	AMainCharacterController* MainCharacterController;
 
 	UPROPERTY(Replicated)

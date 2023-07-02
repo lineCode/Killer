@@ -1,8 +1,6 @@
 #include "KillVolume.h"
 
-#include "Killer/Combat/HealthComponent.h"
-#include "Killer/Combat/HealthInterface.h"
-#include "Kismet/GameplayStatics.h"
+#include "Killer/Combat/Health/HealthComponent.h"
 
 AKillVolume::AKillVolume()
 {

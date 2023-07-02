@@ -1,11 +1,11 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "BulletInfo.h"
 #include "GameFramework/Actor.h"
 #include "PaperFlipbookComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Components/BoxComponent.h"
-#include "Killer/Combat/BulletInfo.h"
 #include "Bullet.generated.h"
 
 class AEffectsActor;
@@ -27,21 +27,11 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Components")
 	UProjectileMovementComponent* ProjectileMovementComponent;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Bullet|Damage")
-	float MinDamage;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Bullet|Damage")
-	float MaxDamage;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Bullet|Damage")
-	TSubclassOf<UDamageType> DamageTypeClass;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Bullet|Info")
+	FBulletInfo BulletInfo;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Bullet|Effects")
 	TSubclassOf<AEffectsActor> DestroyEffectsActor;
-
-	float Damage;
-
-	FBulletInfo BulletInfoModifiers;
 
 	void SpawnBulletDestroyEffects() const;
 

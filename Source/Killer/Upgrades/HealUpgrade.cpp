@@ -1,4 +1,5 @@
 #include "HealUpgrade.h"
+#include "Killer/Combat/Health/HealthComponent.h"
 
 void AHealUpgrade::Activate(AMainCharacter* MainCharacter)
 {

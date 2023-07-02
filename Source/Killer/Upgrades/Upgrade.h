@@ -13,9 +13,6 @@ class KILLER_API AUpgrade : public AActor
 	GENERATED_BODY()
 
 protected:
-	UPROPERTY()
-	UWorld* World;
-
 	virtual void BeginPlay() override;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
@@ -27,9 +24,7 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Upgrade|Effects")
 	TSubclassOf<AEffectsActor> PickupEffectsActor;
 
-	/**
-	 * UpgradeLocation = Sin(TimeSinceGameStarted * AnimationHalfHeightMultiplier) * AnimationSpeed * DeltaSeconds;
-	 */
+	/** UpgradeLocation = Sin(TimeSinceGameStarted * AnimationHalfHeightMultiplier) * AnimationSpeed * DeltaSeconds; */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Upgrade|Animation")
 	float AnimationHalfHeightMultiplier;
 
@@ -38,14 +33,14 @@ protected:
 
 	void AnimateUpgrade(float DeltaSeconds);
 
-public:
-	AUpgrade();
-
-	virtual void Tick(float DeltaSeconds) override;
-
 	virtual void Activate(AMainCharacter* MainCharacter);
 
 	UFUNCTION()
 	void OnUpgradeBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent*
-	                           OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+							   OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+	
+public:
+	AUpgrade();
+
+	virtual void Tick(float DeltaSeconds) override;
 };

@@ -3,9 +3,9 @@
 #include "GameFramework/Actor.h"
 #include "PaperFlipbookComponent.h"
 #include "Components/BoxComponent.h"
-#include "Killer/Combat/BulletInfo.h"
 #include "Gun.generated.h"
 
+struct FBulletInfo;
 class AEffectsActor;
 class ABullet;
 

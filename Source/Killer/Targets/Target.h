@@ -4,9 +4,10 @@
 #include "GameFramework/Pawn.h"
 #include "Components/CapsuleComponent.h"
 #include "PaperFlipbookComponent.h"
-#include "Killer/Combat/HealthInterface.h"
-#include "Killer/Combat/HealthComponent.h"
+#include "Killer/Combat/Health/HealthInterface.h"
 #include "Target.generated.h"
+
+class UHealthComponent;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnTargetKilled, AController*, InstigatedBy, AActor*, DamageCauser);
 
