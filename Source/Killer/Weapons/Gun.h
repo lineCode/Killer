@@ -36,7 +36,7 @@ protected:
 	bool bIsAutomatic;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Gun|Shooting|Effects")
-	TSubclassOf<AEffectsActor> GunshotEffectsActor;
+	TSubclassOf<AEffectsActor> GunshotEffectsActorClass;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Gun|Shooting|Effects")
 	TSubclassOf<UCameraShakeBase> GunshotCameraShakeClass;

@@ -35,7 +35,7 @@ protected:
 	float Speed;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Controller|Effects")
-	TSubclassOf<AEffectsActor> JumpEffectsActor;
+	TSubclassOf<AEffectsActor> JumpEffectsActorClass;
 
 	bool CanShoot;
 

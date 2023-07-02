@@ -1,5 +1,4 @@
 ﻿#include "KillerGameModeBaseMultiplayer.h"
-#include "Killer/General/Save/Save.h"
 #include "Killer/Player/Multiplayer/MainCharacterControllerMultiplayer.h"
 
 AKillerGameModeBaseMultiplayer::AKillerGameModeBaseMultiplayer()
@@ -12,6 +11,4 @@ void AKillerGameModeBaseMultiplayer::OnPostLogin(AController* NewPlayer)
 	Super::OnPostLogin(NewPlayer);
 
 	PlayerControllers.Add(Cast<AMainCharacterControllerMultiplayer>(NewPlayer));
-
-	ChangeName(NewPlayer, USave::GetSave()->PlayerName, false);
 }

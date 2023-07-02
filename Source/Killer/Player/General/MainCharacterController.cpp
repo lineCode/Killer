@@ -135,7 +135,7 @@ void AMainCharacterController::Server_SpawnJumpEffects_Implementation()
 
 	UWorld* World = GetWorld();
 
-	if (!PossessedCharacter || !World || !JumpEffectsActor)
+	if (!PossessedCharacter || !World || !JumpEffectsActorClass)
 	{
 		return;
 	}
@@ -143,7 +143,10 @@ void AMainCharacterController::Server_SpawnJumpEffects_Implementation()
 	FVector JumpEffectsLocation = PossessedCharacter->GetActorLocation();
 	JumpEffectsLocation.Z -= PossessedCharacter->GetCapsuleComponent()->GetScaledCapsuleHalfHeight();
 
-	World->SpawnActor<AEffectsActor>(JumpEffectsActor, JumpEffectsLocation, FRotator::ZeroRotator);
+	if (auto* JumpEffectsActor = World->SpawnActor<AEffectsActor>(JumpEffectsActorClass, JumpEffectsLocation, FRotator::ZeroRotator); MainCharacter)
+	{
+		JumpEffectsActor->Server_SetParticlesMaterial(MainCharacter->GetPlayerMaterial());
+	}
 }
 
 void AMainCharacterController::Shoot(const FInputActionValue& Value)

@@ -83,10 +83,16 @@ void AGun::Server_SpawnBullet_Implementation(const FBulletInfo& BulletModifiers)
 
 void AGun::Server_SpawnGunshotEffects_Implementation()
 {
-	if (UWorld* World = GetWorld(); GunshotEffectsActor)
+	if (UWorld* World = GetWorld(); GunshotEffectsActorClass)
 	{
-		World->SpawnActor<AEffectsActor>(GunshotEffectsActor, MuzzleLocation->GetComponentLocation(),
-		                                 MuzzleLocation->GetComponentRotation());
+		FTransform EffectsSpawnTransform;
+		EffectsSpawnTransform.SetLocation(MuzzleLocation->GetComponentLocation());
+		EffectsSpawnTransform.SetRotation(MuzzleLocation->GetComponentRotation().Quaternion());
+		
+		if (auto* GunshotEffectsActor = World->SpawnActor<AEffectsActor>(GunshotEffectsActorClass, EffectsSpawnTransform))
+		{
+			GunshotEffectsActor->Server_SetParticlesMaterial(GunMaterial);
+		}
 	}
 }
 

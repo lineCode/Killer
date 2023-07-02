@@ -67,16 +67,16 @@ protected:
 	USoundWave* FootstepsSound{};
 
 	UPROPERTY(BlueprintReadWrite, Category = "Main Character|Effects|Footsteps")
-	UNiagaraComponent* WalkParticlesComponent{};
+	UNiagaraComponent* FootstepsParticlesComponent{};
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Main Character|Effects|Landing")
 	float LandingImpactSpeed{};
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Main Character|Effects|Landing")
-	TSubclassOf<AEffectsActor> LandingEffectsActor;
+	TSubclassOf<AEffectsActor> LandingEffectsActorClass;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Main Character|Effects|Landing")
-	TSubclassOf<UCameraShakeBase> LandingCameraShake;
+	TSubclassOf<UCameraShakeBase> LandingCameraShakeClass;
 
 	UPROPERTY(Replicated)
 	AMainCharacterController* MainCharacterController{};
@@ -107,6 +107,9 @@ protected:
 	void PlayFootstepsSound() const;
 
 	void InitializeFootstepsEffects();
+
+	UFUNCTION(Server, Reliable)
+	void Server_ChangePlayerName(const FString& Name);
 
 public:
 	AMainCharacter();
@@ -141,6 +144,8 @@ public:
 
 	UHealthComponent* GetHealthComponent() const { return HealthComponent; }
 	UWeaponComponent* GetWeaponComponent() const { return WeaponComponent; }
+
+	UMaterialInterface* GetPlayerMaterial() const { return PlayerMaterial; } 
 
 	UFUNCTION(Client, Reliable)
 	void Client_OnKilled();

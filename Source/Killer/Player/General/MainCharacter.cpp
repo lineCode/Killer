@@ -6,6 +6,7 @@
 #include "Components/AudioComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "GameFramework/GameModeBase.h"
 #include "Killer/Environment/ObjectSpawn.h"
 #include "Killer/Effects/EffectsActor.h"
 #include "Killer/General/Save/Save.h"
@@ -68,7 +69,10 @@ void AMainCharacter::BeginPlay()
 		TeleportPlayerToRandomSpawn();
 	}
 
-	InitializeFootstepsEffects();
+	if (IsLocallyControlled())
+	{
+		Server_ChangePlayerName(USave::GetSave()->PlayerName);
+	}
 }
 
 void AMainCharacter::Tick(const float DeltaSeconds)
@@ -95,14 +99,17 @@ void AMainCharacter::Landed(const FHitResult& Hit)
 		return;
 	}
 
-	if (MainCharacterController && LandingCameraShake)
+	if (MainCharacterController && LandingCameraShakeClass)
 	{
-		MainCharacterController->PlayerCameraManager->StartCameraShake(LandingCameraShake);
+		MainCharacterController->PlayerCameraManager->StartCameraShake(LandingCameraShakeClass);
 	}
 
-	if (UWorld* World = GetWorld(); LandingEffectsActor)
+	if (UWorld* World = GetWorld(); LandingEffectsActorClass)
 	{
-		World->SpawnActor<AEffectsActor>(LandingEffectsActor, GetActorLocation(), FRotator::ZeroRotator);
+		if (auto* LandingEffectsActor = World->SpawnActor<AEffectsActor>(LandingEffectsActorClass, GetActorLocation(), FRotator::ZeroRotator))
+		{
+			LandingEffectsActor->Server_SetParticlesMaterial(PlayerMaterial);
+		}
 	}
 }
 
@@ -193,6 +200,8 @@ void AMainCharacter::OnKillCaused(AActor* KillCausedTo)
 void AMainCharacter::OnRep_PlayerMaterial()
 {
 	GetSprite()->SetMaterial(0, PlayerMaterial);
+
+	InitializeFootstepsEffects();
 }
 
 void AMainCharacter::Server_ChangePlayerMaterial_Implementation(UMaterialInterface* Material)
@@ -225,13 +234,20 @@ void AMainCharacter::InitializeFootstepsEffects()
 	FVector WalkParticlesLocation;
 	WalkParticlesLocation.Z = -GetCapsuleComponent()->GetScaledCapsuleHalfHeight();
 
-	WalkParticlesComponent = UNiagaraFunctionLibrary::SpawnSystemAttached(WalkParticles, GetCapsuleComponent(), FName(),
+	FootstepsParticlesComponent = UNiagaraFunctionLibrary::SpawnSystemAttached(WalkParticles, GetCapsuleComponent(), FName(),
 	                                                                      WalkParticlesLocation, FRotator::ZeroRotator,
 	                                                                      EAttachLocation::KeepRelativeOffset, false,
 	                                                                      false);
 
+	FootstepsParticlesComponent->SetVariableMaterial("Material", PlayerMaterial);
+
 	GetWorldTimerManager().SetTimer(FootstepsTimerHandle, this, &AMainCharacter::PlayFootstepsSound,
 	                                FootstepsSoundInterval, true, FootstepsSoundInterval);
+}
+
+void AMainCharacter::Server_ChangePlayerName_Implementation(const FString& Name)
+{
+	UGameplayStatics::GetGameMode(this)->ChangeName(GetController(), Name, false);
 }
 
 void AMainCharacter::UpdateCharacterAnimation() const
@@ -265,18 +281,18 @@ void AMainCharacter::RotateCharacter() const
 
 void AMainCharacter::ActivateWalkParticles() const
 {
-	if (!WalkParticlesComponent)
+	if (!FootstepsParticlesComponent)
 	{
 		return;
 	}
 
 	if (FMath::Abs(GetCharacterMovement()->Velocity.X) >= SpeedForWalkParticles && !GetCharacterMovement()->IsFalling())
 	{
-		WalkParticlesComponent->Activate();
+		FootstepsParticlesComponent->Activate();
 	}
 	else
 	{
-		WalkParticlesComponent->Deactivate();
+		FootstepsParticlesComponent->Deactivate();
 	}
 }
 
