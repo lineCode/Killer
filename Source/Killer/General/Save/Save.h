@@ -44,6 +44,12 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stats")
 	int32 TotalKills;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Multiplayer")
+	FString PlayerName;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Multiplayer")
+	UMaterialInterface* PlayerMaterial;
+
 	UFUNCTION(BlueprintCallable, BlueprintPure)
 	static USave* GetSave();
 };

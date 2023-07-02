@@ -38,6 +38,7 @@ void AMainCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLi
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(AMainCharacter, MainCharacterController);
+	DOREPLIFETIME(AMainCharacter, PlayerMaterial);
 }
 
 void AMainCharacter::PossessedBy(AController* NewController)
@@ -47,6 +48,8 @@ void AMainCharacter::PossessedBy(AController* NewController)
 	MainCharacterController = Cast<AMainCharacterController>(NewController);
 
 	WeaponComponent->Server_SpawnWeapon(MainCharacterController);
+
+	Client_ChangePlayerMaterial();
 }
 
 void AMainCharacter::UnPossessed()
@@ -185,6 +188,23 @@ void AMainCharacter::OnKillCaused(AActor* KillCausedTo)
 
 		UGameplayStatics::SaveGameToSlot(Save, Save->SlotName, 0);
 	}
+}
+
+void AMainCharacter::OnRep_PlayerMaterial()
+{
+	GetSprite()->SetMaterial(0, PlayerMaterial);
+}
+
+void AMainCharacter::Server_ChangePlayerMaterial_Implementation(UMaterialInterface* Material)
+{
+	PlayerMaterial = Material;
+
+	OnRep_PlayerMaterial();
+}
+
+void AMainCharacter::Client_ChangePlayerMaterial_Implementation()
+{
+	Server_ChangePlayerMaterial(USave::GetSave()->PlayerMaterial);
 }
 
 void AMainCharacter::TeleportPlayerToRandomSpawn()

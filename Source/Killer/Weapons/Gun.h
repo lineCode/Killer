@@ -15,6 +15,8 @@ class KILLER_API AGun : public AActor
 	GENERATED_BODY()
 
 protected:
+	virtual void BeginPlay() override;
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Components")
 	UBoxComponent* BoxComponent;
 
@@ -39,6 +41,15 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Gun|Shooting|Effects")
 	TSubclassOf<UCameraShakeBase> GunshotCameraShakeClass;
 
+	UPROPERTY(ReplicatedUsing="OnRep_GunMaterial")
+	UMaterialInterface* GunMaterial;
+
+	UFUNCTION()
+	void OnRep_GunMaterial();
+
+	UFUNCTION(Server, Reliable)
+	void Server_SetGunMaterial(UMaterialInterface* Material);
+
 	bool bCanShoot;
 
 	FTimerHandle FireRateTimerHandle;
@@ -54,6 +65,8 @@ protected:
 
 public:
 	AGun();
+
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 	bool IsAutomatic() const { return bIsAutomatic; }
 

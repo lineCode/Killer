@@ -84,6 +84,18 @@ protected:
 	UPROPERTY()
 	AMainCharacterHUD* MainCharacterHUD{};
 
+	UPROPERTY(ReplicatedUsing="OnRep_PlayerMaterial")
+	UMaterialInterface* PlayerMaterial;
+
+	UFUNCTION()
+	void OnRep_PlayerMaterial();
+
+	UFUNCTION(Server, Reliable)
+	void Server_ChangePlayerMaterial(UMaterialInterface* Material);
+
+	UFUNCTION(Client, Reliable)
+	void Client_ChangePlayerMaterial();
+
 	void TeleportPlayerToRandomSpawn();
 
 	void UpdateCharacterAnimation() const;

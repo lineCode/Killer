@@ -61,8 +61,8 @@ void UWeaponComponent::Server_SpawnWeapon_Implementation(AMainCharacterControlle
 	{
 		FActorSpawnParameters GunSpawnParameters;
 
-		GunSpawnParameters.Instigator = MainCharacterOwner;
-		GunSpawnParameters.Owner = MainCharacterOwner;
+		GunSpawnParameters.Instigator = Controller->GetPawn();
+		GunSpawnParameters.Owner = Controller->GetPawn();
 
 		Gun = World->SpawnActor<AGun>(WeaponClass, FVector::ZeroVector, FRotator::ZeroRotator, GunSpawnParameters);
 	}

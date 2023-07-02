@@ -17,6 +17,13 @@ USave::USave()
 	MusicVolume = 0.5f;
 	UIVolume = 0.5f;
 	FOVShake = 0.5f;
+
+	PlayerName = "Player";
+	if (const auto Material = ConstructorHelpers::FObjectFinder<UMaterialInterface>(
+		TEXT("/Script/Engine.MaterialInstanceConstant'/Game/Graphics/Materials/SpriteLit/MI_SL_Red.MI_SL_Red'")); Material.Succeeded())
+	{
+		PlayerMaterial = Material.Object;
+	}
 }
 
 USave* USave::GetSave()

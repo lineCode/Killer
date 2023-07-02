@@ -1,7 +1,9 @@
 #include "Gun.h"
 #include "Killer/Effects/EffectsActor.h"
+#include "Killer/General/Save/Save.h"
 #include "Killer/Projectiles/Bullet.h"
 #include "Kismet/GameplayStatics.h"
+#include "Net/UnrealNetwork.h"
 
 AGun::AGun()
 {
@@ -17,6 +19,23 @@ AGun::AGun()
 	MuzzleLocation->SetupAttachment(RootComponent);
 
 	bCanShoot = true;
+}
+
+void AGun::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(AGun, GunMaterial);
+}
+
+void AGun::BeginPlay()
+{
+	Super::BeginPlay();
+
+	if (GetInstigator()->IsLocallyControlled())
+	{
+		Server_SetGunMaterial(USave::GetSave()->PlayerMaterial);
+	}
 }
 
 void AGun::FireFromMuzzle(const FBulletInfo& BulletModifiers)
@@ -83,6 +102,18 @@ void AGun::StartGunshotCameraShake() const
 			}
 		}
 	}
+}
+
+void AGun::Server_SetGunMaterial_Implementation(UMaterialInterface* Material)
+{
+	GunMaterial = Material;
+
+	OnRep_GunMaterial();
+}
+
+void AGun::OnRep_GunMaterial()
+{
+	GetSprite()->SetMaterial(0, GunMaterial);
 }
 
 void AGun::ResetFireRate()
