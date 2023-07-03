@@ -1,5 +1,5 @@
 #include "ObjectSpawn.h"
-#include "Killer/General/GameModes/KillerGameModeBase.h"
+#include "Killer/General/GameModes/GameModeBaseSingleplayer.h"
 #include "Kismet/GameplayStatics.h"
 
 
@@ -14,7 +14,7 @@ void AObjectSpawn::BeginPlay()
 
 	if (AGameModeBase* GameModeBase = UGameplayStatics::GetGameMode(GetWorld()))
 	{
-		KillerGameModeBase = Cast<AKillerGameModeBase>(GameModeBase);
+		KillerGameModeBase = Cast<AGameModeBaseSingleplayer>(GameModeBase);
 	}
 }
 

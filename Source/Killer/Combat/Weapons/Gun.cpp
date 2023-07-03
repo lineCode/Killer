@@ -33,7 +33,7 @@ void AGun::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (GetInstigator()->IsLocallyControlled())
+	if (GetInstigator() && GetInstigator()->IsLocallyControlled())
 	{
 		Server_SetGunMaterial(USave::GetSave()->PlayerMaterial);
 	}

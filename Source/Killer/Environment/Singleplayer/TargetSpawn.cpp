@@ -1,5 +1,5 @@
 #include "TargetSpawn.h"
-#include "Killer/General/GameModes/KillerGameModeBase.h"
+#include "Killer/General/GameModes/GameModeBaseSingleplayer.h"
 #include "Killer/Targets/Target.h"
 
 AActor* ATargetSpawn::SpawnRandomObject(AObjectSpawner* Spawner)

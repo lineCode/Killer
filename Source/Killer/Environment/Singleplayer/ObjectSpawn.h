@@ -5,7 +5,7 @@
 #include "ObjectSpawner.h"
 #include "ObjectSpawn.generated.h"
 
-class AKillerGameModeBase;
+class AGameModeBaseSingleplayer;
 
 USTRUCT(BlueprintType)
 struct FObjectToSpawn
@@ -35,7 +35,7 @@ protected:
 	AObjectSpawner* ObjectSpawner;
 
 	UPROPERTY()
-	AKillerGameModeBase* KillerGameModeBase;
+	AGameModeBaseSingleplayer* KillerGameModeBase;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Spawn")
 	TArray<FObjectToSpawn> ObjectsToSpawn;

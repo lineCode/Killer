@@ -1,14 +1,14 @@
-﻿#include "KillerGameModeBaseMultiplayer.h"
+﻿#include "GameModeBaseMultiplayer.h"
 #include "Killer/Player/Multiplayer/MainCharacterControllerMultiplayer.h"
 
-AKillerGameModeBaseMultiplayer::AKillerGameModeBaseMultiplayer()
+AGameModeBaseMultiplayer::AGameModeBaseMultiplayer()
 {
 	PrimaryActorTick.bCanEverTick = false;
 
 	MaxNumPlayers = 4;
 }
 
-void AKillerGameModeBaseMultiplayer::PreLogin(const FString& Options, const FString& Address,
+void AGameModeBaseMultiplayer::PreLogin(const FString& Options, const FString& Address,
 	const FUniqueNetIdRepl& UniqueId, FString& ErrorMessage)
 {
 	if (GetNumPlayers() >= MaxNumPlayers)
@@ -22,7 +22,7 @@ void AKillerGameModeBaseMultiplayer::PreLogin(const FString& Options, const FStr
 	Super::PreLogin(Options, Address, UniqueId, ErrorMessage);
 }
 
-void AKillerGameModeBaseMultiplayer::OnPostLogin(AController* NewPlayer)
+void AGameModeBaseMultiplayer::OnPostLogin(AController* NewPlayer)
 {
 	Super::OnPostLogin(NewPlayer);
 

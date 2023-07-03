@@ -1,23 +1,22 @@
 ﻿#pragma once
 
 #include "CoreMinimal.h"
-#include "KillerGameModeBase.h"
-#include "KillerGameModeBaseMultiplayer.generated.h"
+#include "GameFramework/GameModeBase.h"
+#include "GameModeBaseMultiplayer.generated.h"
 
 class AMainCharacterControllerMultiplayer;
 
 UCLASS()
-class KILLER_API AKillerGameModeBaseMultiplayer : public AKillerGameModeBase
+class KILLER_API AGameModeBaseMultiplayer : public AGameModeBase
 {
 	GENERATED_BODY()
 
 protected:
-
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Game Mode")
 	int32 MaxNumPlayers;
 
 public:
-	AKillerGameModeBaseMultiplayer();
+	AGameModeBaseMultiplayer();
 
 	virtual void PreLogin(const FString& Options, const FString& Address, const FUniqueNetIdRepl& UniqueId, FString& ErrorMessage) override;
 	virtual void OnPostLogin(AController* NewPlayer) override;

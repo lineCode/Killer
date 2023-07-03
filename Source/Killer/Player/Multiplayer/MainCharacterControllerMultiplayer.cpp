@@ -1,10 +1,14 @@
 ﻿#include "MainCharacterControllerMultiplayer.h"
 #include "EnhancedInputComponent.h"
 #include "MainCharacterHUDMultiplayer.h"
+#include "Blueprint/UserWidget.h"
 #include "GameFramework/PlayerStart.h"
+#include "Killer/Combat/Health/HealthComponent.h"
 #include "Killer/Input/InputActionsData.h"
 #include "Killer/Player/General/MainCharacter.h"
+#include "Killer/UI/Elements/TimerWidget.h"
 #include "Kismet/GameplayStatics.h"
+#include "Killer/UI/Elements/TextWidget.h"
 
 void AMainCharacterControllerMultiplayer::Restart(const FInputActionValue& Value)
 {
@@ -25,6 +29,24 @@ void AMainCharacterControllerMultiplayer::SetupInputComponent()
 		                                   &AMainCharacterControllerMultiplayer::HidePlayersTable);
 		EnhancedInputComponent->BindAction(InputActionsData->ShowPlayersTable, ETriggerEvent::Canceled, this,
 		                                   &AMainCharacterControllerMultiplayer::HidePlayersTable);
+	}
+}
+
+void AMainCharacterControllerMultiplayer::Client_ShowTimer_Implementation(const float Seconds)
+{
+	if (auto* TimerWidget = CreateWidget<UTimerWidget>(GetWorld(), TimerWidgetClass))
+	{
+		TimerWidget->AddToViewport();
+		TimerWidget->StartTimer(Seconds);
+	}
+}
+
+void AMainCharacterControllerMultiplayer::Client_ShowTextMessage_Implementation(const FText& Message)
+{
+	if (auto* TextMessageWidget = CreateWidget<UTextWidget>(GetWorld(), TextMessageWidgetClass))
+	{
+		TextMessageWidget->AddToViewport();
+		TextMessageWidget->SetDisplayText(Message);
 	}
 }
 

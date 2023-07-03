@@ -12,6 +12,12 @@ class KILLER_API AMainCharacterControllerMultiplayer : public AMainCharacterCont
 protected:
 	virtual void Restart(const FInputActionValue& Value) override;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Controller|UI")
+	TSubclassOf<UUserWidget> TimerWidgetClass;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Controller|UI")
+	TSubclassOf<UUserWidget> TextMessageWidgetClass;
+
 	UFUNCTION(Server, Reliable)
 	void Server_Restart();
 
@@ -22,6 +28,12 @@ protected:
 
 public:
 	virtual void SetupInputComponent() override;
+
+	UFUNCTION(Client, Reliable)
+	void Client_ShowTimer(float Seconds);
+
+	UFUNCTION(Client, Reliable)
+	void Client_ShowTextMessage(const FText& Message);
 
 	virtual void Pause() override;
 	virtual void UnPause() override;
