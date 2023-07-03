@@ -12,10 +12,15 @@ class KILLER_API AKillerGameModeBaseMultiplayer : public AKillerGameModeBase
 	GENERATED_BODY()
 
 protected:
-	virtual void OnPostLogin(AController* NewPlayer) override;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Game Mode")
+	int32 MaxNumPlayers;
 
 public:
 	AKillerGameModeBaseMultiplayer();
+
+	virtual void PreLogin(const FString& Options, const FString& Address, const FUniqueNetIdRepl& UniqueId, FString& ErrorMessage) override;
+	virtual void OnPostLogin(AController* NewPlayer) override;
 
 	UPROPERTY()
 	TArray<AMainCharacterControllerMultiplayer*> PlayerControllers;

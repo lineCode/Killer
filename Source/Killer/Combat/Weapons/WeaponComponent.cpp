@@ -68,7 +68,7 @@ void UWeaponComponent::Server_DestroyWeapon_Implementation()
 
 void UWeaponComponent::MoveWeapon() const
 {
-	if (!MainCharacterController)
+	if (!MainCharacterController || !Gun)
 	{
 		return;
 	}
@@ -78,6 +78,9 @@ void UWeaponComponent::MoveWeapon() const
 	MainCharacterController->DeprojectMousePositionToWorld(CursorLocation, CursorDirection);
 
 	const FVector CursorWorldLocation = CursorLocation.Y / CursorDirection.Y * -CursorDirection + CursorLocation;
+
+	// We move weapon on the client and server to exclude movement lags on client.
+	Gun->SetActorLocation(CursorWorldLocation, true);
 
 	Server_MoveWeapon(CursorWorldLocation);
 }
