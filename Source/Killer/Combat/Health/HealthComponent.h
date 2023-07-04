@@ -35,6 +35,9 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health Component|Effects")
 	TSubclassOf<AEffectsActor> DamageEffectsActor;
 
+	UPROPERTY()
+	AController* LastAttacker;
+
 	/**
 	 * When HP changes, owner's and its children flipbooks change their emission in percentages.
 	 * Flipbooks should have material with scalar "Emission" parameter.

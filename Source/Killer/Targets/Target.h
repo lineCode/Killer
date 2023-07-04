@@ -19,9 +19,6 @@ class KILLER_API ATarget : public APawn, public IHealthInterface
 protected:
 	virtual void BeginPlay() override;
 
-	UPROPERTY()
-	UWorld* World;
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
 	UCapsuleComponent* CapsuleComponent;
 

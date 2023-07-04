@@ -1,14 +1,11 @@
 ﻿#include "MainCharacterControllerMultiplayer.h"
 #include "EnhancedInputComponent.h"
 #include "MainCharacterHUDMultiplayer.h"
-#include "Blueprint/UserWidget.h"
 #include "GameFramework/PlayerStart.h"
 #include "Killer/Combat/Health/HealthComponent.h"
 #include "Killer/Input/InputActionsData.h"
 #include "Killer/Player/General/MainCharacter.h"
-#include "Killer/UI/Elements/TimerWidget.h"
 #include "Kismet/GameplayStatics.h"
-#include "Killer/UI/Elements/TextWidget.h"
 
 void AMainCharacterControllerMultiplayer::Restart(const FInputActionValue& Value)
 {
@@ -24,29 +21,43 @@ void AMainCharacterControllerMultiplayer::SetupInputComponent()
 	if (InputActionsData)
 	{
 		EnhancedInputComponent->BindAction(InputActionsData->ShowPlayersTable, ETriggerEvent::Started, this,
-		                                   &AMainCharacterControllerMultiplayer::ShowPlayersTable);
+		                                   &AMainCharacterControllerMultiplayer::ShowScoreboard);
 		EnhancedInputComponent->BindAction(InputActionsData->ShowPlayersTable, ETriggerEvent::Completed, this,
-		                                   &AMainCharacterControllerMultiplayer::HidePlayersTable);
+		                                   &AMainCharacterControllerMultiplayer::HideScoreboard);
 		EnhancedInputComponent->BindAction(InputActionsData->ShowPlayersTable, ETriggerEvent::Canceled, this,
-		                                   &AMainCharacterControllerMultiplayer::HidePlayersTable);
+		                                   &AMainCharacterControllerMultiplayer::HideScoreboard);
 	}
 }
 
 void AMainCharacterControllerMultiplayer::Client_ShowTimer_Implementation(const float Seconds)
 {
-	if (auto* TimerWidget = CreateWidget<UTimerWidget>(GetWorld(), TimerWidgetClass))
+	if (auto* MultiplayerHUD = GetMultiplayerHUD())
 	{
-		TimerWidget->AddToViewport();
-		TimerWidget->StartTimer(Seconds);
+		MultiplayerHUD->ShowTimer(Seconds);
+	}
+}
+
+void AMainCharacterControllerMultiplayer::Client_HideTimer_Implementation()
+{
+	if (auto* MultiplayerHUD = GetMultiplayerHUD())
+	{
+		MultiplayerHUD->HideTimer();
 	}
 }
 
 void AMainCharacterControllerMultiplayer::Client_ShowTextMessage_Implementation(const FText& Message)
 {
-	if (auto* TextMessageWidget = CreateWidget<UTextWidget>(GetWorld(), TextMessageWidgetClass))
+	if (auto* MultiplayerHUD = GetMultiplayerHUD())
 	{
-		TextMessageWidget->AddToViewport();
-		TextMessageWidget->SetDisplayText(Message);
+		MultiplayerHUD->ShowTextMessage(Message);
+	}
+}
+
+void AMainCharacterControllerMultiplayer::Client_HideTextMessage_Implementation()
+{
+	if (auto* MultiplayerHUD = GetMultiplayerHUD())
+	{
+		MultiplayerHUD->HideTextMessage();
 	}
 }
 
@@ -115,21 +126,26 @@ void AMainCharacterControllerMultiplayer::Server_Restart_Implementation()
 	MainCharacter->GetHealthComponent()->Server_ReviveOwner();
 }
 
-void AMainCharacterControllerMultiplayer::ShowPlayersTable(const FInputActionValue& Value)
+void AMainCharacterControllerMultiplayer::ShowScoreboard(const FInputActionValue& Value)
 {
 	if (MainCharacter)
 	{
-		if (const auto* MultiplayerHUD = Cast<AMainCharacterHUDMultiplayer>(MainCharacter->GetMainCharacterHUD()))
+		if (auto* MultiplayerHUD = GetMultiplayerHUD())
 		{
-			MultiplayerHUD->ShowPlayersTableWidget();
+			MultiplayerHUD->ShowScoreboardWidget();
 		}
 	}
 }
 
-void AMainCharacterControllerMultiplayer::HidePlayersTable(const FInputActionValue& Value)
+void AMainCharacterControllerMultiplayer::HideScoreboard(const FInputActionValue& Value)
 {
-	if (const auto* MultiplayerHUD = Cast<AMainCharacterHUDMultiplayer>(MainCharacter->GetMainCharacterHUD()))
+	if (auto* MultiplayerHUD = GetMultiplayerHUD())
 	{
-		MultiplayerHUD->HidePlayersTableWidget();
+		MultiplayerHUD->HideScoreboardWidget();
 	}
+}
+
+AMainCharacterHUDMultiplayer* AMainCharacterControllerMultiplayer::GetMultiplayerHUD() const
+{
+	return Cast<AMainCharacterHUDMultiplayer>(GetHUD());
 }

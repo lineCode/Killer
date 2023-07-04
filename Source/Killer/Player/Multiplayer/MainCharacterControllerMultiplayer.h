@@ -4,6 +4,8 @@
 #include "Killer/Player/General/MainCharacterController.h"
 #include "MainCharacterControllerMultiplayer.generated.h"
 
+class AMainCharacterHUDMultiplayer;
+
 UCLASS()
 class KILLER_API AMainCharacterControllerMultiplayer : public AMainCharacterController
 {
@@ -12,19 +14,15 @@ class KILLER_API AMainCharacterControllerMultiplayer : public AMainCharacterCont
 protected:
 	virtual void Restart(const FInputActionValue& Value) override;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Controller|UI")
-	TSubclassOf<UUserWidget> TimerWidgetClass;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Controller|UI")
-	TSubclassOf<UUserWidget> TextMessageWidgetClass;
-
 	UFUNCTION(Server, Reliable)
 	void Server_Restart();
 
 	bool bIsPaused;
 
-	void ShowPlayersTable(const FInputActionValue& Value);
-	void HidePlayersTable(const FInputActionValue& Value);
+	void ShowScoreboard(const FInputActionValue& Value);
+	void HideScoreboard(const FInputActionValue& Value);
+
+	AMainCharacterHUDMultiplayer* GetMultiplayerHUD() const;
 
 public:
 	virtual void SetupInputComponent() override;
@@ -33,7 +31,13 @@ public:
 	void Client_ShowTimer(float Seconds);
 
 	UFUNCTION(Client, Reliable)
+	void Client_HideTimer();
+
+	UFUNCTION(Client, Reliable)
 	void Client_ShowTextMessage(const FText& Message);
+
+	UFUNCTION(Client, Reliable)
+	void Client_HideTextMessage();
 
 	virtual void Pause() override;
 	virtual void UnPause() override;

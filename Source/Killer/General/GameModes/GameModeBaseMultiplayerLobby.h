@@ -13,8 +13,11 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Game Mode|Players")
 	int32 MinNumPlayers;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Game Mode|Wait For Players")
+	FText WaitForPlayersMessage;
+
 	/** Time to start match in seconds. */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Game Mode|Travel")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Game Mode|Wait For Players")
 	float TimeToStartMatch;
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Game Mode|Travel")

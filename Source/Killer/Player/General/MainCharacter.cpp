@@ -13,7 +13,7 @@
 #include "Killer/Effects/EffectsActor.h"
 #include "Killer/General/Save/Save.h"
 #include "Killer/Player/Multiplayer/MainCharacterStateMultiplayer.h"
-#include "Killer/UI/HUD/HUDWidget.h"
+#include "Killer/UI/HUD/RestartTextWidget.h"
 #include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
 #include "NiagaraFunctionLibrary.h"
@@ -162,7 +162,7 @@ void AMainCharacter::Client_OnKilled_Implementation()
 {
 	if (MainCharacterHUD)
 	{
-		MainCharacterHUD->GetHUDWidget()->ShowDeathText();
+		MainCharacterHUD->ShowRestartTextWidget();
 	}
 }
 
@@ -170,7 +170,7 @@ void AMainCharacter::Client_OnRevived_Implementation()
 {
 	if (MainCharacterHUD)
 	{
-		MainCharacterHUD->GetHUDWidget()->HideDeathText();
+		MainCharacterHUD->HideRestartTextWidget();
 	}
 }
 

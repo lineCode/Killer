@@ -5,7 +5,7 @@
 #include "MainCharacterHUD.generated.h"
 
 class UPauseMenuWidget;
-class UHUDWidget;
+class URestartTextWidget;
 
 UCLASS()
 class KILLER_API AMainCharacterHUD : public AHUD
@@ -19,10 +19,10 @@ protected:
 	virtual void BeginPlay() override;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Main Character HUD")
-	TSubclassOf<UUserWidget> HUDWidgetClass;
+	TSubclassOf<UUserWidget> RestartTextWidgetClass;
 
 	UPROPERTY(BlueprintReadWrite)
-	UHUDWidget* HUDWidget;
+	URestartTextWidget* RestartTextWidget;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Main Character HUD")
 	TSubclassOf<UUserWidget> PauseMenuWidgetClass;
@@ -31,8 +31,9 @@ protected:
 	UPauseMenuWidget* PauseMenuWidget;
 
 public:
-	UHUDWidget* GetHUDWidget() const { return HUDWidget; }
-
+	void ShowRestartTextWidget() const;
+	void HideRestartTextWidget() const;
+	
 	void ShowPauseWidget() const;
 	void HidePauseWidget() const;
 };

@@ -1,7 +1,5 @@
 ﻿#include "GameModeBaseMultiplayerLobby.h"
-
 #include "Killer/Player/Multiplayer/MainCharacterControllerMultiplayer.h"
-#include "Killer/UI/Elements/TimerWidget.h"
 
 AGameModeBaseMultiplayerLobby::AGameModeBaseMultiplayerLobby()
 {
@@ -28,6 +26,14 @@ void AGameModeBaseMultiplayerLobby::PostLogin(APlayerController* NewPlayer)
 		for (const auto& Controller : PlayerControllers)
 		{
 			Controller->Client_ShowTimer(TimeToStartMatch);
+			Controller->Client_HideTextMessage();
+		}
+	}
+	else
+	{
+		if (auto* MultiplayerController = Cast<AMainCharacterControllerMultiplayer>(NewPlayer))
+		{
+			MultiplayerController->Client_ShowTextMessage(WaitForPlayersMessage);
 		}
 	}
 }

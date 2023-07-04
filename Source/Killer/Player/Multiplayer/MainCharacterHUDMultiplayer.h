@@ -4,7 +4,9 @@
 #include "Killer/Player/General/MainCharacterHUD.h"
 #include "MainCharacterHUDMultiplayer.generated.h"
 
-class UPlayersTableWidget;
+class UTextWidget;
+class UTimerWidget;
+class UScoreboardWidget;
 
 UCLASS()
 class KILLER_API AMainCharacterHUDMultiplayer : public AMainCharacterHUD
@@ -12,19 +14,33 @@ class KILLER_API AMainCharacterHUDMultiplayer : public AMainCharacterHUD
 	GENERATED_BODY()
 
 protected:
-	virtual void BeginPlay() override;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Main Character HUD")
-	TSubclassOf<UUserWidget> PlayersTableWidgetClass;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Main Character HUD|Multiplayer")
+	TSubclassOf<UUserWidget> ScoreboardWidgetClass;
 
 	UPROPERTY(BlueprintReadWrite)
-	UPlayersTableWidget* PlayersTableWidget;
+	UScoreboardWidget* ScoreboardWidget;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Main Character HUD|Multiplayer")
+	TSubclassOf<UUserWidget> TimerWidgetClass;
+
+	UPROPERTY(BlueprintReadWrite)
+	UTimerWidget* TimerWidget;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Main Character HUD|Multiplayer")
+	TSubclassOf<UUserWidget> TextMessageWidgetClass;
+
+	UPROPERTY(BlueprintReadWrite)
+	UTextWidget* TextMessageWidget;
 
 public:
 	AMainCharacterHUDMultiplayer();
 
-	UPlayersTableWidget* GetPlayersTableWidget() const { return PlayersTableWidget; }
+	void ShowScoreboardWidget();
+	void HideScoreboardWidget() const;
 
-	void ShowPlayersTableWidget() const;
-	void HidePlayersTableWidget() const;
+	void ShowTimer(float Seconds);
+	void HideTimer() const;
+	
+	void ShowTextMessage(const FText& Message);
+	void HideTextMessage() const;
 };

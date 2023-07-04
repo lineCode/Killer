@@ -118,6 +118,8 @@ void UHealthComponent::Server_DamageOwner_Implementation(AController* Instigated
 {
 	if (auto* HealthInterfaceOwner = Cast<IHealthInterface>(GetOwner()))
 	{
+		LastAttacker = InstigatedBy;
+		
 		HealthInterfaceOwner->OnDamageTaken(InstigatedBy, DamageCauser);
 
 		if (InstigatedBy && InstigatedBy->GetPawn())
@@ -149,6 +151,13 @@ void UHealthComponent::Server_KillOwner_Implementation(AController* InstigatedBy
 	if (InstigatedBy && InstigatedBy->GetPawn())
 	{
 		if (auto* DamageCauserInterface = Cast<IHealthInterface>(InstigatedBy->GetPawn()))
+		{
+			DamageCauserInterface->OnKillCaused(GetOwner());
+		}
+	}
+	else if (LastAttacker)
+	{
+		if (auto* DamageCauserInterface = Cast<IHealthInterface>(LastAttacker->GetPawn()))
 		{
 			DamageCauserInterface->OnKillCaused(GetOwner());
 		}

@@ -20,9 +20,7 @@ ATarget::ATarget()
 void ATarget::BeginPlay()
 {
 	Super::BeginPlay();
-
-	World = GetWorld();
-
+	
 	if (IsPlacedInWorld)
 	{
 		SetLocations();
