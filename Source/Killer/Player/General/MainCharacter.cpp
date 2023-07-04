@@ -13,7 +13,6 @@
 #include "Killer/Effects/EffectsActor.h"
 #include "Killer/General/Save/Save.h"
 #include "Killer/Player/Multiplayer/MainCharacterStateMultiplayer.h"
-#include "Killer/UI/HUD/RestartTextWidget.h"
 #include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
 #include "NiagaraFunctionLibrary.h"
@@ -86,7 +85,7 @@ void AMainCharacter::Tick(const float DeltaSeconds)
 
 	RotateCharacter();
 
-	ActivateWalkParticles();
+	ActivateFootstepsParticles();
 
 	FVector FixedYLocation = GetActorLocation();
 	FixedYLocation.Y = 0.0f;
@@ -284,7 +283,7 @@ void AMainCharacter::RotateCharacter() const
 	GetSprite()->SetWorldRotation(Rotation);
 }
 
-void AMainCharacter::ActivateWalkParticles() const
+void AMainCharacter::ActivateFootstepsParticles() const
 {
 	if (!FootstepsParticlesComponent)
 	{

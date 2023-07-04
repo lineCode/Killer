@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include "CoreMinimal.h"
+#include "MenuWidget.h"
 #include "Blueprint/UserWidget.h"
 #include "Components/VerticalBox.h"
 #include "Components/WidgetSwitcher.h"
@@ -9,7 +10,7 @@
 class UButtonWidget;
 
 UCLASS()
-class KILLER_API UPauseMenuWidget : public UUserWidget
+class KILLER_API UPauseMenuWidget : public UMenuWidget
 {
 	GENERATED_BODY()
 

@@ -31,6 +31,8 @@ protected:
 	UPauseMenuWidget* PauseMenuWidget;
 
 public:
+	void Destroyed() override;
+	
 	void ShowRestartTextWidget() const;
 	void HideRestartTextWidget() const;
 	

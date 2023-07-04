@@ -68,7 +68,7 @@ void AMainCharacterController::SetupInputComponent()
 		                                   &AMainCharacterController::StopJumping);
 		EnhancedInputComponent->BindAction(InputActionsData->JumpInput, ETriggerEvent::Canceled, this,
 		                                   &AMainCharacterController::StopJumping);
-		EnhancedInputComponent->BindAction(InputActionsData->PauseInput, ETriggerEvent::Triggered, this,
+		EnhancedInputComponent->BindAction(InputActionsData->PauseInput, ETriggerEvent::Started, this,
 		                                   &AMainCharacterController::PauseGame);
 		EnhancedInputComponent->BindAction(InputActionsData->RestartInput, ETriggerEvent::Triggered, this,
 		                                   &AMainCharacterController::Restart);

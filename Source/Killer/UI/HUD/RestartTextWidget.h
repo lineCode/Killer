@@ -20,6 +20,6 @@ protected:
 	UWidgetAnimation* RestartTextBlockAnimation;
 
 public:
-	virtual void ShowDeathText();
+	virtual void ShowRestartText();
 	virtual void HideDeathText();
 };

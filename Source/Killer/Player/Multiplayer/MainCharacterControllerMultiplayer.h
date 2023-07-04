@@ -39,6 +39,7 @@ public:
 	UFUNCTION(Client, Reliable)
 	void Client_HideTextMessage();
 
+	void PauseGame(const FInputActionValue& Value) override;
 	virtual void Pause() override;
 	virtual void UnPause() override;
 };

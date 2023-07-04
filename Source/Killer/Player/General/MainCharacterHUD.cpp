@@ -25,9 +25,16 @@ void AMainCharacterHUD::BeginPlay()
 	PauseMenuWidget->SetOwningPlayer(GetOwningPlayerController());
 }
 
+void AMainCharacterHUD::Destroyed()
+{
+	Super::Destroyed();
+
+	HideRestartTextWidget(); // Without this, restart text widget pops up when player exits to the main menu. I don't know why.
+}
+
 void AMainCharacterHUD::ShowRestartTextWidget() const
 {
-	RestartTextWidget->ShowDeathText();
+	RestartTextWidget->ShowRestartText();
 	
 	RestartTextWidget->AddToViewport();
 }

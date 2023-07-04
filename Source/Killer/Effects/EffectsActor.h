@@ -12,6 +12,9 @@ class KILLER_API AEffectsActor : public AActor
 
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Components")
+	USceneComponent* Root;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Components")
 	UNiagaraComponent* NiagaraComponent;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Components")

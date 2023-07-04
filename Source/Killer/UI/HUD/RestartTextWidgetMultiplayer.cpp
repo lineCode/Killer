@@ -1,6 +1,6 @@
 ﻿#include "RestartTextWidgetMultiplayer.h"
 
-void URestartTextWidgetMultiplayer::ShowDeathText()
+void URestartTextWidgetMultiplayer::ShowRestartText()
 {
 	PlayAnimation(RestartTextBlockAnimation, 0.0f, 0, EUMGSequencePlayMode::PingPong);
 

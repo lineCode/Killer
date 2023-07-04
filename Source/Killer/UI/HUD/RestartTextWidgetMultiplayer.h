@@ -10,5 +10,5 @@ class KILLER_API URestartTextWidgetMultiplayer : public URestartTextWidget
 	GENERATED_BODY()
 
 public:
-	virtual void ShowDeathText() override;
+	virtual void ShowRestartText() override;
 };

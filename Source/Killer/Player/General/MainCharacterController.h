@@ -43,7 +43,7 @@ protected:
 	void Shoot(const FInputActionValue& Value);
 	void Jump(const FInputActionValue& Value);
 	void StopJumping(const FInputActionValue& Value);
-	void PauseGame(const FInputActionValue& Value);
+	virtual void PauseGame(const FInputActionValue& Value);
 	virtual void Restart(const FInputActionValue& Value);
 
 	UFUNCTION(Server, Unreliable)

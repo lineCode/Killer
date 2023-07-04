@@ -8,7 +8,7 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "Kismet/KismetTextLibrary.h"
 
-void URestartTextWidget::ShowDeathText()
+void URestartTextWidget::ShowRestartText()
 {
 	PlayAnimation(RestartTextBlockAnimation, 0.0f, 0, EUMGSequencePlayMode::PingPong);
 

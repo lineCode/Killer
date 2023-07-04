@@ -11,6 +11,9 @@ AEffectsActor::AEffectsActor()
 	bReplicates = true;
 	AActor::SetReplicateMovement(true);
 
+	Root = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
+	RootComponent = Root;
+	
 	NiagaraComponent = CreateDefaultSubobject<UNiagaraComponent>(TEXT("Particles"));
 	NiagaraComponent->SetupAttachment(RootComponent);
 

@@ -61,6 +61,18 @@ void AMainCharacterControllerMultiplayer::Client_HideTextMessage_Implementation(
 	}
 }
 
+void AMainCharacterControllerMultiplayer::PauseGame(const FInputActionValue& Value)
+{
+	if (bIsPaused)
+	{
+		UnPause();
+	}
+	else
+	{
+		Pause();
+	}
+}
+
 void AMainCharacterControllerMultiplayer::Pause()
 {
 	if (bIsPaused)

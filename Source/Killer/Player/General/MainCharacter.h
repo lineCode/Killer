@@ -104,7 +104,7 @@ protected:
 	void UpdateCharacterAnimation() const;
 	void RotateCharacter() const;
 
-	void ActivateWalkParticles() const;
+	void ActivateFootstepsParticles() const;
 
 	FTimerHandle FootstepsTimerHandle;
 	void PlayFootstepsSound() const;

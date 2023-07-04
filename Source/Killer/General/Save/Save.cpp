@@ -5,10 +5,10 @@ USave::USave()
 {
 	SlotName = "SaveSlot";
 
-	if (const auto GunClass = ConstructorHelpers::FObjectFinder<UBlueprint>(
-		TEXT("/Script/Engine.Blueprint'/Game/Blueprints/Combat/Weapons/BP_Gun.BP_Gun'")); GunClass.Succeeded())
+	if (const auto GunClass = ConstructorHelpers::FObjectFinder<UClass>(
+		TEXT("Class'/Game/Blueprints/Combat/Weapons/BP_Gun.BP_Gun_C'")); GunClass.Succeeded())
 	{
-		WeaponClass = GunClass.Object->GeneratedClass;
+		WeaponClass = GunClass.Object;
 	}
 
 	LastChosenLevelName = "MidnightCity";
@@ -19,6 +19,7 @@ USave::USave()
 	FOVShake = 0.5f;
 
 	PlayerName = "Player";
+	
 	if (const auto Material = ConstructorHelpers::FObjectFinder<UMaterialInterface>(
 		TEXT("/Script/Engine.MaterialInstanceConstant'/Game/Graphics/Materials/SpriteLit/MI_SL_Red.MI_SL_Red'")); Material.Succeeded())
 	{
@@ -34,7 +35,7 @@ USave* USave::GetSave()
 		return nullptr;
 	}
 
-	USave* Save = Cast<USave>(EmptySave);
+	auto* Save = Cast<USave>(EmptySave);
 	if (!Save)
 	{
 		return nullptr;
