@@ -9,7 +9,8 @@ public class Killer : ModuleRules
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 
 		PublicDependencyModuleNames.AddRange(new[]
-			{ "Core", "CoreUObject", "Engine", "InputCore", "Paper2D", "UMG", "Niagara", "EnhancedInput" });
+			{ "Core", "CoreUObject", "Engine", "InputCore", "Paper2D", "UMG", "Niagara", "EnhancedInput",
+				"OnlineSubsystem", "OnlineServicesNull", "OnlineSubsystemUtils" });
 
 		PrivateDependencyModuleNames.AddRange(new string[] { });
 
