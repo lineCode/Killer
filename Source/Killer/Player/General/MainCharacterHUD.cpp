@@ -2,7 +2,7 @@
 #include "MainCharacter.h"
 #include "Blueprint/UserWidget.h"
 #include "Killer/UI/HUD/RestartTextWidget.h"
-#include "Killer/UI/Menu/PauseMenuWidget.h"
+#include "Killer/UI/Menu/Pause/PauseMenuWidget.h"
 
 AMainCharacterHUD::AMainCharacterHUD()
 {

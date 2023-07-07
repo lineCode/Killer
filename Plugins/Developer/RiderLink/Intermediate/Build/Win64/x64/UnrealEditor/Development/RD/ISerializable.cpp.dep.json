@@ -1,11 +1,11 @@
 {
     "Version": "1.2",
     "Data": {
-        "Source": "d:\\projects\\ue\\killercopy\\killer\\plugins\\developer\\riderlink\\source\\rd\\src\\rd_framework_cpp\\src\\main\\serialization\\iserializable.cpp",
+        "Source": "d:\\projects\\ue\\killer\\plugins\\developer\\riderlink\\source\\rd\\src\\rd_framework_cpp\\src\\main\\serialization\\iserializable.cpp",
         "ProvidedModule": "",
         "Includes": [
-            "d:\\projects\\ue\\killercopy\\killer\\plugins\\developer\\riderlink\\intermediate\\build\\win64\\x64\\unrealeditor\\development\\rd\\definitions.h",
-            "d:\\projects\\ue\\killercopy\\killer\\plugins\\developer\\riderlink\\source\\rd\\src\\rd_framework_cpp\\src\\main\\serialization\\iserializable.h",
+            "d:\\projects\\ue\\killer\\plugins\\developer\\riderlink\\intermediate\\build\\win64\\x64\\unrealeditor\\development\\rd\\definitions.h",
+            "d:\\projects\\ue\\killer\\plugins\\developer\\riderlink\\source\\rd\\src\\rd_framework_cpp\\src\\main\\serialization\\iserializable.h",
             "d:\\programs\\visualstudio\\vs\\vc\\tools\\msvc\\14.35.32215\\include\\string",
             "d:\\programs\\visualstudio\\vs\\vc\\tools\\msvc\\14.35.32215\\include\\yvals_core.h",
             "d:\\programs\\visualstudio\\vs\\vc\\tools\\msvc\\14.35.32215\\include\\vcruntime.h",
@@ -82,8 +82,8 @@
             "d:\\programs\\visualstudio\\vs\\vc\\tools\\msvc\\14.35.32215\\include\\tuple",
             "d:\\programs\\visualstudio\\vs\\vc\\tools\\msvc\\14.35.32215\\include\\cctype",
             "c:\\program files (x86)\\windows kits\\10\\include\\10.0.22000.0\\ucrt\\ctype.h",
-            "d:\\projects\\ue\\killercopy\\killer\\plugins\\developer\\riderlink\\source\\rd\\src\\rd_framework_cpp\\rd_framework_export.h",
-            "d:\\projects\\ue\\killercopy\\killer\\plugins\\developer\\riderlink\\source\\rd\\src\\rd_core_cpp\\src\\main\\std\\hash.h",
+            "d:\\projects\\ue\\killer\\plugins\\developer\\riderlink\\source\\rd\\src\\rd_framework_cpp\\rd_framework_export.h",
+            "d:\\projects\\ue\\killer\\plugins\\developer\\riderlink\\source\\rd\\src\\rd_core_cpp\\src\\main\\std\\hash.h",
             "d:\\programs\\visualstudio\\vs\\vc\\tools\\msvc\\14.35.32215\\include\\functional",
             "d:\\programs\\visualstudio\\vs\\vc\\tools\\msvc\\14.35.32215\\include\\typeinfo",
             "d:\\programs\\visualstudio\\vs\\vc\\tools\\msvc\\14.35.32215\\include\\vcruntime_typeinfo.h",

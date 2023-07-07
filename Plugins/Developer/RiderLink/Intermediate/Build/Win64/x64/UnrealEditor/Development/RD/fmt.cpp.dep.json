@@ -1,11 +1,11 @@
 {
     "Version": "1.2",
     "Data": {
-        "Source": "d:\\projects\\ue\\killercopy\\killer\\plugins\\developer\\riderlink\\source\\rd\\thirdparty\\spdlog\\src\\fmt.cpp",
+        "Source": "d:\\projects\\ue\\killer\\plugins\\developer\\riderlink\\source\\rd\\thirdparty\\spdlog\\src\\fmt.cpp",
         "ProvidedModule": "",
         "Includes": [
-            "d:\\projects\\ue\\killercopy\\killer\\plugins\\developer\\riderlink\\intermediate\\build\\win64\\x64\\unrealeditor\\development\\rd\\definitions.h",
-            "d:\\projects\\ue\\killercopy\\killer\\plugins\\developer\\riderlink\\source\\rd\\thirdparty\\spdlog\\include\\spdlog\\fmt\\bundled\\format-inl.h",
+            "d:\\projects\\ue\\killer\\plugins\\developer\\riderlink\\intermediate\\build\\win64\\x64\\unrealeditor\\development\\rd\\definitions.h",
+            "d:\\projects\\ue\\killer\\plugins\\developer\\riderlink\\source\\rd\\thirdparty\\spdlog\\include\\spdlog\\fmt\\bundled\\format-inl.h",
             "d:\\programs\\visualstudio\\vs\\vc\\tools\\msvc\\14.35.32215\\include\\algorithm",
             "d:\\programs\\visualstudio\\vs\\vc\\tools\\msvc\\14.35.32215\\include\\yvals_core.h",
             "d:\\programs\\visualstudio\\vs\\vc\\tools\\msvc\\14.35.32215\\include\\vcruntime.h",
@@ -117,8 +117,8 @@
             "d:\\programs\\visualstudio\\vs\\vc\\tools\\msvc\\14.35.32215\\include\\xloctime",
             "c:\\program files (x86)\\windows kits\\10\\include\\10.0.22000.0\\ucrt\\io.h",
             "c:\\program files (x86)\\windows kits\\10\\include\\10.0.22000.0\\ucrt\\corecrt_io.h",
-            "d:\\projects\\ue\\killercopy\\killer\\plugins\\developer\\riderlink\\source\\rd\\thirdparty\\spdlog\\include\\spdlog\\fmt\\bundled\\format.h",
-            "d:\\projects\\ue\\killercopy\\killer\\plugins\\developer\\riderlink\\source\\rd\\thirdparty\\spdlog\\include\\spdlog\\fmt\\bundled\\core.h",
+            "d:\\projects\\ue\\killer\\plugins\\developer\\riderlink\\source\\rd\\thirdparty\\spdlog\\include\\spdlog\\fmt\\bundled\\format.h",
+            "d:\\projects\\ue\\killer\\plugins\\developer\\riderlink\\source\\rd\\thirdparty\\spdlog\\include\\spdlog\\fmt\\bundled\\core.h",
             "d:\\programs\\visualstudio\\vs\\vc\\tools\\msvc\\14.35.32215\\include\\string",
             "d:\\programs\\visualstudio\\vs\\vc\\tools\\msvc\\14.35.32215\\include\\string_view",
             "d:\\programs\\visualstudio\\vs\\vc\\tools\\msvc\\14.35.32215\\include\\intrin.h",

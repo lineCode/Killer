@@ -1,4 +1,5 @@
 ﻿#include "MultiplayerMenuWidget.h"
+#include "DirectConnectMenuWidget.h"
 #include "MultiplayerSessionsMenuWidget.h"
 #include "Components/WidgetSwitcher.h"
 #include "Killer/General/Save/SessionSubsystem.h"
@@ -36,16 +37,16 @@ void UMultiplayerMenuWidget::OnFindSessionsButtonClicked(UButtonWidget* Button)
 		SessionSubsystem->FindSessions(10, true); // TODO: Move settings to UI.
 	}
 	
-	WidgetSwitcher->SetActiveWidget(SessionsMenuWidget);
+	WidgetSwitcher->SetActiveWidget(SessionsMenu);
 }
 
 void UMultiplayerMenuWidget::OnDirectConnectionButtonClicked(UButtonWidget* Button)
 {
-	
+	WidgetSwitcher->SetActiveWidget(DirectConnectMenu);
 }
 
 void UMultiplayerMenuWidget::OnFindSessionsComplete(const TArray<FOnlineSessionSearchResult>& SessionResults,
 	bool Successful)
 {
-	SessionsMenuWidget->DisplaySessions(SessionResults);
+	SessionsMenu->DisplaySessions(SessionResults);
 }

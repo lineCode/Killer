@@ -18,7 +18,7 @@ void AGameModeBaseMultiplayerLobby::PostLogin(APlayerController* NewPlayer)
 {
 	Super::PostLogin(NewPlayer);
 
-	if (GetNumPlayers() >= MinNumPlayers && !GetWorldTimerManager().IsTimerActive(StartMatchTimerHandle))
+	if (PlayerControllers.Num() >= MinNumPlayers && !GetWorldTimerManager().IsTimerActive(StartMatchTimerHandle))
 	{
 		GetWorldTimerManager().SetTimer(StartMatchTimerHandle, this, &AGameModeBaseMultiplayerLobby::StartGame,
 			TimeToStartMatch, false, TimeToStartMatch);
@@ -34,6 +34,22 @@ void AGameModeBaseMultiplayerLobby::PostLogin(APlayerController* NewPlayer)
 		if (auto* MultiplayerController = Cast<AMainCharacterControllerMultiplayer>(NewPlayer))
 		{
 			MultiplayerController->Client_ShowTextMessage(WaitForPlayersMessage);
+		}
+	}
+}
+
+void AGameModeBaseMultiplayerLobby::Logout(AController* Exiting)
+{
+	Super::Logout(Exiting);
+
+	if (PlayerControllers.Num() < MinNumPlayers)
+	{
+		GetWorldTimerManager().ClearTimer(StartMatchTimerHandle);
+
+		for (const auto& Controller : PlayerControllers)
+		{
+			Controller->Client_HideTimer();
+			Controller->Client_ShowTextMessage(WaitForPlayersMessage);
 		}
 	}
 }

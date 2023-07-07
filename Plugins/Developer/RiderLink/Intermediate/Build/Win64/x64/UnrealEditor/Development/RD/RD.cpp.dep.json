@@ -1,11 +1,11 @@
 {
     "Version": "1.2",
     "Data": {
-        "Source": "d:\\projects\\ue\\killercopy\\killer\\plugins\\developer\\riderlink\\source\\rd\\rd.cpp",
+        "Source": "d:\\projects\\ue\\killer\\plugins\\developer\\riderlink\\source\\rd\\rd.cpp",
         "ProvidedModule": "",
         "Includes": [
-            "d:\\projects\\ue\\killercopy\\killer\\plugins\\developer\\riderlink\\intermediate\\build\\win64\\x64\\unrealeditor\\development\\rd\\definitions.h",
-            "d:\\projects\\ue\\killercopy\\killer\\plugins\\developer\\riderlink\\source\\rd\\rd.h",
+            "d:\\projects\\ue\\killer\\plugins\\developer\\riderlink\\intermediate\\build\\win64\\x64\\unrealeditor\\development\\rd\\definitions.h",
+            "d:\\projects\\ue\\killer\\plugins\\developer\\riderlink\\source\\rd\\rd.h",
             "d:\\programs\\ue_5.2\\engine\\source\\runtime\\core\\public\\logging\\logmacros.h",
             "d:\\programs\\ue_5.2\\engine\\source\\runtime\\core\\public\\containers\\unrealstring.h",
             "d:\\programs\\ue_5.2\\engine\\source\\runtime\\core\\public\\coretypes.h",

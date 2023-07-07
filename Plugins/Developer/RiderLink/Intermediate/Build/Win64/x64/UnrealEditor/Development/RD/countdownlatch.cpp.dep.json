@@ -1,10 +1,10 @@
 {
     "Version": "1.2",
     "Data": {
-        "Source": "d:\\projects\\ue\\killercopy\\killer\\plugins\\developer\\riderlink\\source\\rd\\thirdparty\\countdownlatch\\countdownlatch.cpp",
+        "Source": "d:\\projects\\ue\\killer\\plugins\\developer\\riderlink\\source\\rd\\thirdparty\\countdownlatch\\countdownlatch.cpp",
         "ProvidedModule": "",
         "Includes": [
-            "d:\\projects\\ue\\killercopy\\killer\\plugins\\developer\\riderlink\\intermediate\\build\\win64\\x64\\unrealeditor\\development\\rd\\definitions.h",
+            "d:\\projects\\ue\\killer\\plugins\\developer\\riderlink\\intermediate\\build\\win64\\x64\\unrealeditor\\development\\rd\\definitions.h",
             "d:\\programs\\visualstudio\\vs\\vc\\tools\\msvc\\14.35.32215\\include\\chrono",
             "d:\\programs\\visualstudio\\vs\\vc\\tools\\msvc\\14.35.32215\\include\\yvals_core.h",
             "d:\\programs\\visualstudio\\vs\\vc\\tools\\msvc\\14.35.32215\\include\\vcruntime.h",
@@ -93,7 +93,7 @@
             "d:\\programs\\visualstudio\\vs\\vc\\tools\\msvc\\14.35.32215\\include\\atomic",
             "d:\\programs\\visualstudio\\vs\\vc\\tools\\msvc\\14.35.32215\\include\\xthreads.h",
             "d:\\programs\\visualstudio\\vs\\vc\\tools\\msvc\\14.35.32215\\include\\xfilesystem_abi.h",
-            "d:\\projects\\ue\\killercopy\\killer\\plugins\\developer\\riderlink\\source\\rd\\thirdparty\\countdownlatch\\countdownlatch.hpp",
+            "d:\\projects\\ue\\killer\\plugins\\developer\\riderlink\\source\\rd\\thirdparty\\countdownlatch\\countdownlatch.hpp",
             "d:\\programs\\visualstudio\\vs\\vc\\tools\\msvc\\14.35.32215\\include\\cinttypes",
             "c:\\program files (x86)\\windows kits\\10\\include\\10.0.22000.0\\ucrt\\inttypes.h",
             "d:\\programs\\visualstudio\\vs\\vc\\tools\\msvc\\14.35.32215\\include\\mutex",

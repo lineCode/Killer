@@ -35,4 +35,6 @@ protected:
 public:
 	AGameModeBaseMultiplayerLobby();
 	virtual void PostLogin(APlayerController* NewPlayer) override;
+
+	virtual void Logout(AController* Exiting) override;
 };

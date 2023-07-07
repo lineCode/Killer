@@ -1,11 +1,11 @@
 {
     "Version": "1.2",
     "Data": {
-        "Source": "d:\\projects\\ue\\killercopy\\killer\\plugins\\developer\\riderlink\\source\\rd\\src\\rd_framework_cpp\\src\\main\\base\\iserializersowner.cpp",
+        "Source": "d:\\projects\\ue\\killer\\plugins\\developer\\riderlink\\source\\rd\\src\\rd_framework_cpp\\src\\main\\base\\iserializersowner.cpp",
         "ProvidedModule": "",
         "Includes": [
-            "d:\\projects\\ue\\killercopy\\killer\\plugins\\developer\\riderlink\\intermediate\\build\\win64\\x64\\unrealeditor\\development\\rd\\definitions.h",
-            "d:\\projects\\ue\\killercopy\\killer\\plugins\\developer\\riderlink\\source\\rd\\src\\rd_framework_cpp\\src\\main\\base\\iserializersowner.h",
+            "d:\\projects\\ue\\killer\\plugins\\developer\\riderlink\\intermediate\\build\\win64\\x64\\unrealeditor\\development\\rd\\definitions.h",
+            "d:\\projects\\ue\\killer\\plugins\\developer\\riderlink\\source\\rd\\src\\rd_framework_cpp\\src\\main\\base\\iserializersowner.h",
             "d:\\programs\\visualstudio\\vs\\vc\\tools\\msvc\\14.35.32215\\include\\unordered_set",
             "d:\\programs\\visualstudio\\vs\\vc\\tools\\msvc\\14.35.32215\\include\\yvals_core.h",
             "d:\\programs\\visualstudio\\vs\\vc\\tools\\msvc\\14.35.32215\\include\\vcruntime.h",
@@ -86,7 +86,7 @@
             "d:\\programs\\visualstudio\\vs\\vc\\tools\\msvc\\14.35.32215\\include\\xstring",
             "d:\\programs\\visualstudio\\vs\\vc\\tools\\msvc\\14.35.32215\\include\\iosfwd",
             "d:\\programs\\visualstudio\\vs\\vc\\tools\\msvc\\14.35.32215\\include\\xnode_handle.h",
-            "d:\\projects\\ue\\killercopy\\killer\\plugins\\developer\\riderlink\\source\\rd\\src\\rd_framework_cpp\\rd_framework_export.h"
+            "d:\\projects\\ue\\killer\\plugins\\developer\\riderlink\\source\\rd\\src\\rd_framework_cpp\\rd_framework_export.h"
         ],
         "ImportedModules": [],
         "ImportedHeaderUnits": []

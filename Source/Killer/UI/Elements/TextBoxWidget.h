@@ -19,4 +19,7 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Text Box Widget")
 	FText Text;
+
+public:
+	FText GetText() { return Text; }
 };

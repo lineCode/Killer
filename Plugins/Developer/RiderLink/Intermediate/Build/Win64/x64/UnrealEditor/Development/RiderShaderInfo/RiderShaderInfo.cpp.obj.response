@@ -1,4 +1,4 @@
-D:\Projects\UE\KillerCopy\Killer\Plugins\Developer\RiderLink\Source\RiderShaderInfo\RiderShaderInfo.cpp
+D:\Projects\UE\Killer\Plugins\Developer\RiderLink\Source\RiderShaderInfo\RiderShaderInfo.cpp
 /I .
 /I Runtime\TraceLog\Public
 /I Runtime\Core\Public
@@ -7,7 +7,7 @@ D:\Projects\UE\KillerCopy\Killer\Plugins\Developer\RiderLink\Source\RiderShaderI
 /I Runtime\Json\Public
 /I Runtime\RenderCore\Public
 /I Runtime\RHI\Public
-/I D:\Projects\UE\KillerCopy\Killer\Plugins\Developer\RiderLink\Source
+/I D:\Projects\UE\Killer\Plugins\Developer\RiderLink\Source
 /external:W0
 /external:I ThirdParty\mimalloc\include
 /external:I D:\Programs\VisualStudio\VS\VC\Tools\MSVC\14.35.32215\INCLUDE
@@ -15,9 +15,9 @@ D:\Projects\UE\KillerCopy\Killer\Plugins\Developer\RiderLink\Source\RiderShaderI
 /external:I "C:\Program Files (x86)\Windows Kits\10\include\10.0.22000.0\shared"
 /external:I "C:\Program Files (x86)\Windows Kits\10\include\10.0.22000.0\um"
 /external:I "C:\Program Files (x86)\Windows Kits\10\include\10.0.22000.0\winrt"
-/FI"D:\Projects\UE\KillerCopy\Killer\Plugins\Developer\RiderLink\Intermediate\Build\Win64\x64\UnrealEditor\Development\RiderShaderInfo\Definitions.h"
-/Fo"D:\Projects\UE\KillerCopy\Killer\Plugins\Developer\RiderLink\Intermediate\Build\Win64\x64\UnrealEditor\Development\RiderShaderInfo\RiderShaderInfo.cpp.obj"
-/sourceDependencies D:\Projects\UE\KillerCopy\Killer\Plugins\Developer\RiderLink\Intermediate\Build\Win64\x64\UnrealEditor\Development\RiderShaderInfo\RiderShaderInfo.cpp.dep.json
+/FI"D:\Projects\UE\Killer\Plugins\Developer\RiderLink\Intermediate\Build\Win64\x64\UnrealEditor\Development\RiderShaderInfo\Definitions.h"
+/Fo"D:\Projects\UE\Killer\Plugins\Developer\RiderLink\Intermediate\Build\Win64\x64\UnrealEditor\Development\RiderShaderInfo\RiderShaderInfo.cpp.obj"
+/sourceDependencies D:\Projects\UE\Killer\Plugins\Developer\RiderLink\Intermediate\Build\Win64\x64\UnrealEditor\Development\RiderShaderInfo\RiderShaderInfo.cpp.dep.json
 /Zc:inline
 /nologo
 /Oi

@@ -1,9 +1,10 @@
 ﻿#pragma once
 
 #include "CoreMinimal.h"
-#include "MenuWidget.h"
+#include "Killer/UI/Menu/General/MenuWidget.h"
 #include "MultiplayerMenuWidget.generated.h"
 
+class UDirectConnectMenuWidget;
 class UComboBoxWidget;
 class UTextBoxWidget;
 class UMultiplayerSessionsMenuWidget;
@@ -41,7 +42,10 @@ protected:
 	UComboBoxWidget* PlayerColorComboBox;
 
 	UPROPERTY(BlueprintReadWrite, meta=(BindWidget))
-	UMultiplayerSessionsMenuWidget* SessionsMenuWidget;
+	UMultiplayerSessionsMenuWidget* SessionsMenu;
+
+	UPROPERTY(BlueprintReadWrite, meta=(BindWidget))
+	UDirectConnectMenuWidget* DirectConnectMenu;
 
 	UFUNCTION()
 	void OnHostButtonClicked(UButtonWidget* Button);

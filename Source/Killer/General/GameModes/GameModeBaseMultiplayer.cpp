@@ -11,7 +11,7 @@ AGameModeBaseMultiplayer::AGameModeBaseMultiplayer()
 void AGameModeBaseMultiplayer::PreLogin(const FString& Options, const FString& Address,
 	const FUniqueNetIdRepl& UniqueId, FString& ErrorMessage)
 {
-	if (GetNumPlayers() >= MaxNumPlayers)
+	if (PlayerControllers.Num() >= MaxNumPlayers)
 	{
 		ErrorMessage = TEXT("Server full.");
 		FGameModeEvents::GameModePreLoginEvent.Broadcast(this, UniqueId, ErrorMessage);
@@ -27,4 +27,11 @@ void AGameModeBaseMultiplayer::OnPostLogin(AController* NewPlayer)
 	Super::OnPostLogin(NewPlayer);
 
 	PlayerControllers.Add(Cast<AMainCharacterControllerMultiplayer>(NewPlayer));
+}
+
+void AGameModeBaseMultiplayer::Logout(AController* Exiting)
+{
+	Super::Logout(Exiting);
+
+	PlayerControllers.Remove(Cast<AMainCharacterControllerMultiplayer>(Exiting));
 }

@@ -1,10 +1,9 @@
 ﻿#pragma once
 
 #include "CoreMinimal.h"
-#include "MenuWidget.h"
-#include "Blueprint/UserWidget.h"
 #include "Components/VerticalBox.h"
 #include "Components/WidgetSwitcher.h"
+#include "Killer/UI/Menu/General/MenuWidget.h"
 #include "PauseMenuWidget.generated.h"
 
 class UButtonWidget;

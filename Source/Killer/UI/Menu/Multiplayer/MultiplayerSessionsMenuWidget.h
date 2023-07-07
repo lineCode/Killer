@@ -1,7 +1,7 @@
 ﻿#pragma once
 
 #include "CoreMinimal.h"
-#include "MenuWidget.h"
+#include "Killer/UI/Menu/General/MenuWidget.h"
 #include "MultiplayerSessionsMenuWidget.generated.h"
 
 class UMultiplayerSessionWidget;
