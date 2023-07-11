@@ -15,7 +15,7 @@ class KILLER_API UWeaponComponent : public UActorComponent
 
 protected:
 	virtual void BeginPlay() override;
-
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Weapon Component")
 	bool bLoadFromSave;
 
@@ -23,10 +23,7 @@ protected:
 	TSubclassOf<AGun> WeaponClass;
 
 	UPROPERTY()
-	AMainCharacter* MainCharacterOwner;
-
-	UPROPERTY()
-	AMainCharacterController* MainCharacterController;
+	APlayerController* OwnerController;
 
 	UPROPERTY(Replicated)
 	AGun* Gun;
@@ -47,7 +44,7 @@ public:
 	                           FActorComponentTickFunction* ThisTickFunction) override;
 
 	UFUNCTION(Server, Reliable)
-	void Server_SpawnWeapon(AMainCharacterController* Controller);
+	void Server_SpawnWeapon(APlayerController* Controller);
 
 	UFUNCTION(Server, Reliable)
 	void Server_DestroyWeapon();

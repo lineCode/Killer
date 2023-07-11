@@ -102,9 +102,6 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Main Character|Effects|Landing")
 	TSubclassOf<UCameraShakeBase> LandingCameraShakeClass;
 
-	UPROPERTY(Replicated)
-	AMainCharacterController* MainCharacterController{};
-
 	UPROPERTY()
 	AMainCharacterHUD* MainCharacterHUD{};
 
@@ -162,14 +159,7 @@ public:
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override { return AbilitySystemComponent; }
 	UPlayerAttributeSet* GetPlayerAttributes() const { return PlayerAttributes; }
 
-	AMainCharacterController* GetMainCharacterController() const { return MainCharacterController; }
 	AMainCharacterHUD* GetMainCharacterHUD() const { return MainCharacterHUD; }
-
-	void SetMainCharacterController(AMainCharacterController* NewController)
-	{
-		MainCharacterController = NewController;
-	}
-
 	void SetMainCharacterHUD(AMainCharacterHUD* NewHUD) { MainCharacterHUD = NewHUD; }
 
 	UHealthComponent* GetHealthComponent() const { return HealthComponent; }

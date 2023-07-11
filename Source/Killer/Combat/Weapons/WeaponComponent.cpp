@@ -21,8 +21,10 @@ void UWeaponComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	MainCharacterOwner = Cast<AMainCharacter>(GetOwner());
-	MainCharacterController = MainCharacterOwner->GetMainCharacterController();
+	if (const APawn* OwnerPawn = Cast<APawn>(GetOwner()))
+	{
+		OwnerController = Cast<APlayerController>(OwnerPawn->GetController());
+	}
 }
 
 void UWeaponComponent::TickComponent(float DeltaTime, ELevelTick TickType,
@@ -30,17 +32,13 @@ void UWeaponComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	if (MainCharacterController && MainCharacterController->IsLocalController())
-	{
-		MoveWeapon();
-	}
-
+	MoveWeapon();
 	RotateWeapon();
 }
 
-void UWeaponComponent::Server_SpawnWeapon_Implementation(AMainCharacterController* Controller)
+void UWeaponComponent::Server_SpawnWeapon_Implementation(APlayerController* Controller)
 {
-	MainCharacterController = Controller;
+	OwnerController = Controller;
 
 	if (bLoadFromSave)
 	{
@@ -68,14 +66,19 @@ void UWeaponComponent::Server_DestroyWeapon_Implementation()
 
 void UWeaponComponent::MoveWeapon() const
 {
-	if (!MainCharacterController || !Gun)
+	if (!OwnerController || !Gun)
+	{
+		return;
+	}
+
+	if (!OwnerController->IsLocalController())
 	{
 		return;
 	}
 
 	FVector CursorLocation;
 	FVector CursorDirection;
-	MainCharacterController->DeprojectMousePositionToWorld(CursorLocation, CursorDirection);
+	OwnerController->DeprojectMousePositionToWorld(CursorLocation, CursorDirection);
 
 	const FVector CursorWorldLocation = CursorLocation.Y / CursorDirection.Y * -CursorDirection + CursorLocation;
 
@@ -97,12 +100,12 @@ void UWeaponComponent::Server_MoveWeapon_Implementation(const FVector& Location)
 
 void UWeaponComponent::RotateWeapon() const
 {
-	if (!Gun || !MainCharacterOwner)
+	if (!Gun)
 	{
 		return;
 	}
 
-	FVector Direction = Gun->GetActorLocation() - MainCharacterOwner->GetActorLocation();
+	FVector Direction = Gun->GetActorLocation() - GetOwner()->GetActorLocation();
 	Direction.Y = 0.0f;
 
 	const FQuat GunRotation = FQuat(Direction.Rotation());

@@ -18,8 +18,7 @@ void URestartTextWidget::ShowRestartText()
 		return;
 	}
 
-	const auto* MainCharacterPlayerState = MainCharacter->GetMainCharacterController()->GetPlayerState<
-		AMainCharacterStateMultiplayer>();
+	const auto* MainCharacterPlayerState = GetOwningPlayer()->GetPlayerState<AMainCharacterStateMultiplayer>();
 	if (!MainCharacterPlayerState)
 	{
 		return;

@@ -20,7 +20,6 @@
 #include "GameFramework/PlayerStart.h"
 #include "Killer/Combat/AbilitySystem/Attributes/Player/PlayerAttributeSet.h"
 #include "Killer/Combat/AbilitySystem/UIData/UpgradeUIData.h"
-#include "Killer/UI/HUD/UpgradeNotifyWidget.h"
 #include "Killer/Upgrades/Upgrade.h"
 
 AMainCharacter::AMainCharacter()
@@ -50,7 +49,6 @@ void AMainCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLi
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	DOREPLIFETIME(AMainCharacter, MainCharacterController);
 	DOREPLIFETIME(AMainCharacter, PlayerMaterial);
 }
 
@@ -58,9 +56,7 @@ void AMainCharacter::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
 
-	MainCharacterController = Cast<AMainCharacterController>(NewController);
-
-	WeaponComponent->Server_SpawnWeapon(MainCharacterController);
+	WeaponComponent->Server_SpawnWeapon(Cast<AMainCharacterController>(NewController));
 
 	Client_ChangePlayerMaterial();
 }
@@ -187,9 +183,9 @@ void AMainCharacter::Landed(const FHitResult& Hit)
 		return;
 	}
 
-	if (MainCharacterController && LandingCameraShakeClass)
+	if (const APlayerController* PlayerController = Cast<APlayerController>(GetController()); PlayerController && LandingCameraShakeClass)
 	{
-		MainCharacterController->PlayerCameraManager->StartCameraShake(LandingCameraShakeClass);
+		PlayerController->PlayerCameraManager->StartCameraShake(LandingCameraShakeClass);
 	}
 
 	if (UWorld* World = GetWorld(); LandingEffectsActorClass)
@@ -211,12 +207,9 @@ void AMainCharacter::OnKilled(AController* InstigatedBy, AActor* DamageCauser)
 
 	GetCharacterMovement()->SetMovementMode(MOVE_None);
 
-	if (MainCharacterController)
+	if (auto* PlayerStateMultiplayer = GetController()->GetPlayerState<AMainCharacterStateMultiplayer>())
 	{
-		if (auto* PlayerStateMultiplayer = MainCharacterController->GetPlayerState<AMainCharacterStateMultiplayer>())
-		{
-			PlayerStateMultiplayer->Server_IncrementDeathsCount();
-		}
+		PlayerStateMultiplayer->Server_IncrementDeathsCount();
 	}
 }
 
@@ -269,12 +262,9 @@ void AMainCharacter::OnDamageCaused(AActor* DamageCausedTo, const float Damage)
 
 void AMainCharacter::OnKillCaused(AActor* KillCausedTo)
 {
-	if (MainCharacterController)
+	if (auto* PlayerStateMultiplayer = GetController()->GetPlayerState<AMainCharacterStateMultiplayer>())
 	{
-		if (auto* PlayerStateMultiplayer = MainCharacterController->GetPlayerState<AMainCharacterStateMultiplayer>())
-		{
-			PlayerStateMultiplayer->Server_IncrementKillsCount();
-		}
+		PlayerStateMultiplayer->Server_IncrementKillsCount();
 	}
 
 	if (USave* Save = USave::GetSave())
