@@ -11,8 +11,8 @@ class KILLER_API ADamageUpgrade : public AUpgrade
 
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Damage Upgrade")
-	float DamageMultiplier;
+	TSubclassOf<UGameplayEffect> DamageMultiplierEffectClass;
 
 public:
-	virtual void Activate(AMainCharacter* MainCharacter) override;
+	virtual void ActivateUpgrade(AMainCharacter* MainCharacter) override;
 };

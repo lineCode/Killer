@@ -2,6 +2,7 @@
 #include "MainCharacter.h"
 #include "Blueprint/UserWidget.h"
 #include "Killer/UI/HUD/RestartTextWidget.h"
+#include "Killer/UI/HUD/UpgradeNotifyWidget.h"
 #include "Killer/UI/Menu/Pause/PauseMenuWidget.h"
 
 AMainCharacterHUD::AMainCharacterHUD()
@@ -34,22 +35,48 @@ void AMainCharacterHUD::Destroyed()
 
 void AMainCharacterHUD::ShowRestartTextWidget() const
 {
-	RestartTextWidget->ShowRestartText();
+	if (RestartTextWidget)
+	{
+		RestartTextWidget->ShowRestartText();
 	
-	RestartTextWidget->AddToViewport();
+		RestartTextWidget->AddToViewport();
+	}
 }
 
 void AMainCharacterHUD::HideRestartTextWidget() const
 {
-	RestartTextWidget->RemoveFromParent();
+	if (RestartTextWidget)
+	{
+		RestartTextWidget->RemoveFromParent();
+	}
 }
 
 void AMainCharacterHUD::ShowPauseWidget() const
 {
-	PauseMenuWidget->AddToViewport();
+	if (PauseMenuWidget)
+	{
+		PauseMenuWidget->AddToViewport();
+	}
 }
 
 void AMainCharacterHUD::HidePauseWidget() const
 {
-	PauseMenuWidget->RemoveFromParent();
+	if (PauseMenuWidget)
+	{
+		PauseMenuWidget->RemoveFromParent();
+	}
+}
+
+void AMainCharacterHUD::ShowUpgradeNotification(const UUpgradeUIData* UIData)
+{
+	if (!UpgradeNotifyWidget && UpgradeNotifyWidgetClass)
+	{
+		UpgradeNotifyWidget = CreateWidget<UUpgradeNotifyWidget>(GetOwningPlayerController(), UpgradeNotifyWidgetClass);
+		UpgradeNotifyWidget->AddToViewport();
+	}
+
+	if (UpgradeNotifyWidget)
+	{
+		UpgradeNotifyWidget->ShowUpgradeNotification(UIData);
+	}
 }

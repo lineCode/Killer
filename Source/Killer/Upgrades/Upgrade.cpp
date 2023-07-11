@@ -1,5 +1,7 @@
 #include "Upgrade.h"
 
+#include "AbilitySystemComponent.h"
+#include "GameplayEffectTypes.h"
 #include "Killer/Combat/Weapons/Gun.h"
 #include "Killer/Effects/EffectsActor.h"
 #include "Kismet/GameplayStatics.h"
@@ -10,6 +12,9 @@ AUpgrade::AUpgrade()
 
 	BoxComponent = CreateDefaultSubobject<UBoxComponent>(TEXT("Box Component"));
 	RootComponent = BoxComponent;
+
+	BoxComponent->SetCanEverAffectNavigation(false);
+	BoxComponent->SetCollisionProfileName("OverlapAll");
 
 	FlipbookComponent = CreateDefaultSubobject<UPaperFlipbookComponent>(TEXT("Flipbook Component"));
 	FlipbookComponent->SetupAttachment(RootComponent);
@@ -28,6 +33,34 @@ void AUpgrade::Tick(const float DeltaSeconds)
 	AnimateUpgrade(DeltaSeconds);
 }
 
+FActiveGameplayEffectHandle AUpgrade::ApplyGameplayEffectToMainCharacter(
+const AMainCharacter* MainCharacter, const TSubclassOf<UGameplayEffect> EffectClass, const UObject* SourceObject,
+	AActor* Instigator, AActor* EffectCauser)
+{
+	if (!MainCharacter || !EffectClass)
+	{
+		return {};
+	}
+
+	UAbilitySystemComponent* AbilitySystemComponent = MainCharacter->GetAbilitySystemComponent();
+	if (!AbilitySystemComponent)
+	{
+		return {};
+	}
+	
+	FGameplayEffectContextHandle EffectContext = AbilitySystemComponent->MakeEffectContext();
+	EffectContext.AddSourceObject(SourceObject);
+	EffectContext.AddInstigator(Instigator, EffectCauser);
+
+	const FGameplayEffectSpecHandle SpecHandle = AbilitySystemComponent->MakeOutgoingSpec(EffectClass, 1, EffectContext);
+	if (SpecHandle.IsValid())
+	{
+		return AbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
+	}
+
+	return {};
+}
+
 void AUpgrade::BeginPlay()
 {
 	Super::BeginPlay();
@@ -44,18 +77,18 @@ void AUpgrade::OnUpgradeBeginOverlap(UPrimitiveComponent* OverlappedComponent, A
 {
 	if (AMainCharacter* MainCharacter = Cast<AMainCharacter>(OtherActor))
 	{
-		Activate(MainCharacter);
+		ActivateUpgrade(MainCharacter);
 	}
 	else
 	{
 		if (const AGun* Gun = Cast<AGun>(OtherActor))
 		{
-			Activate(Cast<AMainCharacter>(Gun->GetOwner()));
+			ActivateUpgrade(Cast<AMainCharacter>(Gun->GetOwner()));
 		}
 	}
 }
 
-void AUpgrade::Activate(AMainCharacter* MainCharacter)
+void AUpgrade::ActivateUpgrade(AMainCharacter* MainCharacter)
 {
 	UWorld* World = GetWorld();
 	if (!World || !MainCharacter)

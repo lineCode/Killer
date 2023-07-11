@@ -1,4 +1,5 @@
 #include "MainCharacter.h"
+#include "AbilitySystemComponent.h"
 #include "MainCharacterController.h"
 #include "MainCharacterHUD.h"
 #include "NiagaraComponent.h"
@@ -17,6 +18,10 @@
 #include "Net/UnrealNetwork.h"
 #include "NiagaraFunctionLibrary.h"
 #include "GameFramework/PlayerStart.h"
+#include "Killer/Combat/AbilitySystem/Attributes/Player/PlayerAttributeSet.h"
+#include "Killer/Combat/AbilitySystem/UIData/UpgradeUIData.h"
+#include "Killer/UI/HUD/UpgradeNotifyWidget.h"
+#include "Killer/Upgrades/Upgrade.h"
 
 AMainCharacter::AMainCharacter()
 {
@@ -33,6 +38,12 @@ AMainCharacter::AMainCharacter()
 
 	HealthComponent = CreateDefaultSubobject<UHealthComponent>(TEXT("Health Component"));
 	WeaponComponent = CreateDefaultSubobject<UWeaponComponent>(TEXT("Weapon Component"));
+	
+	AbilitySystemComponent = CreateDefaultSubobject<UAbilitySystemComponent>(TEXT("Ability System Component"));
+	AbilitySystemComponent->SetIsReplicated(true);
+	AbilitySystemComponent->SetReplicationMode(EGameplayEffectReplicationMode::Minimal);
+
+	PlayerAttributes = CreateDefaultSubobject<UPlayerAttributeSet>(TEXT("Player Attribute Set"));
 }
 
 void AMainCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -41,7 +52,6 @@ void AMainCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLi
 
 	DOREPLIFETIME(AMainCharacter, MainCharacterController);
 	DOREPLIFETIME(AMainCharacter, PlayerMaterial);
-	DOREPLIFETIME(AMainCharacter, BulletModifiers);
 }
 
 void AMainCharacter::PossessedBy(AController* NewController)
@@ -68,12 +78,88 @@ void AMainCharacter::BeginPlay()
 
 	if (HasAuthority())
 	{
+		AUpgrade::ApplyGameplayEffectToMainCharacter(this, DefaultAttributeEffect, this);
+
+		GiveAbilities();
+
+		AbilitySystemComponent->OnGameplayEffectAppliedDelegateToSelf.AddUObject(this, &AMainCharacter::OnGameplayEffectAppliedToSelf);
+		
 		TeleportPlayerToRandomSpawn();
 	}
 
 	if (IsLocallyControlled())
 	{
 		Server_ChangePlayerName(USave::GetSave()->PlayerName);
+	}
+}
+
+void AMainCharacter::OnGameplayEffectAppliedToSelf(UAbilitySystemComponent* ASC, const FGameplayEffectSpec& Spec,
+	FActiveGameplayEffectHandle Handle)
+{
+	HandleDamageGameplayEffect(Spec);
+	HandleHealGameplayEffect(Spec);
+	HandleUpgradeGameplayEffect(Spec);
+}
+
+void AMainCharacter::HandleDamageGameplayEffect(const FGameplayEffectSpec& Spec)
+{
+	if (Spec.Def.Get()->HasMatchingGameplayTag(FGameplayTag::RequestGameplayTag(FName("GameplayEffect.Damage"))))
+	{
+		float Damage = 0.0f;
+		for (auto& Attribute : Spec.ModifiedAttributes)
+		{
+			Damage += FMath::Abs<float>(Attribute.TotalMagnitude);
+		}
+
+		AController* InstigatorController = nullptr;
+		if (const APawn* InstigatorPawn = Cast<APawn>(Spec.GetContext().GetInstigator()))
+		{
+			InstigatorController = InstigatorPawn->GetController();
+		}
+		
+		GetHealthComponent()->OnActorTakeAnyDamage(this, Damage, nullptr, InstigatorController, Spec.GetContext().GetEffectCauser());
+	}
+}
+
+void AMainCharacter::HandleHealGameplayEffect(const FGameplayEffectSpec& Spec) const
+{
+	if (Spec.Def.Get()->HasMatchingGameplayTag(FGameplayTag::RequestGameplayTag(FName("GameplayEffect.Heal"))))
+	{
+		float HealAmount = 0.0f;
+		for (auto& Attribute : Spec.ModifiedAttributes)
+		{
+			HealAmount += FMath::Abs<float>(Attribute.TotalMagnitude);
+		}
+		
+		GetHealthComponent()->Server_HealOwner(HealAmount);
+	}
+}
+
+void AMainCharacter::HandleUpgradeGameplayEffect(const FGameplayEffectSpec& Spec)
+{
+	if (Spec.Def.Get()->HasMatchingGameplayTag(FGameplayTag::RequestGameplayTag(FName("GameplayEffect.Upgrade"))))
+	{
+		Client_ShowUpgradeNotification(Cast<UUpgradeUIData>(Spec.Def.Get()->UIData));
+	}
+}
+
+void AMainCharacter::Client_ShowUpgradeNotification_Implementation(const UUpgradeUIData* UIData)
+{
+	if (MainCharacterHUD)
+	{
+		MainCharacterHUD->ShowUpgradeNotification(UIData);
+	}
+}
+
+void AMainCharacter::GiveAbilities()
+{
+	if (HasAuthority() && AbilitySystemComponent)
+	{
+		for (const auto& Ability : DefaultAbilities)
+		{
+			AbilitySystemComponent->GiveAbility(
+				FGameplayAbilitySpec(Ability, 1, INDEX_NONE, this));
+		}
 	}
 }
 

@@ -16,6 +16,9 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Heal Upgrade")
 	float MaxHealAmount;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Heal Upgrade")
+	TSubclassOf<UGameplayEffect> HealGameplayEffectClass;
+
 public:
-	virtual void Activate(AMainCharacter* MainCharacter) override;
+	virtual void ActivateUpgrade(AMainCharacter* MainCharacter) override;
 };

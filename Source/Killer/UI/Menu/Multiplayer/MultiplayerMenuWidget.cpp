@@ -15,6 +15,7 @@ void UMultiplayerMenuWidget::NativeConstruct()
 	if (SessionSubsystem)
 	{
 		SessionSubsystem->OnFindSessionsCompleteEvent.AddUObject(this, &UMultiplayerMenuWidget::OnFindSessionsComplete);
+		SessionSubsystem->OnCreateSessionCompleteEvent.AddDynamic(this, &UMultiplayerMenuWidget::OnCreateSessionComplete);
 	}
 
 	HostButton->OnButtonClicked.AddDynamic(this, &UMultiplayerMenuWidget::OnHostButtonClicked);
@@ -45,8 +46,13 @@ void UMultiplayerMenuWidget::OnDirectConnectionButtonClicked(UButtonWidget* Butt
 	WidgetSwitcher->SetActiveWidget(DirectConnectMenu);
 }
 
+void UMultiplayerMenuWidget::OnCreateSessionComplete(bool Successful)
+{
+	GetWorld()->ServerTravel("/Game/Levels/MultiplayerLobby?listen");
+}
+
 void UMultiplayerMenuWidget::OnFindSessionsComplete(const TArray<FOnlineSessionSearchResult>& SessionResults,
-	bool Successful)
+                                                    bool Successful)
 {
 	SessionsMenu->DisplaySessions(SessionResults);
 }

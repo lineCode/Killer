@@ -39,7 +39,7 @@ protected:
 	AController* LastAttacker;
 
 	/**
-	 * When HP changes, owner's and its children flipbooks change their emission in percentages.
+	 * When HP changes, owner's and its children flipbooks change their emissions in percentages.
 	 * Flipbooks should have material with scalar "Emission" parameter.
 	 */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Health Component|Effects")
@@ -68,14 +68,14 @@ protected:
 
 	void InitializeOwnerDynamicMaterials();
 
-	UFUNCTION()
-	void OnActorTakeAnyDamage(AActor* DamagedActor, float Damage, const class UDamageType* DamageType,
-							  class AController* InstigatedBy, AActor* DamageCauser);
-
 public:
 	UHealthComponent();
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
+	UFUNCTION()
+	void OnActorTakeAnyDamage(AActor* DamagedActor, float Damage, const class UDamageType* DamageType,
+							  class AController* InstigatedBy, AActor* DamageCauser);
 
 	bool IsDead() const { return bIsDead; }
 

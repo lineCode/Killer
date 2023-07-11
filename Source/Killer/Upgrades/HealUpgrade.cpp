@@ -1,24 +1,35 @@
 #include "HealUpgrade.h"
-#include "Killer/Combat/Health/HealthComponent.h"
+#include "AbilitySystemComponent.h"
+#include "GameplayEffect.h"
+#include "GameplayEffectTypes.h"
 
-void AHealUpgrade::Activate(AMainCharacter* MainCharacter)
+void AHealUpgrade::ActivateUpgrade(AMainCharacter* MainCharacter)
 {
-	Super::Activate(MainCharacter);
+	Super::ActivateUpgrade(MainCharacter);
 
-	if (!MainCharacter)
+	if (!MainCharacter || !HealGameplayEffectClass)
 	{
 		return;
 	}
 
-	UHealthComponent* HealthComponent = MainCharacter->GetHealthComponent();
-	if (!HealthComponent)
+	UAbilitySystemComponent* AbilitySystemComponent = MainCharacter->GetAbilitySystemComponent();
+	if (!AbilitySystemComponent)
 	{
 		return;
 	}
+	
+	FGameplayEffectContextHandle EffectContext = AbilitySystemComponent->MakeEffectContext();
+	EffectContext.AddSourceObject(this);
+	EffectContext.AddInstigator(nullptr, this);
 
-	const float HealAmount = FMath::RandRange(MinHealAmount, MaxHealAmount);
-
-	HealthComponent->Server_HealOwner(HealAmount);
+	const FGameplayEffectSpecHandle SpecHandle = AbilitySystemComponent->MakeOutgoingSpec(HealGameplayEffectClass, 1, EffectContext);
+	if (SpecHandle.IsValid())
+	{
+		SpecHandle.Data->SetSetByCallerMagnitude(FGameplayTag::RequestGameplayTag(FName("Data.Heal")),
+			FMath::RandRange(MinHealAmount, MaxHealAmount));
+		
+		AbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
+	}
 
 	Destroy();
 }

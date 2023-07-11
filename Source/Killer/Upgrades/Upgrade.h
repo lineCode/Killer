@@ -7,6 +7,8 @@
 #include "Killer/Player/General/MainCharacter.h"
 #include "Upgrade.generated.h"
 
+struct FActiveGameplayEffectHandle;
+
 UCLASS()
 class KILLER_API AUpgrade : public AActor
 {
@@ -33,7 +35,7 @@ protected:
 
 	void AnimateUpgrade(float DeltaSeconds);
 
-	virtual void Activate(AMainCharacter* MainCharacter);
+	virtual void ActivateUpgrade(AMainCharacter* MainCharacter);
 
 	UFUNCTION()
 	void OnUpgradeBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent*
@@ -43,4 +45,8 @@ public:
 	AUpgrade();
 
 	virtual void Tick(float DeltaSeconds) override;
+
+	static FActiveGameplayEffectHandle ApplyGameplayEffectToMainCharacter(
+		const AMainCharacter* MainCharacter, TSubclassOf<UGameplayEffect> EffectClass, const UObject* SourceObject,
+		AActor* Instigator = nullptr, AActor* EffectCauser = nullptr);
 };

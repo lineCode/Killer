@@ -5,9 +5,9 @@
 #include "Components/BoxComponent.h"
 #include "Gun.generated.h"
 
-struct FBulletInfo;
+struct FProjectileInfo;
 class AEffectsActor;
-class ABullet;
+class AProjectile;
 
 UCLASS()
 class KILLER_API AGun : public AActor
@@ -27,10 +27,10 @@ protected:
 	USceneComponent* MuzzleLocation;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Gun|Shooting")
-	TSubclassOf<ABullet> BulletClass;
+	TSubclassOf<AProjectile> BulletClass;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Gun|Shooting")
-	float TimeToShoot;
+	float FireRate;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Gun|Shooting")
 	bool bIsAutomatic;
@@ -50,19 +50,6 @@ protected:
 	UFUNCTION(Server, Reliable)
 	void Server_SetGunMaterial(UMaterialInterface* Material);
 
-	bool bCanShoot;
-
-	FTimerHandle FireRateTimerHandle;
-	void ResetFireRate();
-
-	UFUNCTION(Server, Reliable)
-	void Server_SpawnBullet(const FBulletInfo& BulletModifiers);
-
-	UFUNCTION(Server, Unreliable)
-	void Server_SpawnGunshotEffects();
-
-	void StartGunshotCameraShake() const;
-
 public:
 	AGun();
 
@@ -70,7 +57,12 @@ public:
 
 	bool IsAutomatic() const { return bIsAutomatic; }
 
-	void FireFromMuzzle(const FBulletInfo& BulletModifiers);
-
 	UPaperFlipbookComponent* GetSprite() const { return FlipbookComponent; }
+
+	float GetFireRate() const { return FireRate; }
+	FTransform GetMuzzleTransform() const { return MuzzleLocation->GetComponentTransform(); }
+	UMaterialInterface* GetGunMaterial() const { return GunMaterial; }
+	TSubclassOf<AProjectile> GetProjectileClass() const { return BulletClass; }
+	TSubclassOf<AEffectsActor> GetGunshotEffectsActorClass() const { return GunshotEffectsActorClass; }
+	TSubclassOf<UCameraShakeBase> GetGunshotCameraShakeClass() const { return GunshotCameraShakeClass; }
 };

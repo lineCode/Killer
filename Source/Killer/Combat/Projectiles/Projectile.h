@@ -1,17 +1,17 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "BulletInfo.h"
 #include "GameFramework/Actor.h"
 #include "PaperFlipbookComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Components/BoxComponent.h"
-#include "Bullet.generated.h"
+#include "Projectile.generated.h"
 
+class UGameplayEffect;
 class AEffectsActor;
 
 UCLASS()
-class KILLER_API ABullet : public AActor
+class KILLER_API AProjectile : public AActor
 {
 	GENERATED_BODY()
 
@@ -27,21 +27,21 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Components")
 	UProjectileMovementComponent* ProjectileMovementComponent;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Bullet|Info")
-	FBulletInfo BulletInfo;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Projectile|Info")
+	TSubclassOf<UDamageType> DamageTypeClass;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Bullet|Effects")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Projectile|Info")
+	TSubclassOf<UGameplayEffect> DamageGameplayEffectClass;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Projectile|Effects")
 	TSubclassOf<AEffectsActor> DestroyEffectsActor;
 
-	void SpawnBulletDestroyEffects() const;
+	void SpawnProjectileDestroyEffects() const;
 
 public:
-	ABullet();
-
-	/** Needs to be called before bullet spawn finished. */
-	void ModifyBulletInfo(const FBulletInfo& BulletModifiers);
+	AProjectile();
 
 	UFUNCTION()
-	void OnBulletHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
+	void OnProjectileHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
 	                 FVector NormalImpulse, const FHitResult& Hit);
 };

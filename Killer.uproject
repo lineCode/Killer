@@ -11,7 +11,8 @@
 			"AdditionalDependencies": [
 				"Paper2D",
 				"Engine",
-				"CoreUObject"
+				"CoreUObject",
+				"GameplayAbilities"
 			]
 		}
 	],
@@ -30,6 +31,10 @@
 			"SupportedTargetPlatforms": [
 				"Win64"
 			]
+		},
+		{
+			"Name": "GameplayAbilities",
+			"Enabled": true
 		}
 	]
 }

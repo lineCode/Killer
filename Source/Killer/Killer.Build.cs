@@ -10,6 +10,7 @@ public class Killer : ModuleRules
 
 		PublicDependencyModuleNames.AddRange(new[]
 			{ "Core", "CoreUObject", "Engine", "InputCore", "Paper2D", "UMG", "Niagara", "EnhancedInput",
+				"GameplayAbilities", "GameplayTags", "GameplayTasks",
 				"OnlineSubsystem", "OnlineServicesNull", "OnlineSubsystemUtils" });
 
 		PrivateDependencyModuleNames.AddRange(new string[] { });

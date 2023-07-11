@@ -4,6 +4,8 @@
 #include "GameFramework/HUD.h"
 #include "MainCharacterHUD.generated.h"
 
+class UUpgradeNotifyWidget;
+class UUpgradeUIData;
 class UPauseMenuWidget;
 class URestartTextWidget;
 
@@ -30,6 +32,12 @@ protected:
 	UPROPERTY(BlueprintReadWrite)
 	UPauseMenuWidget* PauseMenuWidget;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Main Character HUD")
+	TSubclassOf<UUserWidget> UpgradeNotifyWidgetClass;
+
+	UPROPERTY(BlueprintReadWrite)
+	UUpgradeNotifyWidget* UpgradeNotifyWidget;
+
 public:
 	void Destroyed() override;
 	
@@ -38,4 +46,6 @@ public:
 	
 	void ShowPauseWidget() const;
 	void HidePauseWidget() const;
+
+	void ShowUpgradeNotification(const UUpgradeUIData* UIData);
 };

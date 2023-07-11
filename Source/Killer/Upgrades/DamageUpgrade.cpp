@@ -1,15 +1,11 @@
 #include "DamageUpgrade.h"
+#include "ActiveGameplayEffectHandle.h"
 
-void ADamageUpgrade::Activate(AMainCharacter* MainCharacter)
+void ADamageUpgrade::ActivateUpgrade(AMainCharacter* MainCharacter)
 {
-	Super::Activate(MainCharacter);
+	Super::ActivateUpgrade(MainCharacter);
 
-	if (!MainCharacter)
-	{
-		return;
-	}
-
-	MainCharacter->BulletModifiers.DamageMultiplier *= DamageMultiplier;
+	ApplyGameplayEffectToMainCharacter(MainCharacter, DamageMultiplierEffectClass, this);
 
 	Destroy();
 }

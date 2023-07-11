@@ -54,8 +54,6 @@ void USessionSubsystem::OnCreateSessionCompleted(FName SessionName, bool Success
 	if (const IOnlineSessionPtr SessionInterface = Online::GetSessionInterface(GetWorld()))
 	{
 		SessionInterface->ClearOnCreateSessionCompleteDelegate_Handle(CreateSessionCompleteDelegateHandle);
-
-		GetWorld()->ServerTravel("/Game/Levels/MultiplayerLobby?listen");
 	}
 
 	OnCreateSessionCompleteEvent.Broadcast(Successful);

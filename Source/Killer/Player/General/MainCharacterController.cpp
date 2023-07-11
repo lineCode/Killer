@@ -1,4 +1,5 @@
 #include "MainCharacterController.h"
+#include "AbilitySystemComponent.h"
 #include "GameFramework/Character.h"
 #include "MainCharacter.h"
 #include "Kismet/GameplayStatics.h"
@@ -15,7 +16,7 @@
 
 AMainCharacterController::AMainCharacterController()
 {
-	CanShoot = true;
+	
 }
 
 void AMainCharacterController::OnPossess(APawn* InPawn)
@@ -61,7 +62,9 @@ void AMainCharacterController::SetupInputComponent()
 		EnhancedInputComponent->BindAction(InputActionsData->MoveInput, ETriggerEvent::Triggered, this,
 		                                   &AMainCharacterController::Move);
 		EnhancedInputComponent->BindAction(InputActionsData->ShootInput, ETriggerEvent::Triggered, this,
-		                                   &AMainCharacterController::Shoot);
+		                                   &AMainCharacterController::ShootAutomaticGun);
+		EnhancedInputComponent->BindAction(InputActionsData->ShootInput, ETriggerEvent::Started, this,
+										   &AMainCharacterController::ShootNonAutomaticGun);
 		EnhancedInputComponent->BindAction(InputActionsData->JumpInput, ETriggerEvent::Started, this,
 		                                   &AMainCharacterController::Jump);
 		EnhancedInputComponent->BindAction(InputActionsData->JumpInput, ETriggerEvent::Completed, this,
@@ -78,6 +81,23 @@ void AMainCharacterController::SetupInputComponent()
 bool AMainCharacterController::CanProceedInput() const
 {
 	return MainCharacter && !MainCharacter->GetHealthComponent()->IsDead() && bIsInputEnabled;
+}
+
+bool AMainCharacterController::IsGunAutomatic() const
+{
+	const UWeaponComponent* WeaponComponent = MainCharacter->GetWeaponComponent();
+	if (!WeaponComponent)
+	{
+		return false;
+	}
+
+	const AGun* Gun = WeaponComponent->GetGun();
+	if (!Gun)
+	{
+		return false;
+	}
+
+	return Gun->IsAutomatic();
 }
 
 void AMainCharacterController::Move(const FInputActionValue& Value)
@@ -150,38 +170,29 @@ void AMainCharacterController::Server_SpawnJumpEffects_Implementation()
 	}
 }
 
-void AMainCharacterController::Shoot(const FInputActionValue& Value)
+void AMainCharacterController::ShootAutomaticGun(const FInputActionValue& Value)
 {
-	if (!CanProceedInput())
+	if (!MainCharacter || !ShootAbilityClass)
 	{
 		return;
 	}
 
-	const UWeaponComponent* WeaponComponent = MainCharacter->GetWeaponComponent();
-	if (!WeaponComponent)
+	if (IsGunAutomatic())
+	{
+		MainCharacter->GetAbilitySystemComponent()->TryActivateAbilityByClass(ShootAbilityClass);
+	}
+}
+
+void AMainCharacterController::ShootNonAutomaticGun(const FInputActionValue& Value)
+{
+	if (!MainCharacter || !ShootAbilityClass)
 	{
 		return;
 	}
 
-	AGun* Gun = WeaponComponent->GetGun();
-	if (!Gun)
+	if (!IsGunAutomatic())
 	{
-		return;
-	}
-
-	if (Gun->IsAutomatic() && Value.Get<bool>())
-	{
-		Gun->FireFromMuzzle(MainCharacter->BulletModifiers);
-	}
-	else if (!Gun->IsAutomatic() && Value.Get<bool>() && CanShoot)
-	{
-		Gun->FireFromMuzzle(MainCharacter->BulletModifiers);
-
-		CanShoot = false;
-	}
-	else if (!Value.Get<bool>())
-	{
-		CanShoot = true;
+		MainCharacter->GetAbilitySystemComponent()->TryActivateAbilityByClass(ShootAbilityClass);
 	}
 }
 

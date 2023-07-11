@@ -56,5 +56,8 @@ protected:
 	UFUNCTION()
 	void OnDirectConnectionButtonClicked(UButtonWidget* Button);
 
+	UFUNCTION()
+	void OnCreateSessionComplete(bool Successful);
+	
 	void OnFindSessionsComplete(const TArray<FOnlineSessionSearchResult>& SessionResults, bool Successful);
 };

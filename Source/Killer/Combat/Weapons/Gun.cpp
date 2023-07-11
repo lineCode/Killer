@@ -1,6 +1,6 @@
 #include "Gun.h"
 
-#include "Killer/Combat/Projectiles/Bullet.h"
+#include "Killer/Combat/Projectiles/Projectile.h"
 #include "Killer/Effects/EffectsActor.h"
 #include "Killer/General/Save/Save.h"
 #include "Kismet/GameplayStatics.h"
@@ -18,8 +18,6 @@ AGun::AGun()
 
 	MuzzleLocation = CreateDefaultSubobject<USceneComponent>(TEXT("Muzzle Location"));
 	MuzzleLocation->SetupAttachment(RootComponent);
-
-	bCanShoot = true;
 }
 
 void AGun::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -39,78 +37,6 @@ void AGun::BeginPlay()
 	}
 }
 
-void AGun::FireFromMuzzle(const FBulletInfo& BulletModifiers)
-{
-	if (!bCanShoot)
-	{
-		return;
-	}
-
-	Server_SpawnBullet(BulletModifiers);
-
-	Server_SpawnGunshotEffects();
-
-	StartGunshotCameraShake();
-
-	bCanShoot = false;
-
-	GetWorldTimerManager().SetTimer(FireRateTimerHandle, this, &AGun::ResetFireRate, TimeToShoot, false, TimeToShoot);
-}
-
-void AGun::Server_SpawnBullet_Implementation(const FBulletInfo& BulletModifiers)
-{
-	UWorld* World = GetWorld();
-	if (!World)
-	{
-		return;
-	}
-
-	FTransform BulletSpawnTransform;
-	BulletSpawnTransform.SetLocation(MuzzleLocation->GetComponentLocation());
-	BulletSpawnTransform.SetRotation(MuzzleLocation->GetComponentRotation().Quaternion());
-
-	ABullet* Bullet = World->SpawnActorDeferred<ABullet>(BulletClass, BulletSpawnTransform, this, GetInstigator());
-	if (!Bullet)
-	{
-		return;
-	}
-
-	Bullet->SetActorRotation(MuzzleLocation->GetComponentRotation());
-
-	Bullet->ModifyBulletInfo(BulletModifiers);
-
-	UGameplayStatics::FinishSpawningActor(Bullet, BulletSpawnTransform);
-}
-
-void AGun::Server_SpawnGunshotEffects_Implementation()
-{
-	if (UWorld* World = GetWorld(); GunshotEffectsActorClass)
-	{
-		FTransform EffectsSpawnTransform;
-		EffectsSpawnTransform.SetLocation(MuzzleLocation->GetComponentLocation());
-		EffectsSpawnTransform.SetRotation(MuzzleLocation->GetComponentRotation().Quaternion());
-		
-		if (auto* GunshotEffectsActor = World->SpawnActor<AEffectsActor>(GunshotEffectsActorClass, EffectsSpawnTransform))
-		{
-			GunshotEffectsActor->Server_SetParticlesMaterial(GunMaterial);
-		}
-	}
-}
-
-void AGun::StartGunshotCameraShake() const
-{
-	if (GunshotCameraShakeClass)
-	{
-		if (AController* InstigatorController = GetInstigatorController())
-		{
-			if (const APlayerController* PlayerController = Cast<APlayerController>(InstigatorController))
-			{
-				PlayerController->PlayerCameraManager->StartCameraShake(GunshotCameraShakeClass);
-			}
-		}
-	}
-}
-
 void AGun::Server_SetGunMaterial_Implementation(UMaterialInterface* Material)
 {
 	GunMaterial = Material;
@@ -121,9 +47,4 @@ void AGun::Server_SetGunMaterial_Implementation(UMaterialInterface* Material)
 void AGun::OnRep_GunMaterial()
 {
 	GetSprite()->SetMaterial(0, GunMaterial);
-}
-
-void AGun::ResetFireRate()
-{
-	bCanShoot = true;
 }

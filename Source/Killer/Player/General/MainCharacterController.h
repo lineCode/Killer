@@ -5,6 +5,7 @@
 #include "InputMappingContext.h"
 #include "MainCharacterController.generated.h"
 
+class UGameplayAbility;
 class UInputActionsData;
 class AEffectsActor;
 class AMainCharacter;
@@ -22,6 +23,9 @@ protected:
 	UPROPERTY(Replicated)
 	AMainCharacter* MainCharacter;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Controller|Abilities")
+	TSubclassOf<UGameplayAbility> ShootAbilityClass;
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Controller|Input")
 	bool bIsInputEnabled;
 
@@ -37,10 +41,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Controller|Effects")
 	TSubclassOf<AEffectsActor> JumpEffectsActorClass;
 
-	bool CanShoot;
-
 	void Move(const FInputActionValue& Value);
-	void Shoot(const FInputActionValue& Value);
+	void ShootAutomaticGun(const FInputActionValue& Value);
+	void ShootNonAutomaticGun(const FInputActionValue& Value);
 	void Jump(const FInputActionValue& Value);
 	void StopJumping(const FInputActionValue& Value);
 	virtual void PauseGame(const FInputActionValue& Value);
@@ -51,9 +54,11 @@ protected:
 
 	bool CanProceedInput() const;
 
+	bool IsGunAutomatic() const;
+
 public:
 	AMainCharacterController();
-
+	
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 	virtual void SetupInputComponent() override;

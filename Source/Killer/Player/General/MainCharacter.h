@@ -5,9 +5,16 @@
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Killer/Combat/Health/HealthInterface.h"
-#include "Killer/Combat/Projectiles/BulletInfo.h"
+#include "AbilitySystemInterface.h"
 #include "MainCharacter.generated.h"
 
+class UUpgradeUIData;
+struct FActiveGameplayEffectHandle;
+struct FGameplayEffectSpec;
+struct FOnAttributeChangeData;
+class UGameplayAbility;
+class UGameplayEffect;
+class UPlayerAttributeSet;
 class UNiagaraSystem;
 class UNiagaraComponent;
 class UPaperFlipbook;
@@ -19,7 +26,7 @@ class UWeaponComponent;
 class AGun;
 
 UCLASS()
-class KILLER_API AMainCharacter : public APaperCharacter, public IHealthInterface
+class KILLER_API AMainCharacter : public APaperCharacter, public IHealthInterface, public IAbilitySystemInterface
 {
 	GENERATED_BODY()
 
@@ -40,6 +47,20 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
 	UWeaponComponent* WeaponComponent;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
+	UAbilitySystemComponent* AbilitySystemComponent;
+
+	UPROPERTY()
+	UPlayerAttributeSet* PlayerAttributes;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Main Character|GAS")
+	TSubclassOf<UGameplayEffect> DefaultAttributeEffect;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Main Character|GAS")
+	TArray<TSubclassOf<UGameplayAbility>> DefaultAbilities;
+	
+	void GiveAbilities();
 
 	/** When player causes damage to others, he takes damage too. Damage multiplied by this value. */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Main Character|Self Damage")
@@ -114,6 +135,12 @@ protected:
 	UFUNCTION(Server, Reliable)
 	void Server_ChangePlayerName(const FString& Name);
 
+	void OnGameplayEffectAppliedToSelf(UAbilitySystemComponent* ASC, const FGameplayEffectSpec& Spec, FActiveGameplayEffectHandle Handle);
+
+	void HandleDamageGameplayEffect(const FGameplayEffectSpec& Spec);
+	void HandleHealGameplayEffect(const FGameplayEffectSpec& Spec) const;
+	void HandleUpgradeGameplayEffect(const FGameplayEffectSpec& Spec);
+
 public:
 	AMainCharacter();
 
@@ -126,14 +153,14 @@ public:
 
 	virtual void Landed(const FHitResult& Hit) override;
 
-	UPROPERTY(Replicated, EditAnywhere, BlueprintReadWrite)
-	FBulletInfo BulletModifiers{};
-
 	virtual void OnKilled(AController* InstigatedBy, AActor* DamageCauser) override;
 	virtual void OnRevived() override;
 
 	virtual void OnDamageCaused(AActor* DamageCausedTo, float Damage) override;
 	virtual void OnKillCaused(AActor* KillCausedTo) override;
+
+	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override { return AbilitySystemComponent; }
+	UPlayerAttributeSet* GetPlayerAttributes() const { return PlayerAttributes; }
 
 	AMainCharacterController* GetMainCharacterController() const { return MainCharacterController; }
 	AMainCharacterHUD* GetMainCharacterHUD() const { return MainCharacterHUD; }
@@ -161,4 +188,7 @@ public:
 
 	UFUNCTION(NetMulticast, Reliable)
 	void Multicast_OnKilled();
+
+	UFUNCTION(Client, Reliable)
+	void Client_ShowUpgradeNotification(const UUpgradeUIData* UIData);
 };
